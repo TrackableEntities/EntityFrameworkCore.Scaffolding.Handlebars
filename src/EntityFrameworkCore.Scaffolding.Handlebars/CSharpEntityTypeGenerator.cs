@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -15,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -46,6 +48,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
             if (@namespace == null) throw new ArgumentNullException(nameof(@namespace));
+
+            // Register spaces helper
+            HandlebarsLib.RegisterHelper("spaces", HandlebarsHelpers.GetSpacesHelper());
 
             _sb = new IndentedStringBuilder();
             _useDataAnnotations = useDataAnnotations;

@@ -20,10 +20,6 @@ using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     public class HbsCSharpDbContextGenerator : ICSharpDbContextGenerator
     {
         private const string EntityLambdaIdentifier = "entity";
@@ -35,10 +31,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         private IndentedStringBuilder _sb;
         private bool _entityTypeBuilderInitialized;
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public HbsCSharpDbContextGenerator(
             IScaffoldingProviderCodeGenerator providerCodeGenerator,
             IAnnotationCodeGenerator annotationCodeGenerator,
@@ -49,10 +41,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             _cSharpUtilities = cSharpUtilities ?? throw new ArgumentNullException(nameof(cSharpUtilities));
         }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public virtual string WriteCode(
             IModel model,
             string @namespace,
@@ -82,10 +70,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return _sb.ToString();
         }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         protected virtual void GenerateClass(
             IModel model,
             string contextName,
@@ -136,10 +120,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         protected virtual void GenerateOnConfiguring(
             string connectionString)
         {
@@ -175,10 +155,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             _sb.AppendLine();
         }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         protected virtual void GenerateOnModelCreating(
             IModel model,
             bool useDataAnnotations)

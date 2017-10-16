@@ -1,10 +1,11 @@
-﻿using HandlebarsDotNet;
+﻿using System;
+using System.IO;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars.Helpers
 {
     public static class HandlebarsHelpers
     {
-        public static HandlebarsHelper GetSpacesHelper()
+        public static Action<TextWriter, object, object[]> GetSpacesHelper()
         {
             return (writer, context, parameters) =>
             {

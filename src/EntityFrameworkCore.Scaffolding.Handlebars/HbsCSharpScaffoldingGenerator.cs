@@ -4,50 +4,33 @@
 // Modifications copyright(C) 2017 Tony Sneed.
 
 using System;
+using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     public class HbsCSharpScaffoldingGenerator : ScaffoldingCodeGenerator
     {
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        public virtual IEntityTypeTemplateService EntityTypeTemplateService { get; }
         public virtual ICSharpDbContextGenerator CSharpDbContextGenerator { get; }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public virtual ICSharpEntityTypeGenerator CSharpEntityTypeGenerator { get; }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public HbsCSharpScaffoldingGenerator(
-            IFileService fileService, 
-            ICSharpDbContextGenerator cSharpDbContextGenerator, 
+            ITemplateFileService fileService,
+            IEntityTypeTemplateService entityTypeTemplateService,
+            ICSharpDbContextGenerator cSharpDbContextGenerator,
             ICSharpEntityTypeGenerator cSharpEntityTypeGenerator)
           : base(fileService)
         {
+            EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
             CSharpDbContextGenerator = cSharpDbContextGenerator ?? throw new ArgumentNullException(nameof(cSharpDbContextGenerator));
             CSharpEntityTypeGenerator = cSharpEntityTypeGenerator ?? throw new ArgumentNullException(nameof(cSharpEntityTypeGenerator));
         }
 
         public override string FileExtension => ".cs";
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public override ReverseEngineerFiles WriteCode(
             IModel model, 
             string outputPath, 
@@ -61,11 +44,17 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (@namespace == null) throw new ArgumentNullException(nameof(@namespace));
             if (contextName == null) throw new ArgumentNullException(nameof(contextName));
             if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
+
             ReverseEngineerFiles reverseEngineerFiles = new ReverseEngineerFiles();
             string contents1 = CSharpDbContextGenerator.WriteCode(model, @namespace, contextName, connectionString, useDataAnnotations);
             string fileName1 = contextName + FileExtension;
             string str1 = FileService.OutputFile(outputPath, fileName1, contents1);
             reverseEngineerFiles.ContextFile = str1;
+
+            // Register Hbs helpers and partial templates
+            EntityTypeTemplateService.RegisterHelper(Constants.SpacesHelper, HandlebarsHelpers.GetSpacesHelper());
+            EntityTypeTemplateService.RegisterPartialTemplates();
+
             foreach (IEntityType entityType in model.GetEntityTypes())
             {
                 string contents2 = CSharpEntityTypeGenerator.WriteCode(entityType, @namespace, useDataAnnotations);
@@ -73,6 +62,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 string str2 = FileService.OutputFile(outputPath, fileName2, contents2);
                 reverseEngineerFiles.EntityTypeFiles.Add(str2);
             }
+
             return reverseEngineerFiles;
         }
     }

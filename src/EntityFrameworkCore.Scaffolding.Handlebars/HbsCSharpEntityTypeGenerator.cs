@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -16,50 +15,29 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
-using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and may change or be removed in future releases.
-    /// </summary>
     public class HbsCSharpEntityTypeGenerator : ICSharpEntityTypeGenerator
     {
-        private ICSharpUtilities CSharpUtilities { get; }
-        private readonly IEntityTypeTemplateService _entityTypeTemplateService;
-
         private IndentedStringBuilder _sb;
         private bool _useDataAnnotations;
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        private ICSharpUtilities CSharpUtilities { get; }
+        public virtual IEntityTypeTemplateService EntityTypeTemplateService { get; }
+
         public HbsCSharpEntityTypeGenerator(
             ICSharpUtilities cSharpUtilities,
             IEntityTypeTemplateService entityTypeTemplateService)
         {
             CSharpUtilities = cSharpUtilities ?? throw new ArgumentNullException(nameof(cSharpUtilities));
-            _entityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
+            EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
         }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public virtual string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
             if (@namespace == null) throw new ArgumentNullException(nameof(@namespace));
-
-            // Register spaces helper
-            HandlebarsLib.RegisterHelper(Constants.SpacesHelper, HandlebarsHelpers.GetSpacesHelper());
-
-            // Register partial templates
-            foreach (var partialTemplate in _entityTypeTemplateService.GetEntityTypePartialTemplates())
-            {
-                HandlebarsLib.RegisterTemplate(partialTemplate.Key, partialTemplate.Value);
-            }
 
             _sb = new IndentedStringBuilder();
             _useDataAnnotations = useDataAnnotations;
@@ -95,10 +73,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return _sb.ToString();
         }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         protected virtual void GenerateClass(
             IEntityType entityType)
         {
@@ -123,10 +97,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             _sb.AppendLine("}");
         }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         protected virtual void GenerateEntityTypeDataAnnotations(
             IEntityType entityType)
         {
@@ -159,10 +129,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         protected virtual void GenerateConstructor(
             IEntityType entityType)
         {
@@ -188,10 +154,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         protected virtual void GenerateProperties(
             IEntityType entityType)
         {
@@ -208,10 +170,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         protected virtual void GeneratePropertyDataAnnotations(
             IProperty property)
         {
@@ -297,10 +255,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         protected virtual void GenerateNavigationProperties(
             IEntityType entityType)
         {

@@ -7,26 +7,26 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
-namespace Scaffolding.Handlebars.Tests.Internal
+namespace EntityFrameworkCore.Scaffolding.Handlebars.Internal
 {
     public class InMemoryFileService : IFileService
     {
         // maps directory name to a dictionary mapping file name to file contents
-        private readonly Dictionary<string, Dictionary<string, string>> _nameToContentMap
+        protected readonly Dictionary<string, Dictionary<string, string>> NameToContentMap
             = new Dictionary<string, Dictionary<string, string>>();
 
         public virtual bool DirectoryExists(string directoryName)
-            => _nameToContentMap.TryGetValue(directoryName, out _);
+            => NameToContentMap.TryGetValue(directoryName, out _);
 
         public virtual bool FileExists(string directoryName, string fileName)
-            => _nameToContentMap.TryGetValue(directoryName, out var filesMap)
+            => NameToContentMap.TryGetValue(directoryName, out var filesMap)
                && filesMap.TryGetValue(fileName, out _);
 
         public virtual bool IsFileReadOnly(string outputDirectoryName, string outputFileName) => false;
 
         public virtual string RetrieveFileContents(string directoryName, string fileName)
         {
-            if (!_nameToContentMap.TryGetValue(directoryName, out var filesMap))
+            if (!NameToContentMap.TryGetValue(directoryName, out var filesMap))
             {
                 throw new DirectoryNotFoundException("Could not find directory " + directoryName);
             }
@@ -44,10 +44,10 @@ namespace Scaffolding.Handlebars.Tests.Internal
             string fileName,
             string contents)
         {
-            if (!_nameToContentMap.TryGetValue(directoryName, out var filesMap))
+            if (!NameToContentMap.TryGetValue(directoryName, out var filesMap))
             {
                 filesMap = new Dictionary<string, string>();
-                _nameToContentMap[directoryName] = filesMap;
+                NameToContentMap[directoryName] = filesMap;
             }
 
             filesMap[fileName] = contents;

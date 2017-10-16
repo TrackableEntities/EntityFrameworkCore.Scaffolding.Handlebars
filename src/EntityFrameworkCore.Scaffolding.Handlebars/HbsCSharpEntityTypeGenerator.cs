@@ -23,9 +23,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// <summary>
     ///     This API supports the Entity Framework Core infrastructure and may change or be removed in future releases.
     /// </summary>
-    public class CSharpEntityTypeGenerator : ICSharpEntityTypeGenerator
+    public class HbsCSharpEntityTypeGenerator : ICSharpEntityTypeGenerator
     {
         private ICSharpUtilities CSharpUtilities { get; }
+        private readonly IEntityTypeTemplateService _entityTypeTemplateService;
 
         private IndentedStringBuilder _sb;
         private bool _useDataAnnotations;
@@ -34,10 +35,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public CSharpEntityTypeGenerator(
-            ICSharpUtilities cSharpUtilities)
+        public HbsCSharpEntityTypeGenerator(
+            ICSharpUtilities cSharpUtilities,
+            IEntityTypeTemplateService entityTypeTemplateService)
         {
             CSharpUtilities = cSharpUtilities ?? throw new ArgumentNullException(nameof(cSharpUtilities));
+            _entityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
         }
 
         /// <summary>
@@ -50,7 +53,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (@namespace == null) throw new ArgumentNullException(nameof(@namespace));
 
             // Register spaces helper
-            HandlebarsLib.RegisterHelper("spaces", HandlebarsHelpers.GetSpacesHelper());
+            HandlebarsLib.RegisterHelper(Constants.SpacesHelper, HandlebarsHelpers.GetSpacesHelper());
+
+            // Register partial templates
+            foreach (var partialTemplate in _entityTypeTemplateService.GetEntityTypePartialTemplates())
+            {
+                HandlebarsLib.RegisterTemplate(partialTemplate.Key, partialTemplate.Value);
+            }
 
             _sb = new IndentedStringBuilder();
             _useDataAnnotations = useDataAnnotations;

@@ -5,6 +5,7 @@
 
 using System;
 using System.Linq;
+using EntityFrameworkCore.Scaffolding.Handlebars;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -13,8 +14,6 @@ using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Scaffolding.Handlebars.Tests.Internal;
-using MyCSharpDbContextGenerator = EntityFrameworkCore.Scaffolding.Handlebars.CSharpDbContextGenerator;
-using MyCSharpEntityTypeGenerator = EntityFrameworkCore.Scaffolding.Handlebars.CSharpEntityTypeGenerator;
 using Xunit;
 
 namespace Scaffolding.Handlebars.Tests
@@ -32,13 +31,14 @@ namespace Scaffolding.Handlebars.Tests
         private void ValidateContextNameInReverseEngineerGenerator(string contextName)
         {
             var cSharpUtilities = new CSharpUtilities();
+            var fileService = new FileSystemFileService();
             var reverseEngineer = new ReverseEngineerScaffolder(
                 new FakeDatabaseModelFactory(),
                 new FakeScaffoldingModelFactory(new TestOperationReporter()),
-                new CSharpScaffoldingGenerator(
+                new HbsCSharpScaffoldingGenerator(
                     new InMemoryFileService(),
-                    new MyCSharpDbContextGenerator(new FakeScaffoldingCodeGenerator(), new FakeAnnotationCodeGenerator(), cSharpUtilities),
-                    new MyCSharpEntityTypeGenerator(cSharpUtilities)),
+                    new HbsCSharpDbContextGenerator(new FakeScaffoldingCodeGenerator(), new FakeAnnotationCodeGenerator(), cSharpUtilities),
+                    new HbsCSharpEntityTypeGenerator(cSharpUtilities, new HbsEntityTypeTemplateService(fileService))),
                 cSharpUtilities);
 
             Assert.Equal(

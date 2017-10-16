@@ -24,7 +24,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
     ///     directly from your code. This API may change or be removed in future releases.
     /// </summary>
-    public class CSharpDbContextGenerator : ICSharpDbContextGenerator
+    public class HbsCSharpDbContextGenerator : ICSharpDbContextGenerator
     {
         private const string EntityLambdaIdentifier = "entity";
         private const string Language = "CSharp";
@@ -39,7 +39,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public CSharpDbContextGenerator(
+        public HbsCSharpDbContextGenerator(
             IScaffoldingProviderCodeGenerator providerCodeGenerator,
             IAnnotationCodeGenerator annotationCodeGenerator,
             ICSharpUtilities cSharpUtilities)

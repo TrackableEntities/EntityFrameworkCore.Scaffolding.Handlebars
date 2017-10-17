@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
     public class InMemoryTemplateFileService : InMemoryFileService, ITemplateFileService
     {
-        public string[] InputFiles((string directoryName, string fileName, string contents)[] files)
+        public string[] InputFiles(params (string directoryName, string fileName, string contents)[] files)
         {
             var filePaths = new List<string>();
 

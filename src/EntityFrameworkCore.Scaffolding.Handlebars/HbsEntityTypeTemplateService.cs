@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using HandlebarsDotNet;
 using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
@@ -55,9 +56,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         protected virtual IDictionary<string, string> GetPartialTemplates()
         {
             var importTemplate = _fileService.RetrieveFileContents(
-                Constants.EntityTypePartialsDirectory, Constants.EntityTypeImportTemplate);
+                Constants.EntityTypePartialsDirectory,
+                Constants.EntityTypeImportTemplate + Constants.TemplateExtension);
             var propertyTemplate = _fileService.RetrieveFileContents(
-                Constants.EntityTypePartialsDirectory, Constants.EntityTypePropertyTemplate);
+                Constants.EntityTypePartialsDirectory,
+                Constants.EntityTypePropertyTemplate + Constants.TemplateExtension);
 
             var templates = new Dictionary<string, string>
             {

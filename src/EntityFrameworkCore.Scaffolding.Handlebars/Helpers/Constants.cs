@@ -1,4 +1,4 @@
-﻿namespace EntityFrameworkCore.Scaffolding.Handlebars
+﻿namespace EntityFrameworkCore.Scaffolding.Handlebars.Helpers
 {
     public static class Constants
     {

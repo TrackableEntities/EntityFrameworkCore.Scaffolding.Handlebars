@@ -58,7 +58,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             foreach (IEntityType entityType in model.GetEntityTypes())
             {
                 string contents2 = CSharpEntityTypeGenerator.WriteCode(entityType, @namespace, useDataAnnotations);
-                string fileName2 = entityType.DisplayName() + FileExtension;
+                    string fileName2 = entityType.DisplayName() + FileExtension;
                 string str2 = FileService.OutputFile(outputPath, fileName2, contents2);
                 reverseEngineerFiles.EntityTypeFiles.Add(str2);
             }

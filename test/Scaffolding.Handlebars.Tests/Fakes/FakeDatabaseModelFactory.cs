@@ -14,8 +14,9 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
+using RelationalScaffoldingModelFactory = Scaffolding.Handlebars.Tests.Internal.RelationalScaffoldingModelFactory;
 
-namespace Scaffolding.Handlebars.Tests.Internal
+namespace Scaffolding.Handlebars.Tests.Fakes
 {
     public class FakeScaffoldingModelFactory : RelationalScaffoldingModelFactory
     {

@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
+using Scaffolding.Handlebars.Tests.Fakes;
 using Scaffolding.Handlebars.Tests.Internal;
 using Xunit;
 
@@ -20,41 +21,6 @@ namespace Scaffolding.Handlebars.Tests
 {
     public class ReverseEngineeringConfigurationTests
     {
-        [Fact]
-        public void EntityTypeGenerator_Should_Generate_Entity()
-        {
-            // TODO: Set up local in-memory database
-
-            // Arrange
-            var cSharpUtilities = new CSharpUtilities();
-            var fileService = new InMemoryTemplateFileService();
-            var templateService = new HbsEntityTypeTemplateService(fileService);
-
-            var reverseEngineer = new ReverseEngineerScaffolder(
-                new FakeDatabaseModelFactory(),
-                new FakeScaffoldingModelFactory(new TestOperationReporter()),
-                new HbsCSharpScaffoldingGenerator(
-                    fileService,
-                    templateService,
-                    new HbsCSharpDbContextGenerator(
-                        new FakeScaffoldingCodeGenerator(), new FakeAnnotationCodeGenerator(), cSharpUtilities),
-                    new HbsCSharpEntityTypeGenerator(
-                        cSharpUtilities, new HbsEntityTypeTemplateService(fileService))), cSharpUtilities);
-
-            // Act
-            var files = reverseEngineer.Generate(
-                connectionString: "connectionstring",
-                tables: Enumerable.Empty<string>(),
-                schemas: Enumerable.Empty<string>(),
-                projectPath: "FakeProjectPath",
-                outputPath: null,
-                rootNamespace: "FakeNamespace",
-                contextName: "NorthwindSlimContext",
-                useDataAnnotations: false,
-                overwriteFiles: false,
-                useDatabaseNames: false);
-        }
-
         [Fact]
         public void Throws_exceptions_for_invalid_context_name()
         {

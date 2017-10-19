@@ -22,6 +22,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     {
         private IndentedStringBuilder _sb;
         private bool _useDataAnnotations;
+        private Dictionary<string, object> _templateData;
 
         private ICSharpUtilities CSharpUtilities { get; }
         public virtual IEntityTypeTemplateService EntityTypeTemplateService { get; }
@@ -40,41 +41,71 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (@namespace == null) throw new ArgumentNullException(nameof(@namespace));
 
             _sb = new IndentedStringBuilder();
+
+            _templateData = new Dictionary<string, object>();
             _useDataAnnotations = useDataAnnotations;
 
-            _sb.AppendLine("using System;");
-            _sb.AppendLine("using System.Collections.Generic;");
+            //_sb.AppendLine("using System;");
+            //_sb.AppendLine("using System.Collections.Generic;");
 
-            if (_useDataAnnotations)
-            {
-                _sb.AppendLine("using System.ComponentModel.DataAnnotations;");
-                _sb.AppendLine("using System.ComponentModel.DataAnnotations.Schema;");
-            }
+            //if (_useDataAnnotations)
+            //{
+            //    _sb.AppendLine("using System.ComponentModel.DataAnnotations;");
+            //    _sb.AppendLine("using System.ComponentModel.DataAnnotations.Schema;");
+            //}
+
+            //foreach (var ns in entityType.GetProperties()
+            //    .SelectMany(p => p.ClrType.GetNamespaces())
+            //    .Where(ns => ns != "System" && ns != "System.Collections.Generic")
+            //    .Distinct())
+            //{
+            //    _sb.AppendLine($"using {ns};");
+            //}
+
+            //_sb.AppendLine();
+            //_sb.AppendLine($"namespace {@namespace}");
+            //_sb.AppendLine("{");
+
+            _templateData = new Dictionary<string, object>();
+            _templateData.Add("use-data-annotations", _useDataAnnotations);
+
+            GenerateImports(entityType);
+
+            _templateData.Add("namespace", @namespace);
+
+            //using (_sb.Indent())
+            //{
+            //    GenerateClass(entityType);
+            //}
+
+            //_sb.AppendLine("}");
+
+            //return _sb.ToString();
+
+            GenerateClass(entityType);
+
+            string output = EntityTypeTemplateService.GenerateEntityType(_templateData);
+            return output;
+        }
+
+        protected virtual void GenerateImports(IEntityType entityType)
+        {
+            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+
+            var imports = new List<Dictionary<string, object>>();
 
             foreach (var ns in entityType.GetProperties()
                 .SelectMany(p => p.ClrType.GetNamespaces())
                 .Where(ns => ns != "System" && ns != "System.Collections.Generic")
                 .Distinct())
             {
-                _sb.AppendLine($"using {ns};");
+                imports.Add(new Dictionary<string, object> { { "import", ns } });
             }
 
-            _sb.AppendLine();
-            _sb.AppendLine($"namespace {@namespace}");
-            _sb.AppendLine("{");
-
-            using (_sb.Indent())
-            {
-                GenerateClass(entityType);
-            }
-
-            _sb.AppendLine("}");
-
-            return _sb.ToString();
+            _templateData.Add("imports", imports);
         }
 
-        protected virtual void GenerateClass(
-            IEntityType entityType)
+        protected virtual void GenerateClass(IEntityType entityType)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
 
@@ -83,26 +114,133 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 GenerateEntityTypeDataAnnotations(entityType);
             }
 
-            _sb.AppendLine($"public partial class {entityType.Name}");
+            //_sb.AppendLine($"public partial class {entityType.Name}");
+            //_sb.AppendLine("{");
+            //using (_sb.Indent())
+            //{
+            //    GenerateConstructor(entityType);
+            //    GenerateProperties(entityType);
+            //    GenerateNavigationProperties(entityType);
+            //}
+            //_sb.AppendLine("}");
 
-            _sb.AppendLine("{");
+            _templateData.Add("class", entityType.Name);
 
-            using (_sb.Indent())
-            {
-                GenerateConstructor(entityType);
-                GenerateProperties(entityType);
-                GenerateNavigationProperties(entityType);
-            }
-
-            _sb.AppendLine("}");
+            GenerateConstructor(entityType);
+            GenerateProperties(entityType);
+            GenerateNavigationProperties(entityType);
         }
 
-        protected virtual void GenerateEntityTypeDataAnnotations(
-            IEntityType entityType)
+        protected virtual void GenerateConstructor(IEntityType entityType)
+        {
+            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+
+            var collectionNavigations = entityType.GetNavigations().Where(n => n.IsCollection()).ToList();
+
+            if (collectionNavigations.Count > 0)
+            {
+                //_sb.AppendLine($"public {entityType.Name}()");
+                //_sb.AppendLine("{");
+                //using (_sb.Indent())
+                //{
+                //    foreach (var navigation in collectionNavigations)
+                //    {
+                //        _sb.AppendLine($"{navigation.Name} = new HashSet<{navigation.GetTargetType().Name}>();");
+                //    }
+                //}
+                //_sb.AppendLine("}");
+                //_sb.AppendLine();
+
+                var lines = new List<Dictionary<string, object>>();
+
+                foreach (var navigation in collectionNavigations)
+                {
+                    lines.Add(new Dictionary<string, object>
+                    {
+                        { "property-name", navigation.Name },
+                        { "property-type", navigation.GetTargetType().Name },
+                    });
+                }
+
+                _templateData.Add("lines", lines);
+            }
+        }
+
+        protected virtual void GenerateProperties(IEntityType entityType)
+        {
+            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+
+            var properties = new List<Dictionary<string, object>>();
+
+            foreach (var property in entityType.GetProperties().OrderBy(p => p.Scaffolding().ColumnOrdinal))
+            {
+                if (_useDataAnnotations)
+                {
+                    GeneratePropertyDataAnnotations(property);
+                }
+
+                //_sb.AppendLine($"public {CSharpUtilities.GetTypeName(property.ClrType)} {property.Name} {{ get; set; }}");
+
+                properties.Add(new Dictionary<string, object>
+                {
+                    { "property-type", CSharpUtilities.GetTypeName(property.ClrType) },
+                    { "property-name", property.Name },
+                });
+            }
+
+            _templateData.Add("properties", properties);
+        }
+
+        protected virtual void GenerateNavigationProperties(IEntityType entityType)
+        {
+            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+
+            var sortedNavigations = entityType.GetNavigations()
+                .OrderBy(n => n.IsDependentToPrincipal() ? 0 : 1)
+                .ThenBy(n => n.IsCollection() ? 1 : 0);
+
+            if (sortedNavigations.Any())
+            {
+                //_sb.AppendLine();
+
+                var properties = (List<Dictionary<string, object>>) _templateData["properties"];
+
+                foreach (var navigation in sortedNavigations)
+                {
+                    if (_useDataAnnotations)
+                    {
+                        GenerateNavigationDataAnnotations(navigation);
+                    }
+
+                    var referencedTypeName = navigation.GetTargetType().Name;
+                    var navigationType = navigation.IsCollection() ? $"ICollection<{referencedTypeName}>" : referencedTypeName;
+                    
+                    //_sb.AppendLine($"public {navigationType} {navigation.Name} {{ get; set; }}");
+
+                    properties.Add(new Dictionary<string, object>
+                    {
+                        { "property-type", navigationType },
+                        { "property-name", navigation.Name },
+                    });
+                }
+            }
+        }
+
+        protected virtual void GenerateEntityTypeDataAnnotations(IEntityType entityType)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
 
             GenerateTableAttribute(entityType);
+        }
+
+        protected virtual void GeneratePropertyDataAnnotations(IProperty property)
+        {
+            if (property == null) throw new ArgumentNullException(nameof(property));
+
+            GenerateKeyAttribute(property);
+            GenerateRequiredAttribute(property);
+            GenerateColumnAttribute(property);
+            GenerateMaxLengthAttribute(property);
         }
 
         private void GenerateTableAttribute(IEntityType entityType)
@@ -127,58 +265,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                 _sb.AppendLine(tableAttribute.ToString());
             }
-        }
-
-        protected virtual void GenerateConstructor(
-            IEntityType entityType)
-        {
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
-
-            var collectionNavigations = entityType.GetNavigations().Where(n => n.IsCollection()).ToList();
-
-            if (collectionNavigations.Count > 0)
-            {
-                _sb.AppendLine($"public {entityType.Name}()");
-                _sb.AppendLine("{");
-
-                using (_sb.Indent())
-                {
-                    foreach (var navigation in collectionNavigations)
-                    {
-                        _sb.AppendLine($"{navigation.Name} = new HashSet<{navigation.GetTargetType().Name}>();");
-                    }
-                }
-
-                _sb.AppendLine("}");
-                _sb.AppendLine();
-            }
-        }
-
-        protected virtual void GenerateProperties(
-            IEntityType entityType)
-        {
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
-
-            foreach (var property in entityType.GetProperties().OrderBy(p => p.Scaffolding().ColumnOrdinal))
-            {
-                if (_useDataAnnotations)
-                {
-                    GeneratePropertyDataAnnotations(property);
-                }
-
-                _sb.AppendLine($"public {CSharpUtilities.GetTypeName(property.ClrType)} {property.Name} {{ get; set; }}");
-            }
-        }
-
-        protected virtual void GeneratePropertyDataAnnotations(
-            IProperty property)
-        {
-            if (property == null) throw new ArgumentNullException(nameof(property));
-
-            GenerateKeyAttribute(property);
-            GenerateRequiredAttribute(property);
-            GenerateColumnAttribute(property);
-            GenerateMaxLengthAttribute(property);
         }
 
         private void GenerateKeyAttribute(IProperty property)
@@ -252,33 +338,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 && !property.IsPrimaryKey())
             {
                 _sb.AppendLine(new AttributeWriter(nameof(RequiredAttribute)).ToString());
-            }
-        }
-
-        protected virtual void GenerateNavigationProperties(
-            IEntityType entityType)
-        {
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
-
-            var sortedNavigations = entityType.GetNavigations()
-                .OrderBy(n => n.IsDependentToPrincipal() ? 0 : 1)
-                .ThenBy(n => n.IsCollection() ? 1 : 0);
-
-            if (sortedNavigations.Any())
-            {
-                _sb.AppendLine();
-
-                foreach (var navigation in sortedNavigations)
-                {
-                    if (_useDataAnnotations)
-                    {
-                        GenerateNavigationDataAnnotations(navigation);
-                    }
-
-                    var referencedTypeName = navigation.GetTargetType().Name;
-                    var navigationType = navigation.IsCollection() ? $"ICollection<{referencedTypeName}>" : referencedTypeName;
-                    _sb.AppendLine($"public {navigationType} {navigation.Name} {{ get; set; }}");
-                }
             }
         }
 

@@ -20,10 +20,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         public virtual void RegisterHelper(string helperName, Action<TextWriter, object, object[]> helper)
         {
-            if (Delegate.Combine(helper) is HandlebarsHelper hbsHelper)
-            {
-                HandlebarsLib.RegisterHelper(helperName, hbsHelper);
-            }
+            HandlebarsLib.RegisterHelper(helperName, (output, context, args) => helper(output, context, args));
         }
 
         public virtual void RegisterPartialTemplates()
@@ -48,13 +45,17 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         protected virtual Func<object, string> CompileEntityTypeTemplate()
         {
             var template = _fileService.RetrieveFileContents(
-                Constants.EntityTypeDirectory, Constants.EntityTypeTemplate);
+                Constants.EntityTypeDirectory,
+                Constants.EntityTypeTemplate + Constants.TemplateExtension);
             var entityTemplate = HandlebarsLib.Compile(template);
             return entityTemplate;
         }
 
         protected virtual IDictionary<string, string> GetPartialTemplates()
         {
+            var ctorTemplate = _fileService.RetrieveFileContents(
+                Constants.EntityTypePartialsDirectory,
+                Constants.EntityTypeCtorTemplate + Constants.TemplateExtension);
             var importTemplate = _fileService.RetrieveFileContents(
                 Constants.EntityTypePartialsDirectory,
                 Constants.EntityTypeImportTemplate + Constants.TemplateExtension);
@@ -64,6 +65,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var templates = new Dictionary<string, string>
             {
+                {
+                    Constants.EntityTypeCtorTemplate.ToLower(),
+                    ctorTemplate
+                },
                 {
                     Constants.EntityTypeImportTemplate.ToLower(),
                     importTemplate

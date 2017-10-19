@@ -9,6 +9,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
     public interface ITemplateFileService : IFileService
     {
-        string[] InputFiles((string directoryName, string fileName, string contents)[] files);
+        string[] InputFiles(params InputFile[] files);
     }
 }

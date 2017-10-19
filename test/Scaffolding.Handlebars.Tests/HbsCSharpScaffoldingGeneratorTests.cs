@@ -16,28 +16,56 @@ namespace Scaffolding.Handlebars.Tests
     public class HbsCSharpScaffoldingGeneratorTests
     {
         private NorthwindDbContextFixture Fixture { get; }
+        private InputFile ClassTemplate { get; }
+        private InputFile ImportsTemplate { get; }
+        private InputFile CtorTemplate { get; }
+        private InputFile PropertiesTemplate { get; }
 
         public HbsCSharpScaffoldingGeneratorTests(NorthwindDbContextFixture fixture)
         {
             Fixture = fixture;
             Fixture.Initialize(useInMemory: false);
+
+            var templatesVirtualPath =
+                $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.EntityTypeFolder}";
+            var partialsVirtualPath = templatesVirtualPath + $"/{Constants.Templates.PartialsFolder}";
+            var projectRootDir = Path.Combine("..", "..", "..", "..", "..");
+            var templatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder, 
+                Constants.Templates.CodeTemplatesFolder, Constants.Templates.EntityTypeFolder);
+            var partialTemplatesPath = Path.Combine(templatesPath, Constants.Templates.PartialsFolder);
+
+            ClassTemplate = new InputFile
+            {
+                Directory = templatesVirtualPath,
+                File = Constants.Templates.ClassFile,
+                Contents = File.ReadAllText(Path.Combine(templatesPath, Constants.Templates.ClassFile))
+            };
+            ImportsTemplate = new InputFile
+            {
+                Directory = partialsVirtualPath,
+                File = Constants.Templates.ImportsFile,
+                Contents = File.ReadAllText(Path.Combine(partialTemplatesPath, Constants.Templates.ImportsFile))
+            };
+            CtorTemplate = new InputFile
+            {
+                Directory = partialsVirtualPath,
+                File = Constants.Templates.CtorFile,
+                Contents = File.ReadAllText(Path.Combine(partialTemplatesPath, Constants.Templates.CtorFile))
+            };
+            PropertiesTemplate = new InputFile
+            {
+                Directory = partialsVirtualPath,
+                File = Constants.Templates.PropertiesFile,
+                Contents = File.ReadAllText(Path.Combine(partialTemplatesPath, Constants.Templates.PropertiesFile))
+            };
         }
 
         [Fact]
         public void WriteCode_Should_Generate_Entity_Files()
         {
             // Arrange
-            var inputTemplate = (
-                directoryName: "CodeTemplates/CSharpEntityType/Partials",
-                fileName: "Import.hbs",
-                contents: "using {{import}};");
-            var propertyTemplate = (
-                directoryName: "CodeTemplates/CSharpEntityType/Partials",
-                fileName: "Property.hbs",
-                contents: "public {{type}} {{name}} { get; set; }");
-
             var fileService = new InMemoryTemplateFileService();
-            fileService.InputFiles(inputTemplate, propertyTemplate);
+            fileService.InputFiles(ClassTemplate, ImportsTemplate, CtorTemplate, PropertiesTemplate);
             var templateService = new HbsEntityTypeTemplateService(fileService);
 
             var cSharpUtilities = new CSharpUtilities();
@@ -58,7 +86,7 @@ namespace Scaffolding.Handlebars.Tests
 
             // Act
             var files = reverseEngineer.Generate(
-                connectionString: Constants.SqlServerConnection,
+                connectionString: Constants.Connections.SqlServerConnection,
                 tables: Enumerable.Empty<string>(),
                 schemas: Enumerable.Empty<string>(),
                 projectPath: "FakeProjectPath",
@@ -98,8 +126,7 @@ namespace FakeNamespace
 
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
-
-        public ICollection<Product> Product { get; set; }
+        public ICollection&lt;Product&gt; Product { get; set; }
     }
 }
 ";
@@ -117,7 +144,6 @@ namespace FakeNamespace
         public bool Discontinued { get; set; }
         public string ProductName { get; set; }
         public decimal UnitPrice { get; set; }
-
         public Category Category { get; set; }
     }
 }

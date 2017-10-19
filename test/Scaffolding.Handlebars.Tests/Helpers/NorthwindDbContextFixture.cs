@@ -18,7 +18,7 @@ namespace Scaffolding.Handlebars.Tests.Helpers
             if (useInMemory)
             {
                 // In-memory database only exists while the connection is open
-                _connection = new SqliteConnection(Constants.SqLiteConnection);
+                _connection = new SqliteConnection(Constants.Connections.SqLiteConnection);
                 _connection.Open();
                 _options = new DbContextOptionsBuilder<NorthwindDbContext>()
                     .UseSqlite(_connection)
@@ -27,7 +27,7 @@ namespace Scaffolding.Handlebars.Tests.Helpers
             else
             {
                 _options = new DbContextOptionsBuilder<NorthwindDbContext>()
-                    .UseSqlServer(Constants.SqlServerConnection)
+                    .UseSqlServer(Constants.Connections.SqlServerConnection)
                     .Options;
             }
             _context = new NorthwindDbContext(_options);

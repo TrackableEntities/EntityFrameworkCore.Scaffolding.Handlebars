@@ -11,21 +11,21 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
     public class InMemoryTemplateFileService : InMemoryFileService, ITemplateFileService
     {
-        public string[] InputFiles(params (string directoryName, string fileName, string contents)[] files)
+        public string[] InputFiles(params InputFile[] files)
         {
             var filePaths = new List<string>();
 
             foreach (var file in files)
             {
-                if (!NameToContentMap.TryGetValue(file.directoryName, out var filesMap))
+                if (!NameToContentMap.TryGetValue(file.Directory, out var filesMap))
                 {
                     filesMap = new Dictionary<string, string>();
-                    NameToContentMap[file.directoryName] = filesMap;
+                    NameToContentMap[file.Directory] = filesMap;
                 }
 
-                filesMap[file.fileName] = file.contents;
+                filesMap[file.File] = file.Contents;
 
-                var path = Path.Combine(file.directoryName, file.fileName);
+                var path = Path.Combine(file.Directory, file.File);
                 filePaths.Add(path);
             }
 

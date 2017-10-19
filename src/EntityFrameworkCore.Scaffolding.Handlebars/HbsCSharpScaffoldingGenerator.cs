@@ -45,15 +45,15 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (contextName == null) throw new ArgumentNullException(nameof(contextName));
             if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 
+            // Register Hbs helpers and partial templates
+            EntityTypeTemplateService.RegisterHelper(Constants.SpacesHelper, HandlebarsHelpers.GetSpacesHelper());
+            EntityTypeTemplateService.RegisterPartialTemplates();
+
             ReverseEngineerFiles reverseEngineerFiles = new ReverseEngineerFiles();
             string contents1 = CSharpDbContextGenerator.WriteCode(model, @namespace, contextName, connectionString, useDataAnnotations);
             string fileName1 = contextName + FileExtension;
             string str1 = FileService.OutputFile(outputPath, fileName1, contents1);
             reverseEngineerFiles.ContextFile = str1;
-
-            // Register Hbs helpers and partial templates
-            EntityTypeTemplateService.RegisterHelper(Constants.SpacesHelper, HandlebarsHelpers.GetSpacesHelper());
-            EntityTypeTemplateService.RegisterPartialTemplates();
 
             foreach (IEntityType entityType in model.GetEntityTypes())
             {

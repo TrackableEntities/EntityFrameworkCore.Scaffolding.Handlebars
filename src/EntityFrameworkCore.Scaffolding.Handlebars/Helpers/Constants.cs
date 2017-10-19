@@ -10,8 +10,9 @@
         public const string EntityTypeDirectory = CodeTemplatesDirectory + "/CSharpEntityType";
         public const string EntityTypePartialsDirectory = EntityTypeDirectory + "/Partials";
 
-        public const string EntityTypeTemplate = "CSharpEntityType";
-        public const string EntityTypeImportTemplate = "Import";
-        public const string EntityTypePropertyTemplate = "Property";
+        public const string EntityTypeTemplate = "Class";
+        public const string EntityTypeCtorTemplate = "Constructor";
+        public const string EntityTypeImportTemplate = "Imports";
+        public const string EntityTypePropertyTemplate = "Properties";
     }
 }

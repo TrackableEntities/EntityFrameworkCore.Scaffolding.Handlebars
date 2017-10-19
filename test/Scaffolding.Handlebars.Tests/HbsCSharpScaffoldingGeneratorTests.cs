@@ -126,7 +126,8 @@ namespace FakeNamespace
 
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
-        public ICollection&lt;Product&gt; Product { get; set; }
+
+        public ICollection<Product> Product { get; set; }
     }
 }
 ";
@@ -140,10 +141,11 @@ namespace FakeNamespace
     public partial class Product
     {
         public int ProductId { get; set; }
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
         public bool Discontinued { get; set; }
         public string ProductName { get; set; }
-        public decimal UnitPrice { get; set; }
+        public decimal? UnitPrice { get; set; }
+
         public Category Category { get; set; }
     }
 }

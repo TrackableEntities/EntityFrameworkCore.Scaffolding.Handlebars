@@ -1,3 +1,13 @@
 ﻿{{#each properties}}
 {{spaces 8}}public {{property-type}} {{property-name}} { get; set; }
 {{/each}}
+{{#if nav-properties}}
+
+{{#each nav-properties}}
+{{#if nav-property-collection}}
+{{spaces 8}}public ICollection<{{nav-property-type}}> {{nav-property-name}} { get; set; }
+{{else}}
+{{spaces 8}}public {{nav-property-type}} {{nav-property-name}} { get; set; }
+{{/if}}
+{{/each}}
+{{/if}}

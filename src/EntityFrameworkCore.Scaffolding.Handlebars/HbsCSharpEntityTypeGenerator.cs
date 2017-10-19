@@ -203,7 +203,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 //_sb.AppendLine();
 
-                var properties = (List<Dictionary<string, object>>) _templateData["properties"];
+                var navProperties = new List<Dictionary<string, object>>();
 
                 foreach (var navigation in sortedNavigations)
                 {
@@ -212,17 +212,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         GenerateNavigationDataAnnotations(navigation);
                     }
 
-                    var referencedTypeName = navigation.GetTargetType().Name;
-                    var navigationType = navigation.IsCollection() ? $"ICollection<{referencedTypeName}>" : referencedTypeName;
-                    
+                    //var referencedTypeName = navigation.GetTargetType().Name;
+                    //var navigationType = navigation.IsCollection() ? $"ICollection<{referencedTypeName}>" : referencedTypeName;
+
                     //_sb.AppendLine($"public {navigationType} {navigation.Name} {{ get; set; }}");
 
-                    properties.Add(new Dictionary<string, object>
+                    navProperties.Add(new Dictionary<string, object>
                     {
-                        { "property-type", navigationType },
-                        { "property-name", navigation.Name },
+                        { "nav-property-collection", navigation.IsCollection() },
+                        { "nav-property-type", navigation.GetTargetType().Name },
+                        { "nav-property-name", navigation.Name },
                     });
                 }
+
+                _templateData.Add("nav-properties", navProperties);
             }
         }
 

@@ -9,10 +9,10 @@ namespace Scaffolding.Handlebars.Tests.Models
         [Key]
         public int ProductId { get; set; }
         public string ProductName { get; set; }
-        public decimal UnitPrice { get; set; }
+        public decimal? UnitPrice { get; set; }
         public bool Discontinued { get; set; }
 
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         public Category Category { get; set; }
     }

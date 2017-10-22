@@ -13,17 +13,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
     public class HbsCSharpScaffoldingGenerator : ScaffoldingCodeGenerator
     {
+        public virtual IDbContextTemplateService DbContextTemplateService { get; }
         public virtual IEntityTypeTemplateService EntityTypeTemplateService { get; }
         public virtual ICSharpDbContextGenerator CSharpDbContextGenerator { get; }
         public virtual ICSharpEntityTypeGenerator CSharpEntityTypeGenerator { get; }
 
         public HbsCSharpScaffoldingGenerator(
             ITemplateFileService fileService,
+            IDbContextTemplateService dbContextTemplateService,
             IEntityTypeTemplateService entityTypeTemplateService,
             ICSharpDbContextGenerator cSharpDbContextGenerator,
             ICSharpEntityTypeGenerator cSharpEntityTypeGenerator)
           : base(fileService)
         {
+            DbContextTemplateService = dbContextTemplateService ?? throw new ArgumentNullException(nameof(dbContextTemplateService));
             EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
             CSharpDbContextGenerator = cSharpDbContextGenerator ?? throw new ArgumentNullException(nameof(cSharpDbContextGenerator));
             CSharpEntityTypeGenerator = cSharpEntityTypeGenerator ?? throw new ArgumentNullException(nameof(cSharpEntityTypeGenerator));
@@ -46,7 +49,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 
             // Register Hbs helpers and partial templates
-            EntityTypeTemplateService.RegisterHelper(Constants.SpacesHelper, HandlebarsHelpers.GetSpacesHelper());
+            DbContextTemplateService.RegisterHelper(Constants.SpacesHelper, HandlebarsHelpers.GetSpacesHelper());
+            DbContextTemplateService.RegisterPartialTemplates();
             EntityTypeTemplateService.RegisterPartialTemplates();
 
             ReverseEngineerFiles reverseEngineerFiles = new ReverseEngineerFiles();

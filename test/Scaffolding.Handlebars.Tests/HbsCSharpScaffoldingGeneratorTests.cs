@@ -1,8 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Design.Internal;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Scaffolding.Handlebars.Tests.Fakes;
@@ -13,51 +16,100 @@ using Xunit;
 namespace Scaffolding.Handlebars.Tests
 {
     [Collection("NorthwindDbContext")]
-    public class HbsCSharpScaffoldingGeneratorTests
+    public partial class HbsCSharpScaffoldingGeneratorTests
     {
         private NorthwindDbContextFixture Fixture { get; }
-        private InputFile ClassTemplate { get; }
-        private InputFile ImportsTemplate { get; }
-        private InputFile CtorTemplate { get; }
-        private InputFile PropertiesTemplate { get; }
+
+        private InputFile ContextClassTemplate { get; }
+        private InputFile ContextImportsTemplate { get; }
+        private InputFile ContextDbSetsTemplate { get; }
+        private InputFile EntityClassTemplate { get; }
+        private InputFile EntityImportsTemplate { get; }
+        private InputFile EntityCtorTemplate { get; }
+        private InputFile EntityPropertiesTemplate { get; }
 
         public HbsCSharpScaffoldingGeneratorTests(NorthwindDbContextFixture fixture)
         {
             Fixture = fixture;
             Fixture.Initialize(useInMemory: false);
 
-            var templatesVirtualPath =
-                $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.EntityTypeFolder}";
-            var partialsVirtualPath = templatesVirtualPath + $"/{Constants.Templates.PartialsFolder}";
             var projectRootDir = Path.Combine("..", "..", "..", "..", "..");
-            var templatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder, 
-                Constants.Templates.CodeTemplatesFolder, Constants.Templates.EntityTypeFolder);
-            var partialTemplatesPath = Path.Combine(templatesPath, Constants.Templates.PartialsFolder);
 
-            ClassTemplate = new InputFile
+            var contextTemplatesVirtualPath =
+                $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.DbContextFolder}";
+            var contextPartialsVirtualPath = contextTemplatesVirtualPath + $"/{Constants.Templates.PartialsFolder}";
+            var contextTemplatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder,
+                Constants.Templates.CodeTemplatesFolder, Constants.Templates.DbContextFolder);
+            var contextPartialTemplatesPath = Path.Combine(contextTemplatesPath, Constants.Templates.PartialsFolder);
+
+            var entityTemplatesVirtualPath =
+                $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.EntityTypeFolder}";
+            var entityPartialsVirtualPath = entityTemplatesVirtualPath + $"/{Constants.Templates.PartialsFolder}";
+            var entityTemplatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder, 
+                Constants.Templates.CodeTemplatesFolder, Constants.Templates.EntityTypeFolder);
+            var entityPartialTemplatesPath = Path.Combine(entityTemplatesPath, Constants.Templates.PartialsFolder);
+
+            ContextClassTemplate = new InputFile
             {
-                Directory = templatesVirtualPath,
-                File = Constants.Templates.ClassFile,
-                Contents = File.ReadAllText(Path.Combine(templatesPath, Constants.Templates.ClassFile))
+                Directory = contextTemplatesVirtualPath,
+                File = Constants.Templates.ContextClassFile,
+                Contents = File.ReadAllText(Path.Combine(contextTemplatesPath, Constants.Templates.ContextClassFile))
             };
-            ImportsTemplate = new InputFile
+            ContextImportsTemplate = new InputFile
             {
-                Directory = partialsVirtualPath,
-                File = Constants.Templates.ImportsFile,
-                Contents = File.ReadAllText(Path.Combine(partialTemplatesPath, Constants.Templates.ImportsFile))
+                Directory = contextPartialsVirtualPath,
+                File = Constants.Templates.ContextImportsFile,
+                Contents = File.ReadAllText(Path.Combine(contextPartialTemplatesPath, Constants.Templates.ContextImportsFile))
             };
-            CtorTemplate = new InputFile
+            ContextDbSetsTemplate = new InputFile
             {
-                Directory = partialsVirtualPath,
-                File = Constants.Templates.CtorFile,
-                Contents = File.ReadAllText(Path.Combine(partialTemplatesPath, Constants.Templates.CtorFile))
+                Directory = contextPartialsVirtualPath,
+                File = Constants.Templates.ContextDbSetsFile,
+                Contents = File.ReadAllText(Path.Combine(contextPartialTemplatesPath, Constants.Templates.ContextDbSetsFile))
             };
-            PropertiesTemplate = new InputFile
+
+            EntityClassTemplate = new InputFile
             {
-                Directory = partialsVirtualPath,
-                File = Constants.Templates.PropertiesFile,
-                Contents = File.ReadAllText(Path.Combine(partialTemplatesPath, Constants.Templates.PropertiesFile))
+                Directory = entityTemplatesVirtualPath,
+                File = Constants.Templates.EntityClassFile,
+                Contents = File.ReadAllText(Path.Combine(entityTemplatesPath, Constants.Templates.EntityClassFile))
             };
+            EntityImportsTemplate = new InputFile
+            {
+                Directory = entityPartialsVirtualPath,
+                File = Constants.Templates.EntityImportsFile,
+                Contents = File.ReadAllText(Path.Combine(entityPartialTemplatesPath, Constants.Templates.EntityImportsFile))
+            };
+            EntityCtorTemplate = new InputFile
+            {
+                Directory = entityPartialsVirtualPath,
+                File = Constants.Templates.EntityCtorFile,
+                Contents = File.ReadAllText(Path.Combine(entityPartialTemplatesPath, Constants.Templates.EntityCtorFile))
+            };
+            EntityPropertiesTemplate = new InputFile
+            {
+                Directory = entityPartialsVirtualPath,
+                File = Constants.Templates.EntityPropertiesFile,
+                Contents = File.ReadAllText(Path.Combine(entityPartialTemplatesPath, Constants.Templates.EntityPropertiesFile))
+            };
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations)
+        {
+            // Act
+            Dictionary<string, string> files = ReverseEngineerFiles(ReverseEngineerOptions.DbContextOnly, useDataAnnotations);
+
+            // Assert
+            object expectedContext = useDataAnnotations
+                ? ExpectedContextsWithAnnotations.ContextClass
+                : ExpectedContexts.ContextClass;
+
+            var context = files[Constants.Files.DbContextFile];
+
+            Assert.Equal(expectedContext, context);
         }
 
         [Theory]
@@ -65,16 +117,52 @@ namespace Scaffolding.Handlebars.Tests
         [InlineData(true)]
         public void WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations)
         {
-            // Arrange
-            var fileService = new InMemoryTemplateFileService();
-            fileService.InputFiles(ClassTemplate, ImportsTemplate, CtorTemplate, PropertiesTemplate);
-            var templateService = new HbsEntityTypeTemplateService(fileService);
+            // Act
+            Dictionary<string, string> files = ReverseEngineerFiles(ReverseEngineerOptions.EntitiesOnly, useDataAnnotations);
 
-            var cSharpUtilities = new CSharpUtilities();
-            var entityGenerator = new HbsCSharpEntityTypeGenerator(
-                cSharpUtilities, new HbsEntityTypeTemplateService(fileService));
-            var scaffoldingGenerator = new HbsCSharpScaffoldingGenerator(
-                fileService, templateService, new FakeCSharpDbContextGenerator(), entityGenerator);
+            // Assert
+            var category = files[Constants.Files.CategoryFile];
+            var product = files[Constants.Files.ProductFile];
+
+            object expectedCategory = useDataAnnotations
+                ? ExpectedEntitiesWithAnnotations.CategoryClass
+                : ExpectedEntities.CategoryClass;
+            object expectedProduct = useDataAnnotations
+                ? ExpectedEntitiesWithAnnotations.ProductClass
+                : ExpectedEntities.ProductClass;
+
+            Assert.Equal(expectedCategory, category);
+            Assert.Equal(expectedProduct, product);
+        }
+
+        private Dictionary<string, string> ReverseEngineerFiles(ReverseEngineerOptions options, bool useDataAnnotations)
+        {
+            var fileService = new InMemoryTemplateFileService();
+            fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate, ContextDbSetsTemplate,
+                EntityClassTemplate, EntityImportsTemplate, EntityCtorTemplate, EntityPropertiesTemplate);
+            var dbContextTemplateService = new HbsDbContextTemplateService(fileService);
+            var entityTypeTemplateService = new HbsEntityTypeTemplateService(fileService);
+
+            ICSharpUtilities cSharpUtilities = new CSharpUtilities();
+            ICSharpDbContextGenerator realContextGenerator = new HbsCSharpDbContextGenerator(
+                new SqlServerScaffoldingCodeGenerator(),
+                new SqlServerAnnotationCodeGenerator(new AnnotationCodeGeneratorDependencies()),
+                cSharpUtilities,
+                new HbsDbContextTemplateService(fileService));
+            ICSharpDbContextGenerator contextGenerator =
+                options == ReverseEngineerOptions.DbContextOnly || options == ReverseEngineerOptions.DbContextOnly
+                ? realContextGenerator
+                : new NullCSharpDbContextGenerator();
+            ICSharpEntityTypeGenerator realEntityGenerator = new HbsCSharpEntityTypeGenerator(
+                cSharpUtilities,
+                new HbsEntityTypeTemplateService(fileService));
+            ICSharpEntityTypeGenerator entityGenerator =
+                options == ReverseEngineerOptions.EntitiesOnly || options == ReverseEngineerOptions.DbContextAndEntities
+                ? realEntityGenerator
+                : new NullCSharpEntityTypeGenerator();
+            IScaffoldingCodeGenerator scaffoldingGenerator = new HbsCSharpScaffoldingGenerator(
+                fileService, dbContextTemplateService, entityTypeTemplateService, 
+                contextGenerator, entityGenerator);
 
             var modelFactory = new SqlServerDatabaseModelFactory(
                 new DiagnosticsLogger<DbLoggerCategory.Scaffolding>(
@@ -91,15 +179,17 @@ namespace Scaffolding.Handlebars.Tests
                 connectionString: Constants.Connections.SqlServerConnection,
                 tables: Enumerable.Empty<string>(),
                 schemas: Enumerable.Empty<string>(),
-                projectPath: "FakeProjectPath",
+                projectPath: Constants.Parameters.ProjectPath,
                 outputPath: null,
-                rootNamespace: "FakeNamespace",
-                contextName: "NorthwindDbContext",
+                rootNamespace: Constants.Parameters.RootNamespace,
+                contextName: Constants.Parameters.ContextName,
                 useDataAnnotations: useDataAnnotations,
                 overwriteFiles: false,
                 useDatabaseNames: false);
 
-            // Assert
+            var contextPath = files.ContextFile;
+            var context = fileService.RetrieveFileContents(
+                Path.GetDirectoryName(contextPath), Path.GetFileName(contextPath));
             var categoryPath = files.EntityTypeFiles[0];
             var category = fileService.RetrieveFileContents(
                 Path.GetDirectoryName(categoryPath), Path.GetFileName(categoryPath));
@@ -107,123 +197,21 @@ namespace Scaffolding.Handlebars.Tests
             var product = fileService.RetrieveFileContents(
                 Path.GetDirectoryName(productPath), Path.GetFileName(productPath));
 
-            object expectedCategory;
-            object expectedProduct;
-
-            if (useDataAnnotations)
+            var generatedFiles = new Dictionary<string, string>
             {
-                expectedCategory = ExpectedWithAnnotations.CategoryClass;
-                expectedProduct = ExpectedWithAnnotations.ProductClass;
-            }
-            else
-            {
-                expectedCategory = Expected.CategoryClass;
-                expectedProduct = Expected.ProductClass;
-            }
+                { Constants.Files.DbContextFile, context },
+                { Constants.Files.CategoryFile, category },
+                { Constants.Files.ProductFile, product },
+            };
 
-            Assert.Equal(expectedCategory, category);
-            Assert.Equal(expectedProduct, product);
+            return generatedFiles;
         }
 
-        private static class Expected
+        private enum ReverseEngineerOptions
         {
-            public const string CategoryClass =
-@"using System;
-using System.Collections.Generic;
-
-namespace FakeNamespace
-{
-    public partial class Category
-    {
-        public Category()
-        {
-            Product = new HashSet<Product>();
-        }
-
-        public int CategoryId { get; set; }
-        public string CategoryName { get; set; }
-
-        public ICollection<Product> Product { get; set; }
-    }
-}
-";
-
-            public const string ProductClass =
-@"using System;
-using System.Collections.Generic;
-
-namespace FakeNamespace
-{
-    public partial class Category
-    {
-        public Category()
-        {
-            Product = new HashSet<Product>();
-        }
-
-        public int CategoryId { get; set; }
-        public string CategoryName { get; set; }
-
-        public ICollection<Product> Product { get; set; }
-        }
-    }
-";
-        }
-
-        private static class ExpectedWithAnnotations
-        {
-            public const string CategoryClass =
-@"using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace FakeNamespace
-{
-    public partial class Category
-    {
-        public Category()
-        {
-            Product = new HashSet<Product>();
-        }
-
-        public int CategoryId { get; set; }
-        [Required]
-        [StringLength(15)]
-        public string CategoryName { get; set; }
-
-        [InverseProperty(""Category"")]
-        public ICollection<Product> Product { get; set; }
-    }
-}
-";
-
-            public const string ProductClass =
-@"using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace FakeNamespace
-{
-    public partial class Product
-    {
-        public int ProductId { get; set; }
-        public int? CategoryId { get; set; }
-        public bool Discontinued { get; set; }
-        [Required]
-        [StringLength(40)]
-        public string ProductName { get; set; }
-        public byte[] RowVersion { get; set; }
-        [Column(TypeName = ""money"")]
-        public decimal? UnitPrice { get; set; }
-
-        [ForeignKey(""CategoryId"")]
-        [InverseProperty(""Product"")]
-        public Category Category { get; set; }
-    }
-}
-";
+            DbContextOnly,
+            EntitiesOnly,
+            DbContextAndEntities
         }
     }
 }

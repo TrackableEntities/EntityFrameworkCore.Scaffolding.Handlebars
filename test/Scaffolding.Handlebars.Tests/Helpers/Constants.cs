@@ -8,16 +8,34 @@
             public const string SqlServerConnection = @"Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindTestDb; Integrated Security=True; MultipleActiveResultSets=True";
         }
 
+        public static class Parameters
+        {
+            public const string ProjectPath = "FakeProjectPath";
+            public const string RootNamespace = "FakeNamespace";
+            public const string ContextName = "FakeDbContext";
+        }
+
         public static class Templates
         {
             public const string ProjectFolder = "EntityFrameworkCore.Scaffolding.Handlebars";
             public const string CodeTemplatesFolder = "CodeTemplates";
             public const string EntityTypeFolder = "CSharpEntityType";
+            public const string DbContextFolder = "CSharpDbContext";
             public const string PartialsFolder = "Partials";
-            public const string ClassFile = "Class.hbs";
-            public const string ImportsFile = "Imports.hbs";
-            public const string CtorFile = "Constructor.hbs";
-            public const string PropertiesFile = "Properties.hbs";
+            public const string EntityClassFile = "Class.hbs";
+            public const string EntityImportsFile = "Imports.hbs";
+            public const string EntityCtorFile = "Constructor.hbs";
+            public const string EntityPropertiesFile = "Properties.hbs";
+            public const string ContextClassFile = "DbContext.hbs";
+            public const string ContextImportsFile = "DbImports.hbs";
+            public const string ContextDbSetsFile = "DbSets.hbs";
+        }
+
+        public static class Files
+        {
+            public const string DbContextFile = Parameters.ContextName + ".cs";
+            public const string CategoryFile = "Category.cs";
+            public const string ProductFile = "Product.cs";
         }
     }
 }

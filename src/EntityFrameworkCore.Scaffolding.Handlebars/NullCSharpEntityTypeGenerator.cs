@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
-namespace Scaffolding.Handlebars.Tests.Fakes
+namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
-    public class FakeCSharpEntityTypeGenerator : ICSharpEntityTypeGenerator
+    public class NullCSharpEntityTypeGenerator : ICSharpEntityTypeGenerator
     {
         public string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations)
         {

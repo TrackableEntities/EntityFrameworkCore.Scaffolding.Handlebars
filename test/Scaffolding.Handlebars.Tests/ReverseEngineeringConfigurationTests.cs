@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Scaffolding.Handlebars.Tests
 {
-    public partial class ReverseEngineeringConfigurationTests
+    public class ReverseEngineeringConfigurationTests
     {
         [Theory]
         [InlineData("Invalid!CSharp*Class&Name")]
@@ -24,18 +24,25 @@ namespace Scaffolding.Handlebars.Tests
         {
             var cSharpUtilities = new CSharpUtilities();
             var fileService = new InMemoryTemplateFileService();
-            var templateService = new HbsEntityTypeTemplateService(fileService);
+            var dbContextTemplateService = new HbsDbContextTemplateService(fileService);
+            var entityTypeTemplateService = new HbsEntityTypeTemplateService(fileService);
 
             var reverseEngineer = new ReverseEngineerScaffolder(
                 new FakeDatabaseModelFactory(),
                 new FakeScaffoldingModelFactory(new TestOperationReporter()),
                 new HbsCSharpScaffoldingGenerator(
                     fileService,
-                    templateService,
+                    dbContextTemplateService,
+                    entityTypeTemplateService,
                     new HbsCSharpDbContextGenerator(
-                        new Fakes.ReverseEngineeringConfigurationTests.FakeScaffoldingCodeGenerator(), new FakeAnnotationCodeGenerator(), cSharpUtilities),
+                        new FakeScaffoldingProviderCodeGenerator(),
+                        new FakeAnnotationCodeGenerator(),
+                        cSharpUtilities,
+                        new HbsDbContextTemplateService(fileService)),
                     new HbsCSharpEntityTypeGenerator(
-                        cSharpUtilities, new HbsEntityTypeTemplateService(fileService))),cSharpUtilities);
+                        cSharpUtilities,
+                        new HbsEntityTypeTemplateService(fileService))),
+                        cSharpUtilities);
 
             Assert.Equal(
                 DesignStrings.ContextClassNotValidCSharpIdentifier(contextName),

@@ -20,7 +20,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
     public class HbsCSharpEntityTypeGenerator : ICSharpEntityTypeGenerator
     {
-        //private IndentedStringBuilder _sb;
         private bool _useDataAnnotations;
         private Dictionary<string, object> _templateData;
         private List<Dictionary<string, object>> _propertyAnnotations;
@@ -42,47 +41,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
             if (@namespace == null) throw new ArgumentNullException(nameof(@namespace));
 
-            //_sb = new IndentedStringBuilder();
-
             _useDataAnnotations = useDataAnnotations;
-            _templateData = new Dictionary<string, object>();
-
-            //_sb.AppendLine("using System;");
-            //_sb.AppendLine("using System.Collections.Generic;");
-
-            //if (_useDataAnnotations)
-            //{
-            //    _sb.AppendLine("using System.ComponentModel.DataAnnotations;");
-            //    _sb.AppendLine("using System.ComponentModel.DataAnnotations.Schema;");
-            //}
-
-            //foreach (var ns in entityType.GetProperties()
-            //    .SelectMany(p => p.ClrType.GetNamespaces())
-            //    .Where(ns => ns != "System" && ns != "System.Collections.Generic")
-            //    .Distinct())
-            //{
-            //    _sb.AppendLine($"using {ns};");
-            //}
-
-            //_sb.AppendLine();
-            //_sb.AppendLine($"namespace {@namespace}");
-            //_sb.AppendLine("{");
-
             _templateData = new Dictionary<string, object>();
             _templateData.Add("use-data-annotations", _useDataAnnotations);
 
             GenerateImports(entityType);
 
             _templateData.Add("namespace", @namespace);
-
-            //using (_sb.Indent())
-            //{
-            //    GenerateClass(entityType);
-            //}
-
-            //_sb.AppendLine("}");
-
-            //return _sb.ToString();
 
             GenerateClass(entityType);
 
@@ -116,16 +81,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 GenerateEntityTypeDataAnnotations(entityType);
             }
 
-            //_sb.AppendLine($"public partial class {entityType.Name}");
-            //_sb.AppendLine("{");
-            //using (_sb.Indent())
-            //{
-            //    GenerateConstructor(entityType);
-            //    GenerateProperties(entityType);
-            //    GenerateNavigationProperties(entityType);
-            //}
-            //_sb.AppendLine("}");
-
             _templateData.Add("class", entityType.Name);
 
             GenerateConstructor(entityType);
@@ -141,18 +96,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             if (collectionNavigations.Count > 0)
             {
-                //_sb.AppendLine($"public {entityType.Name}()");
-                //_sb.AppendLine("{");
-                //using (_sb.Indent())
-                //{
-                //    foreach (var navigation in collectionNavigations)
-                //    {
-                //        _sb.AppendLine($"{navigation.Name} = new HashSet<{navigation.GetTargetType().Name}>();");
-                //    }
-                //}
-                //_sb.AppendLine("}");
-                //_sb.AppendLine();
-
                 var lines = new List<Dictionary<string, object>>();
 
                 foreach (var navigation in collectionNavigations)
@@ -183,8 +126,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     GeneratePropertyDataAnnotations(property);
                 }
 
-                //_sb.AppendLine($"public {CSharpUtilities.GetTypeName(property.ClrType)} {property.Name} {{ get; set; }}");
-
                 properties.Add(new Dictionary<string, object>
                 {
                     { "property-type", CSharpUtilities.GetTypeName(property.ClrType) },
@@ -206,8 +147,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             if (sortedNavigations.Any())
             {
-                //_sb.AppendLine();
-
                 var navProperties = new List<Dictionary<string, object>>();
 
                 foreach (var navigation in sortedNavigations)
@@ -218,11 +157,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     {
                         GenerateNavigationDataAnnotations(navigation);
                     }
-
-                    //var referencedTypeName = navigation.GetTargetType().Name;
-                    //var navigationType = navigation.IsCollection() ? $"ICollection<{referencedTypeName}>" : referencedTypeName;
-
-                    //_sb.AppendLine($"public {navigationType} {navigation.Name} {{ get; set; }}");
 
                     navProperties.Add(new Dictionary<string, object>
                     {
@@ -274,7 +208,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     tableAttribute.AddParameter($"{nameof(TableAttribute.Schema)} = {CSharpUtilities.DelimitString(schema)}");
                 }
 
-                //_sb.AppendLine(tableAttribute.ToString());
                 _templateData.Add("class-annotation", tableAttribute.ToString());
             }
         }
@@ -296,7 +229,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     return;
                 }
 
-                //_sb.AppendLine(new AttributeWriter(nameof(KeyAttribute)));
                 _propertyAnnotations.Add(new Dictionary<string, object>
                 {
                     { "property-annotation", new AttributeWriter(nameof(KeyAttribute)) },
@@ -326,7 +258,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     columnAttribute.AddParameter($"{nameof(ColumnAttribute.TypeName)} = {delimitedColumnType}");
                 }
 
-                //_sb.AppendLine(columnAttribute);
                 _propertyAnnotations.Add(new Dictionary<string, object>
                 {
                     { "property-annotation", columnAttribute },
@@ -347,7 +278,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                 lengthAttribute.AddParameter(CSharpUtilities.GenerateLiteral(maxLength.Value));
 
-                //_sb.AppendLine(lengthAttribute.ToString());
                 _propertyAnnotations.Add(new Dictionary<string, object>
                 {
                     { "property-annotation", lengthAttribute.ToString() },
@@ -361,7 +291,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 && property.ClrType.IsNullableType()
                 && !property.IsPrimaryKey())
             {
-                //_sb.AppendLine(new AttributeWriter(nameof(RequiredAttribute)).ToString());
                 _propertyAnnotations.Add(new Dictionary<string, object>
                 {
                     { "property-annotation", new AttributeWriter(nameof(RequiredAttribute)).ToString() },
@@ -389,7 +318,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         CSharpUtilities.DelimitString(
                             string.Join(",", navigation.ForeignKey.Properties.Select(p => p.Name))));
 
-                    //_sb.AppendLine(foreignKeyAttribute.ToString());
                     _navPropertyAnnotations.Add(new Dictionary<string, object>
                     {
                         { "nav-property-annotation", foreignKeyAttribute.ToString() },
@@ -410,7 +338,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                     inversePropertyAttribute.AddParameter(CSharpUtilities.DelimitString(inverseNavigation.Name));
 
-                    //_sb.AppendLine(inversePropertyAttribute.ToString());
                     _navPropertyAnnotations.Add(new Dictionary<string, object>
                     {
                         { "nav-property-annotation", inversePropertyAttribute.ToString() },

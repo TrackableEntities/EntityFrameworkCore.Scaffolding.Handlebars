@@ -2,9 +2,12 @@
 
 namespace {{namespace}}
 {
+{{#if class-annotation}}
+{{{class-annotation}}}
+{{/if}}
     public partial class {{class}}
     {
-        {{> constructor}}
+        {{{> constructor}}}
         {{> properties}}
     }
 }

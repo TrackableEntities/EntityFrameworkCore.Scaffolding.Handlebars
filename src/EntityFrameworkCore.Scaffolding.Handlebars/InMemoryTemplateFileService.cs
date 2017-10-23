@@ -9,9 +9,17 @@ using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
+    /// <summary>
+    /// Provides files to the template service from an in-memory store.
+    /// </summary>
     public class InMemoryTemplateFileService : InMemoryFileService, ITemplateFileService
     {
-        public string[] InputFiles(params InputFile[] files)
+        /// <summary>
+        /// Allows files to be stored for later retrieval. Used for testing purposes.
+        /// </summary>
+        /// <param name="files">Files used by the template service.</param>
+        /// <returns>Array of file paths.</returns>
+        public virtual string[] InputFiles(params InputFile[] files)
         {
             var filePaths = new List<string>();
 

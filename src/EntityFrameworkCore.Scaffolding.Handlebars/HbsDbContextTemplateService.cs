@@ -5,14 +5,29 @@ using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
+    /// <summary>
+    /// Provide services required to generate the DbContext class using Handlebars templates.
+    /// </summary>
     public class HbsDbContextTemplateService : HbsTemplateService, IDbContextTemplateService
     {
+        /// <summary>
+        /// DbContext template.
+        /// </summary>
         public Func<object, string> DbContextTemplate { get; private set; }
 
+        /// <summary>
+        /// Constructor for the DbContext template service.
+        /// </summary>
+        /// <param name="fileService">Template file service.</param>
         public HbsDbContextTemplateService(ITemplateFileService fileService) : base(fileService)
         {
         }
 
+        /// <summary>
+        /// Generate DbContext class.
+        /// </summary>
+        /// <param name="data">Data used to generate DbContext class.</param>
+        /// <returns>Generated DbContext class.</returns>
         public virtual string GenerateDbContext(object data)
         {
             if (DbContextTemplate == null)
@@ -23,6 +38,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return dbContext;
         }
 
+        /// <summary>
+        /// Compile the DbContext template.
+        /// </summary>
+        /// <returns>DbContext template.</returns>
         protected virtual Func<object, string> CompileDbContextTemplate()
         {
             var template = FileService.RetrieveFileContents(
@@ -32,6 +51,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return entityTemplate;
         }
 
+        /// <summary>
+        /// Get DbContext partial templates.
+        /// </summary>
+        /// <returns>Partial templates.</returns>
         protected override IDictionary<string, string> GetPartialTemplates()
         {
             var importTemplate = FileService.RetrieveFileContents(

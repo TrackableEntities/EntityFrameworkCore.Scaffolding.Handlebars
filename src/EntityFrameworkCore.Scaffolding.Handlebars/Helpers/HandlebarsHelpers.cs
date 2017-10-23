@@ -3,8 +3,15 @@ using System.IO;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars.Helpers
 {
+    /// <summary>
+    /// Handlebars helpers used by the scaffolding generator.
+    /// </summary>
     public static class HandlebarsHelpers
     {
+        /// <summary>
+        /// Get the spaces Handlebars helper.
+        /// </summary>
+        /// <returns>Spaces Handlebars helper.</returns>
         public static Action<TextWriter, object, object[]> GetSpacesHelper()
         {
             return (writer, context, parameters) =>

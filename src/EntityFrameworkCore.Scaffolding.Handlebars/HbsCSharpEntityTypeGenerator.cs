@@ -18,6 +18,9 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
+    /// <summary>
+    /// Generator for entity type classes using Handlebars templates.
+    /// </summary>
     public class HbsCSharpEntityTypeGenerator : ICSharpEntityTypeGenerator
     {
         private bool _useDataAnnotations;
@@ -26,8 +29,17 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         private List<Dictionary<string, object>> _navPropertyAnnotations;
 
         private ICSharpUtilities CSharpUtilities { get; }
+
+        /// <summary>
+        /// Template service for the entity types generator.
+        /// </summary>
         public virtual IEntityTypeTemplateService EntityTypeTemplateService { get; }
 
+        /// <summary>
+        /// Constructor for the Handlebars entity types generator.
+        /// </summary>
+        /// <param name="cSharpUtilities">CSharp utilities.</param>
+        /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         public HbsCSharpEntityTypeGenerator(
             ICSharpUtilities cSharpUtilities,
             IEntityTypeTemplateService entityTypeTemplateService)
@@ -36,6 +48,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
         }
 
+        /// <summary>
+        /// Generate entity type class.
+        /// </summary>
+        /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
+        /// <param name="namespace">Entity type namespace.</param>
+        /// <param name="useDataAnnotations">If true use data annotations.</param>
+        /// <returns>Generated entity type.</returns>
         public virtual string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
@@ -55,6 +74,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return output;
         }
 
+        /// <summary>
+        /// Generate entity type imports.
+        /// </summary>
+        /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
         protected virtual void GenerateImports(IEntityType entityType)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
@@ -72,6 +95,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             _templateData.Add("imports", imports);
         }
 
+        /// <summary>
+        /// Generate entity type class.
+        /// </summary>
+        /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
         protected virtual void GenerateClass(IEntityType entityType)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
@@ -88,6 +115,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             GenerateNavigationProperties(entityType);
         }
 
+        /// <summary>
+        /// Generate entity type constructor.
+        /// </summary>
+        /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
         protected virtual void GenerateConstructor(IEntityType entityType)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
@@ -111,6 +142,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
+        /// <summary>
+        /// Generate entity type properties.
+        /// </summary>
+        /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
         protected virtual void GenerateProperties(IEntityType entityType)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
@@ -137,6 +172,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             _templateData.Add("properties", properties);
         }
 
+        /// <summary>
+        /// Generate entity type navigation properties.
+        /// </summary>
+        /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
         protected virtual void GenerateNavigationProperties(IEntityType entityType)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
@@ -171,6 +210,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
+        /// <summary>
+        /// Generate entity type data annotations.
+        /// </summary>
+        /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
         protected virtual void GenerateEntityTypeDataAnnotations(IEntityType entityType)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
@@ -178,7 +221,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             GenerateTableAttribute(entityType);
         }
 
-        protected  virtual void GeneratePropertyDataAnnotations(IProperty property)
+        /// <summary>
+        /// Generate property data annotations.
+        /// </summary>
+        /// <param name="property">Represents a scalar property of an entity.</param>
+        protected virtual void GeneratePropertyDataAnnotations(IProperty property)
         {
             if (property == null) throw new ArgumentNullException(nameof(property));
 

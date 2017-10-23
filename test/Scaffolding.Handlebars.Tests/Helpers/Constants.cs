@@ -5,7 +5,7 @@
         public static class Connections
         {
             public const string SqLiteConnection = "DataSource=:memory:";
-            public const string SqlServerConnection = @"Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindTestDb; Integrated Security=True; MultipleActiveResultSets=True";
+            public const string SqlServerConnection = @"Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindTestDb; Integrated Security=True";
         }
 
         public static class Parameters

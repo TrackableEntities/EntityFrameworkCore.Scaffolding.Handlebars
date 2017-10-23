@@ -20,6 +20,9 @@ using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
+    /// <summary>
+    /// Generator for the DbContext class using Handlebars templates.
+    /// </summary>
     public class HbsCSharpDbContextGenerator : ICSharpDbContextGenerator
     {
         private const string EntityLambdaIdentifier = "entity";
@@ -31,8 +34,19 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         private Dictionary<string, object> _templateData;
 
         private ICSharpUtilities CSharpUtilities { get; }
+
+        /// <summary>
+        /// DbContext template service.
+        /// </summary>
         public virtual IDbContextTemplateService DbContextTemplateService { get; }
 
+        /// <summary>
+        /// Constructor for the Handlebars DbContext generator.
+        /// </summary>
+        /// <param name="providerCodeGenerator">Generator for scaffolding provider.</param>
+        /// <param name="annotationCodeGenerator">Annotation code generator.</param>
+        /// <param name="cSharpUtilities">CSharp utilities.</param>
+        /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
         public HbsCSharpDbContextGenerator(
             IScaffoldingProviderCodeGenerator providerCodeGenerator,
             IAnnotationCodeGenerator annotationCodeGenerator,
@@ -46,6 +60,15 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             DbContextTemplateService = dbContextTemplateService ?? throw new ArgumentNullException(nameof(dbContextTemplateService));
         }
 
+        /// <summary>
+        /// Generate the DbContext class.
+        /// </summary>
+        /// <param name="model">Metadata about the shape of entities, the relationships between them, and how they map to the database.</param>
+        /// <param name="namespace">DbContext namespace.</param>
+        /// <param name="contextName">Name of DbContext class.</param>
+        /// <param name="connectionString">Database connection string.</param>
+        /// <param name="useDataAnnotations">If false use fluent modeling API.</param>
+        /// <returns>Generated DbContext class.</returns>
         public virtual string WriteCode(IModel model, string @namespace, string contextName,
             string connectionString, bool useDataAnnotations)
         {
@@ -60,6 +83,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return output;
         }
 
+        /// <summary>
+        /// Generate the DbContext class.
+        /// </summary>
+        /// <param name="model">Metadata about the shape of entities, the relationships between them, and how they map to the database.</param>
+        /// <param name="contextName">Name of DbContext class.</param>
+        /// <param name="connectionString">Database connection string.</param>
+        /// <param name="useDataAnnotations">Use fluent modeling API if false.</param>
         protected virtual void GenerateClass(IModel model, string contextName,
             string connectionString, bool useDataAnnotations)
         {
@@ -106,6 +136,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             _templateData.Add("entity-type-errors", entityTypeErrors);
         }
 
+        /// <summary>
+        /// Generate OnConfiguring method.
+        /// </summary>
+        /// <param name="connectionString">Database connection string.</param>
         protected virtual void GenerateOnConfiguring(string connectionString)
         {
             if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
@@ -149,6 +183,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
+        /// <summary>
+        /// Generate OnModelBuilding method.
+        /// </summary>
+        /// <param name="model">Metadata about the shape of entities, the relationships between them, and how they map to the database.</param>
+        /// <param name="useDataAnnotations">Use fluent modeling API if false.</param>
         protected virtual void GenerateOnModelCreating(IModel model, bool useDataAnnotations)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));

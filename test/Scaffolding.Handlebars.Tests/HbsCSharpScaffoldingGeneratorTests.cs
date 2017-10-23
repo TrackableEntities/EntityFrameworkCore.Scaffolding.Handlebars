@@ -95,7 +95,7 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         [Theory]
-        [InlineData(false)]
+        //[InlineData(false)]
         [InlineData(true)]
         public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations)
         {
@@ -187,31 +187,31 @@ namespace Scaffolding.Handlebars.Tests
                 overwriteFiles: false,
                 useDatabaseNames: false);
 
-            var contextPath = files.ContextFile;
-            var context = fileService.RetrieveFileContents(
-                Path.GetDirectoryName(contextPath), Path.GetFileName(contextPath));
-            var categoryPath = files.EntityTypeFiles[0];
-            var category = fileService.RetrieveFileContents(
-                Path.GetDirectoryName(categoryPath), Path.GetFileName(categoryPath));
-            var productPath = files.EntityTypeFiles[1];
-            var product = fileService.RetrieveFileContents(
-                Path.GetDirectoryName(productPath), Path.GetFileName(productPath));
+            var generatedFiles = new Dictionary<string, string>();
 
-            var generatedFiles = new Dictionary<string, string>
+            if (options == ReverseEngineerOptions.DbContextOnly
+                || options == ReverseEngineerOptions.DbContextAndEntities)
             {
-                { Constants.Files.DbContextFile, context },
-                { Constants.Files.CategoryFile, category },
-                { Constants.Files.ProductFile, product },
-            };
+                var contextPath = files.ContextFile;
+                var context = fileService.RetrieveFileContents(
+                    Path.GetDirectoryName(contextPath), Path.GetFileName(contextPath));
+                generatedFiles.Add(Constants.Files.DbContextFile, context);
+            }
+
+            if (options == ReverseEngineerOptions.EntitiesOnly
+                || options == ReverseEngineerOptions.DbContextAndEntities)
+            {
+                var categoryPath = files.EntityTypeFiles[0];
+                var category = fileService.RetrieveFileContents(
+                    Path.GetDirectoryName(categoryPath), Path.GetFileName(categoryPath));
+                var productPath = files.EntityTypeFiles[1];
+                var product = fileService.RetrieveFileContents(
+                    Path.GetDirectoryName(productPath), Path.GetFileName(productPath));
+                generatedFiles.Add(Constants.Files.CategoryFile, category);
+                generatedFiles.Add(Constants.Files.ProductFile, product);
+            }
 
             return generatedFiles;
-        }
-
-        private enum ReverseEngineerOptions
-        {
-            DbContextOnly,
-            EntitiesOnly,
-            DbContextAndEntities
         }
     }
 }

@@ -9,21 +9,44 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars.Internal
 {
+    /// <summary>
+    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+    ///     directly from your code. This API may change or be removed in future releases.
+    /// </summary>
     public class InMemoryFileService : IFileService
     {
-        // maps directory name to a dictionary mapping file name to file contents
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
         protected readonly Dictionary<string, Dictionary<string, string>> NameToContentMap
             = new Dictionary<string, Dictionary<string, string>>();
 
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
         public virtual bool DirectoryExists(string directoryName)
             => NameToContentMap.TryGetValue(directoryName, out _);
 
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
         public virtual bool FileExists(string directoryName, string fileName)
             => NameToContentMap.TryGetValue(directoryName, out var filesMap)
                && filesMap.TryGetValue(fileName, out _);
 
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
         public virtual bool IsFileReadOnly(string outputDirectoryName, string outputFileName) => false;
 
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
         public virtual string RetrieveFileContents(string directoryName, string fileName)
         {
             if (!NameToContentMap.TryGetValue(directoryName, out var filesMap))
@@ -39,6 +62,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars.Internal
             return contents;
         }
 
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
         public virtual string OutputFile(
             string directoryName,
             string fileName,

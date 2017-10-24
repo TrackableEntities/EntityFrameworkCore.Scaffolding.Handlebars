@@ -1,9 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-// Modifications copyright(C) 2017 Tony Sneed.
-
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+﻿using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -18,5 +13,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="files">Files used by the template service.</param>
         /// <returns>Array of file paths.</returns>
         string[] InputFiles(params InputFile[] files);
+
+        /// <summary>
+        /// Retreive template file contents from the file system. 
+        /// If template is not present, copy it locally.
+        /// </summary>
+        /// <param name="relativeDirectory">Relative directory name.</param>
+        /// <param name="fileName">File name.</param>
+        /// <param name="altRelativeDirectory">Alternative relative directory. Used for testing purposes.</param>
+        /// <returns>File contents.</returns>
+        string RetrieveTemplateFileContents(string relativeDirectory, string fileName,
+            string altRelativeDirectory = null);
     }
 }

@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// <summary>
     /// Provide services required to generate classes using Handlebars templates.
     /// </summary>
-    public class HbsTemplateService : IHbsTemplateService
+    public abstract class HbsTemplateService : IHbsTemplateService
     {
         /// <summary>
         /// Template file service.
@@ -19,7 +19,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Constructor for the template service.
         /// </summary>
         /// <param name="fileService">Template file service.</param>
-        public HbsTemplateService(ITemplateFileService fileService)
+        protected HbsTemplateService(ITemplateFileService fileService)
         {
             FileService = fileService;
         }
@@ -50,9 +50,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Get partial templates.
         /// </summary>
         /// <returns>Partial templates.</returns>
-        protected virtual IDictionary<string, string> GetPartialTemplates()
-        {
-            return new Dictionary<string, string>();
-        }
+        protected abstract IDictionary<string, string> GetPartialTemplates();
     }
 }

@@ -1,9 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-// Modifications copyright(C) 2017 Tony Sneed.
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 
@@ -38,6 +33,19 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
 
             return filePaths.ToArray();
+        }
+
+        /// <summary>
+        /// Retreive template file contents from the file system. 
+        /// If template is not present, copy it locally.
+        /// </summary>
+        /// <param name="relativeDirectory">Relative directory name.</param>
+        /// <param name="fileName">File name.</param>
+        /// <param name="altRelativeDirectory">Alternative relative directory. Used for testing purposes.</param>
+        /// <returns>File contents.</returns>
+        public virtual string RetrieveTemplateFileContents(string relativeDirectory, string fileName, string altRelativeDirectory = null)
+        {
+            return RetrieveFileContents(relativeDirectory, fileName);
         }
     }
 }

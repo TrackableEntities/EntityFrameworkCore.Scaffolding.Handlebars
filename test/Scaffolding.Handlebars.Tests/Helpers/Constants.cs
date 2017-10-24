@@ -19,8 +19,9 @@
         {
             public const string ProjectFolder = "EntityFrameworkCore.Scaffolding.Handlebars";
             public const string CodeTemplatesFolder = "CodeTemplates";
+            public const string CodeTemplatesAltFolder = "CodeTemplatesAlt";
             public const string EntityTypeFolder = "CSharpEntityType";
-            public const string DbContextFolder = "CSharpDbContext";
+            public const string ContextFolder = "CSharpDbContext";
             public const string PartialsFolder = "Partials";
             public const string EntityClassFile = "Class.hbs";
             public const string EntityImportsFile = "Imports.hbs";

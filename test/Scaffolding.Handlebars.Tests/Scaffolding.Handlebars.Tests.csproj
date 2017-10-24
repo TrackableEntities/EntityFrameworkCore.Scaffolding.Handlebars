@@ -19,4 +19,28 @@
     <ProjectReference Include="..\..\src\EntityFrameworkCore.Scaffolding.Handlebars\EntityFrameworkCore.Scaffolding.Handlebars.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="CodeTemplates\CSharpDbContext\DbContext.hbs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\CSharpDbContext\Partials\DbImports.hbs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\CSharpDbContext\Partials\DbSets.hbs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\CSharpEntityType\Class.hbs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\CSharpEntityType\Partials\Constructor.hbs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\CSharpEntityType\Partials\Imports.hbs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\CSharpEntityType\Partials\Properties.hbs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

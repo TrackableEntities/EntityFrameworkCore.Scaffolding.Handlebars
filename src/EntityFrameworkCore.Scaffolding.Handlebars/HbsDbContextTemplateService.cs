@@ -44,11 +44,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns>DbContext template.</returns>
         protected virtual Func<object, string> CompileDbContextTemplate()
         {
-            var template = FileService.RetrieveFileContents(
+            var template = FileService.RetrieveTemplateFileContents(
                 Constants.DbContextDirectory,
                 Constants.DbContextTemplate + Constants.TemplateExtension);
-            var entityTemplate = HandlebarsLib.Compile(template);
-            return entityTemplate;
+            var contextTemplate = HandlebarsLib.Compile(template);
+            return contextTemplate;
         }
 
         /// <summary>
@@ -57,10 +57,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns>Partial templates.</returns>
         protected override IDictionary<string, string> GetPartialTemplates()
         {
-            var importTemplate = FileService.RetrieveFileContents(
+            var importTemplate = FileService.RetrieveTemplateFileContents(
                 Constants.DbContextPartialsDirectory,
                 Constants.DbContextImportTemplate + Constants.TemplateExtension);
-            var propertyTemplate = FileService.RetrieveFileContents(
+            var propertyTemplate = FileService.RetrieveTemplateFileContents(
                 Constants.DbContextPartialsDirectory,
                 Constants.DbContextDbSetsTemplate + Constants.TemplateExtension);
 

@@ -1,10 +1,7 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-// Modifications copyright(C) 2017 Tony Sneed.
-
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -30,6 +27,35 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
 
             return filePaths.ToArray();
+        }
+
+        /// <summary>
+        /// Retreive template file contents from the file system. 
+        /// If template is not present, copy it locally.
+        /// </summary>
+        /// <param name="relativeDirectory">Relative directory name.</param>
+        /// <param name="fileName">File name.</param>
+        /// <param name="altRelativeDirectory">Alternative relative directory. Used for testing purposes.</param>
+        /// <returns>File contents.</returns>
+        public virtual string RetrieveTemplateFileContents(string relativeDirectory, string fileName,
+            string altRelativeDirectory = null)
+        {
+            string contents;
+            string directory = altRelativeDirectory ?? relativeDirectory;
+            string path = Path.Combine(directory, fileName);
+            if (File.Exists(path))
+            {
+                contents = RetrieveFileContents(directory, fileName);
+            }
+            else
+            {
+                var assemblyDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var localDirectory = Path.Combine(assemblyDirectory, relativeDirectory);
+                var templateContents = RetrieveFileContents(localDirectory, fileName);
+                OutputFile(directory, fileName, templateContents);
+                contents = RetrieveFileContents(directory, fileName);
+            }
+            return contents;
         }
     }
 }

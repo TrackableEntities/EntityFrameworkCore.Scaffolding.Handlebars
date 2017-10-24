@@ -44,7 +44,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns>Entity type template.</returns>
         protected virtual Func<object, string> CompileEntityTypeTemplate()
         {
-            var template = FileService.RetrieveFileContents(
+            var template = FileService.RetrieveTemplateFileContents(
                 Constants.EntityTypeDirectory,
                 Constants.EntityTypeTemplate + Constants.TemplateExtension);
             var entityTemplate = HandlebarsLib.Compile(template);
@@ -57,13 +57,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns>Partial templates.</returns>
         protected override IDictionary<string, string> GetPartialTemplates()
         {
-            var ctorTemplate = FileService.RetrieveFileContents(
+            var ctorTemplate = FileService.RetrieveTemplateFileContents(
                 Constants.EntityTypePartialsDirectory,
                 Constants.EntityTypeCtorTemplate + Constants.TemplateExtension);
-            var importTemplate = FileService.RetrieveFileContents(
+            var importTemplate = FileService.RetrieveTemplateFileContents(
                 Constants.EntityTypePartialsDirectory,
                 Constants.EntityTypeImportTemplate + Constants.TemplateExtension);
-            var propertyTemplate = FileService.RetrieveFileContents(
+            var propertyTemplate = FileService.RetrieveTemplateFileContents(
                 Constants.EntityTypePartialsDirectory,
                 Constants.EntityTypePropertyTemplate + Constants.TemplateExtension);
 

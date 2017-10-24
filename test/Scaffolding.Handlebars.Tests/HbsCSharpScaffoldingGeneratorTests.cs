@@ -36,10 +36,10 @@ namespace Scaffolding.Handlebars.Tests
             var projectRootDir = Path.Combine("..", "..", "..", "..", "..");
 
             var contextTemplatesVirtualPath =
-                $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.DbContextFolder}";
+                $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.ContextFolder}";
             var contextPartialsVirtualPath = contextTemplatesVirtualPath + $"/{Constants.Templates.PartialsFolder}";
             var contextTemplatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder,
-                Constants.Templates.CodeTemplatesFolder, Constants.Templates.DbContextFolder);
+                Constants.Templates.CodeTemplatesFolder, Constants.Templates.ContextFolder);
             var contextPartialTemplatesPath = Path.Combine(contextTemplatesPath, Constants.Templates.PartialsFolder);
 
             var entityTemplatesVirtualPath =
@@ -95,7 +95,7 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         [Theory]
-        //[InlineData(false)]
+        [InlineData(false)]
         [InlineData(true)]
         public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations)
         {
@@ -193,7 +193,7 @@ namespace Scaffolding.Handlebars.Tests
                 || options == ReverseEngineerOptions.DbContextAndEntities)
             {
                 var contextPath = files.ContextFile;
-                var context = fileService.RetrieveFileContents(
+                var context = fileService.RetrieveTemplateFileContents(
                     Path.GetDirectoryName(contextPath), Path.GetFileName(contextPath));
                 generatedFiles.Add(Constants.Files.DbContextFile, context);
             }
@@ -202,10 +202,10 @@ namespace Scaffolding.Handlebars.Tests
                 || options == ReverseEngineerOptions.DbContextAndEntities)
             {
                 var categoryPath = files.EntityTypeFiles[0];
-                var category = fileService.RetrieveFileContents(
+                var category = fileService.RetrieveTemplateFileContents(
                     Path.GetDirectoryName(categoryPath), Path.GetFileName(categoryPath));
                 var productPath = files.EntityTypeFiles[1];
-                var product = fileService.RetrieveFileContents(
+                var product = fileService.RetrieveTemplateFileContents(
                     Path.GetDirectoryName(productPath), Path.GetFileName(productPath));
                 generatedFiles.Add(Constants.Files.CategoryFile, category);
                 generatedFiles.Add(Constants.Files.ProductFile, product);

@@ -16,16 +16,18 @@ Scaffold EF Core models using Handlebars templates.
     Connect to: `(localdb)\MsSqlLocalDb`.
     - Create a new database named **NorthwindSlim**.
     - Download the data file from <http://bit.ly/northwindslim>.
-    - Unzip **NorthwindSlim.sql** run the script to create tables and populate them with data.
+    - Unzip **NorthwindSlim.sql** and run the script to create tables and populate them with data.
 
 ## Usage
 
 1. Create a new **.NET Core** class library.
 
-2. Add the following NuGet packages:
-    - Open the Package Manager Console, Select the default project and enter:
-        + `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
-        + `Install-Package Microsoft.EntityFrameworkCore.Tools`
+    > **Note**: Using the EF Core toolchain with a _.NET Standard_ class library is currently not supported. Instead, you can add a .NET Standard class library to the same solution as the .NET Core library, then add existing items and select **Add As Link** to include entity classes.
+
+2. Add EF Core SQL Server and Tools NuGet packages.  
+   Open the Package Manager Console, select the default project and enter:
+    - `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
+    - `Install-Package Microsoft.EntityFrameworkCore.Tools`
 
 3. Edit the **.csproj** file to add the following section:
 
@@ -39,16 +41,12 @@ Scaffold EF Core models using Handlebars templates.
 
 4. Add the **EntityFrameworkCore.Scaffolding.Handlebars** NuGet package:
     - `Install-Package EntityFrameworkCore.Scaffolding.Handlebars -Pre`
-    - Feel free to edit any of the template files which appear under the **CodeTemplates** folder.
-        + For now you can just add some comments, but you may wish to customize the templates
-          in other ways, for example, by inheriting entities from a base class or implementing
-          specific interfaces.
 
 5. Remove Class1.cs and add a **ScaffoldingDesignTimeServices** class.
     - Implement `IDesignTimeServices` by adding a `ConfigureDesignTimeServices` method
       that calls `services.AddHandlebarsScaffolding`.
     - You can optionally pass a `ReverseEngineerOptions` enum to indicate if you wish 
-      to generate only entity types or only a DbContext class (default is both).
+      to generate only entity types, only a DbContext class, or both (which is the default).
 
     ```csharp
     public class ScaffoldingDesignTimeServices : IDesignTimeServices
@@ -70,4 +68,11 @@ Scaffold EF Core models using Handlebars templates.
     ```
 
     - You should see context and/or entity classes appear in the _Models_ folder of the project.
-    - Your modifications to the Handlebars templates should be reflected in the generated classes.
+    - You will also see a **CodeTemplates** folder appear containing Handlebars templates for customizing generation of context and entity type classes.
+    - Add `-d` to the command to use data annotations. You will need to add the **System.ComponentModel.Annotations** package to a .NET Standard library containing linked entity classes.
+
+6. You may _edit_ any of the template files which appear under the **CodeTemplates** folder.
+    - For now you can just add some comments, but you may wish to customize the templates in other ways, for example, by inheriting entities from a base class or implementing
+    specific interfaces.
+    - When you run the _dotnet-ef-dbcontext-scaffold_ command again, you will see your updated reflected in the generated classes.
+

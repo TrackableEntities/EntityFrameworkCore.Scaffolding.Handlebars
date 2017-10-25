@@ -10,15 +10,10 @@
     <Description>Allows customization of classes reverse engineered from an existing database using the Entity Framework Core toolchain with Handlebars templates.</Description>
     <PackageLicenseUrl>https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars</PackageProjectUrl>
-    <PackageIconUrl>https://user-images.githubusercontent.com/2836367/31868368-730c9136-b763-11e7-8a32-2d9036da19f6.jpg</PackageIconUrl>
+    <PackageIconUrl>https://user-images.githubusercontent.com/2836367/31976914-e533eec4-b8ff-11e7-95ce-394df5cbe72b.png</PackageIconUrl>
     <PackageTags>scaffolding reverse-engineer entity-framework-core handlebars</PackageTags>
     <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v1.0.0-beta1</PackageReleaseNotes>
     <IncludeSource>true</IncludeSource>
-    <PackagePath>content\CodeTemplates\</PackagePath>
-    <!--<contentFiles>
-      --><!-- Copy CodeTemplates to the output folder and keep the directory structure --><!--
-      <files include="CodeTemplates" buildAction="None" copyToOutput="true" flatten="false" />
-    </contentFiles>-->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,6 +24,17 @@
     <DocumentationFile>bin\Release\netstandard2.0\EntityFrameworkCore.Scaffolding.Handlebars.xml</DocumentationFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- pack  tempate files -->
+    <Content Include="CodeTemplates\CSharpDbContext\DbContext.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\" />
+    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbImports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\Partials\" />
+    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbSets.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\Partials\" />
+    <Content Include="CodeTemplates\CSharpEntityType\Class.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\" />
+    <Content Include="CodeTemplates\CSharpEntityType\Partials\Constructor.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
+    <Content Include="CodeTemplates\CSharpEntityType\Partials\Imports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
+    <Content Include="CodeTemplates\CSharpEntityType\Partials\Properties.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="Handlebars.Net" Version="1.9.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />

@@ -1,15 +1,16 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-// Modifications copyright(C) 2017 Tony Sneed.
+// Modifications copyright(C) 2018 Tony Sneed.
 
-/* using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
@@ -23,12 +24,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// </summary>
     public class HbsCSharpEntityTypeGenerator : ICSharpEntityTypeGenerator
     {
+        private readonly ICSharpHelper _code;
         private bool _useDataAnnotations;
         private Dictionary<string, object> _templateData;
         private List<Dictionary<string, object>> _propertyAnnotations;
         private List<Dictionary<string, object>> _navPropertyAnnotations;
-
-        private ICSharpUtilities CSharpUtilities { get; }
 
         /// <summary>
         /// Template service for the entity types generator.
@@ -38,13 +38,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Constructor for the Handlebars entity types generator.
         /// </summary>
-        /// <param name="cSharpUtilities">CSharp utilities.</param>
+        /// <param name="cSharpHelper">CSharp helper.</param>
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         public HbsCSharpEntityTypeGenerator(
-            ICSharpUtilities cSharpUtilities,
+            ICSharpHelper cSharpHelper,
             IEntityTypeTemplateService entityTypeTemplateService)
         {
-            CSharpUtilities = cSharpUtilities ?? throw new ArgumentNullException(nameof(cSharpUtilities));
+            _code = cSharpHelper ?? throw new ArgumentNullException(nameof(cSharpHelper));
             EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
         }
 
@@ -163,7 +163,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                 properties.Add(new Dictionary<string, object>
                 {
-                    { "property-type", CSharpUtilities.GetTypeName(property.ClrType) },
+                    { "property-type", _code.Reference(property.ClrType) },
                     { "property-name", property.Name },
                     { "property-annotations",  _propertyAnnotations}
                 });
@@ -248,11 +248,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 var tableAttribute = new AttributeWriter(nameof(TableAttribute));
 
-                tableAttribute.AddParameter(CSharpUtilities.DelimitString(tableName));
+                tableAttribute.AddParameter(_code.Literal(tableName));
 
                 if (schemaParameterNeeded)
                 {
-                    tableAttribute.AddParameter($"{nameof(TableAttribute.Schema)} = {CSharpUtilities.DelimitString(schema)}");
+                    tableAttribute.AddParameter($"{nameof(TableAttribute.Schema)} = {_code.Literal(schema)}");
                 }
 
                 _templateData.Add("class-annotation", tableAttribute.ToString());
@@ -266,7 +266,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (key?.Properties.Count == 1)
             {
                 if (key is Key concreteKey
-                    && key.Properties.SequenceEqual(new KeyDiscoveryConvention().DiscoverKeyProperties(concreteKey.DeclaringEntityType, concreteKey.DeclaringEntityType.GetProperties().ToList())))
+                    && key.Properties.SequenceEqual(new KeyDiscoveryConvention(null).DiscoverKeyProperties(concreteKey.DeclaringEntityType, concreteKey.DeclaringEntityType.GetProperties().ToList())))
                 {
                     return;
                 }
@@ -288,8 +288,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var columnName = property.Relational().ColumnName;
             var columnType = property.GetConfiguredColumnType();
 
-            var delimitedColumnName = columnName != null && columnName != property.Name ? CSharpUtilities.DelimitString(columnName) : null;
-            var delimitedColumnType = columnType != null ? CSharpUtilities.DelimitString(columnType) : null;
+            var delimitedColumnName = columnName != null && columnName != property.Name ? _code.Literal(columnName) : null;
+            var delimitedColumnType = columnType != null ? _code.Literal(columnType) : null;
 
             if ((delimitedColumnName ?? delimitedColumnType) != null)
             {
@@ -323,7 +323,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         ? nameof(StringLengthAttribute)
                         : nameof(MaxLengthAttribute));
 
-                lengthAttribute.AddParameter(CSharpUtilities.GenerateLiteral(maxLength.Value));
+                lengthAttribute.AddParameter(_code.Literal(maxLength.Value));
 
                 _propertyAnnotations.Add(new Dictionary<string, object>
                 {
@@ -362,7 +362,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     var foreignKeyAttribute = new AttributeWriter(nameof(ForeignKeyAttribute));
 
                     foreignKeyAttribute.AddParameter(
-                        CSharpUtilities.DelimitString(
+                        _code.Literal(
                             string.Join(",", navigation.ForeignKey.Properties.Select(p => p.Name))));
 
                     _navPropertyAnnotations.Add(new Dictionary<string, object>
@@ -383,7 +383,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     var inversePropertyAttribute = new AttributeWriter(nameof(InversePropertyAttribute));
 
-                    inversePropertyAttribute.AddParameter(CSharpUtilities.DelimitString(inverseNavigation.Name));
+                    inversePropertyAttribute.AddParameter(_code.Literal(inverseNavigation.Name));
 
                     _navPropertyAnnotations.Add(new Dictionary<string, object>
                     {
@@ -424,4 +424,4 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
     }
-} */
+}

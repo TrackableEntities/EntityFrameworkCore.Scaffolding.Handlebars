@@ -56,8 +56,10 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IProviderConfigurationCodeGenerator, TestProviderCodeGenerator>()
                 .AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>()
                 .AddSingleton<ICSharpDbContextGenerator, HbsCSharpDbContextGenerator>()
+                .AddSingleton<ICSharpEntityTypeGenerator, HbsCSharpEntityTypeGenerator>()
                 .AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>()
                 .AddSingleton<ITemplateFileService, InMemoryTemplateFileService>()
+                .AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>()
                .BuildServiceProvider()
                 .GetRequiredService<IReverseEngineerScaffolder>();
 

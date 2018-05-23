@@ -55,7 +55,10 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IScaffoldingModelFactory, FakeScaffoldingModelFactory>()
                 .AddSingleton<IProviderConfigurationCodeGenerator, TestProviderCodeGenerator>()
                 .AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>()
-                .BuildServiceProvider()
+                .AddSingleton<ICSharpDbContextGenerator, HbsCSharpDbContextGenerator>()
+                .AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>()
+                .AddSingleton<ITemplateFileService, InMemoryTemplateFileService>()
+               .BuildServiceProvider()
                 .GetRequiredService<IReverseEngineerScaffolder>();
 
             //Assert.Equal(

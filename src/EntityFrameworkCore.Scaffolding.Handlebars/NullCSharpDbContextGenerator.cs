@@ -16,8 +16,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="contextName">Name of DbContext class.</param>
         /// <param name="connectionString">Database connection string.</param>
         /// <param name="useDataAnnotations">If false use fluent modeling API.</param>
+        /// <param name="suppressConnectionStringWarning">True to suppress connection string warning.</param>
         /// <returns>Generated DbContext class.</returns>
-        public string WriteCode(IModel model, string @namespace, string contextName, string connectionString, bool useDataAnnotations)
+        public string WriteCode(IModel model, string @namespace, string contextName, string connectionString, bool useDataAnnotations, bool suppressConnectionStringWarning)
         {
             return string.Empty;
         }

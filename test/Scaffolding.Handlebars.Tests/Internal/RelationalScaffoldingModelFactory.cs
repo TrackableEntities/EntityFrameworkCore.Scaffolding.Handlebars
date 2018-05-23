@@ -3,7 +3,7 @@
 
 // Modifications copyright(C) 2017 Tony Sneed.
 
-using System;
+/* using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -904,4 +904,4 @@ namespace Scaffolding.Handlebars.Tests.Internal
             return finalIdentifier;
         }
     }
-}
+} */

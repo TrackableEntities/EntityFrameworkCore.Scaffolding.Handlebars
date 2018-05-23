@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿/* using System.Collections.Generic;
 using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 
@@ -48,4 +48,4 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return RetrieveFileContents(relativeDirectory, fileName);
         }
     }
-}
+} */

@@ -3,7 +3,7 @@
 
 // Modifications copyright(C) 2017 Tony Sneed.
 
-using System.Collections.Generic;
+/* using System.Collections.Generic;
 using System.IO;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
@@ -82,4 +82,4 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars.Internal
             return Path.Combine(directoryName, fileName);
         }
     }
-}
+} */

@@ -3,7 +3,7 @@
 
 // Modifications copyright(C) 2017 Tony Sneed.
 
-using System.Collections.Generic;
+/* using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Design.Internal;
 
 namespace Scaffolding.Handlebars.Tests.Internal
@@ -28,4 +28,4 @@ namespace Scaffolding.Handlebars.Tests.Internal
         public void WriteError(string message)
             => _messages.Add("error: " + message);
     }
-}
+} */

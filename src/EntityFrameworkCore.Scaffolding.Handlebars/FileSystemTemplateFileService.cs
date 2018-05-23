@@ -1,4 +1,4 @@
-﻿using System;
+﻿/* using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -58,4 +58,4 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return contents;
         }
     }
-}
+} */

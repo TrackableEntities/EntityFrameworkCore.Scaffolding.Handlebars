@@ -3,7 +3,7 @@
 
 // Modifications copyright(C) 2017 Tony Sneed.
 
-using System.Collections.Generic;
+/* using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
 namespace Scaffolding.Handlebars.Tests.Internal
@@ -30,4 +30,4 @@ namespace Scaffolding.Handlebars.Tests.Internal
             bool overwriteFiles,
             bool useDatabaseNames);
     }
-}
+} */

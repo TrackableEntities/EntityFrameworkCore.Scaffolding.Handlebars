@@ -3,7 +3,7 @@
 
 // Modifications copyright(C) 2017 Tony Sneed.
 
-using System;
+/* using System;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -72,4 +72,4 @@ namespace Scaffolding.Handlebars.Tests.Fakes
             throw new NotImplementedException();
         }
     }
-}
+} */

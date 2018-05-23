@@ -3,7 +3,7 @@
 
 // Modifications copyright(C) 2017 Tony Sneed.
 
-using System;
+/* using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -832,4 +832,4 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return $".HasAnnotation({CSharpUtilities.DelimitString(annotation.Name)}, {CSharpUtilities.GenerateLiteral((dynamic)annotation.Value)})";
         }
     }
-}
+} */

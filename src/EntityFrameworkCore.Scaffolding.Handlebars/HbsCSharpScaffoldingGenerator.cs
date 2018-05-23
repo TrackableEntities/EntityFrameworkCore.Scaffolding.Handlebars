@@ -3,7 +3,7 @@
 
 // Modifications copyright(C) 2017 Tony Sneed.
 
-using System;
+/* using System;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -116,4 +116,4 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return reverseEngineerFiles;
         }
     }
-}
+} */

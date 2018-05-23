@@ -3,7 +3,7 @@
 
 // Modifications copyright(C) 2017 Tony Sneed.
 
-using System;
+/* using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -424,4 +424,4 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
     }
-}
+} */

@@ -3,7 +3,7 @@
 
 // Modifications copyright(C) 2017 Tony Sneed.
 
-using Microsoft.EntityFrameworkCore.Metadata;
+/* using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 
 namespace Scaffolding.Handlebars.Tests.Internal
@@ -20,4 +20,4 @@ namespace Scaffolding.Handlebars.Tests.Internal
         /// </summary>
         IModel Create(DatabaseModel databaseModel, bool useDatabaseNames);
     }
-}
+} */

@@ -3,7 +3,7 @@
 
 // Modifications copyright(C) 2017 Tony Sneed.
 
-namespace Scaffolding.Handlebars.Tests.Internal
+/* namespace Scaffolding.Handlebars.Tests.Internal
 {
     /// <summary>
     ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -23,4 +23,4 @@ namespace Scaffolding.Handlebars.Tests.Internal
         /// </summary>
         public const string ConcurrencyToken = "ConcurrencyToken";
     }
-}
+} */

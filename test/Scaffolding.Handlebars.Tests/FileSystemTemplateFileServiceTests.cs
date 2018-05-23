@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿/* using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using Scaffolding.Handlebars.Tests.Helpers;
 using Xunit;
@@ -58,4 +58,4 @@ namespace Scaffolding.Handlebars.Tests
                 relativeDirectory, templateFileName, altDirectory);
         }
     }
-}
+} */

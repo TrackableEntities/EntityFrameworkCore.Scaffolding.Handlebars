@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+﻿using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
     /// <summary>
     /// Provides files to the template service.
     /// </summary>
-    public interface ITemplateFileService  //: IFileService
+    public interface ITemplateFileService : IFileService
     {
         /// <summary>
         /// Allows files to be stored for later retrieval. Used for testing purposes.

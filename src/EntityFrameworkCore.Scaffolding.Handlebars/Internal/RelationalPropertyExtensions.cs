@@ -3,7 +3,7 @@
 
 // Modifications copyright(C) 2017 Tony Sneed.
 
-using System;
+/* using System;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars.Internal
@@ -24,4 +24,4 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars.Internal
             return (string) property[RelationalAnnotationNames.ColumnType];
         }
     }
-}
+} */

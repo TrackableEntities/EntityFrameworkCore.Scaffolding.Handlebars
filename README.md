@@ -6,8 +6,8 @@ Scaffold EF Core models using Handlebars templates.
  
 ## Prerequisites
 
-- [Visual Studio 2017](https://www.visualstudio.com/downloads/) 15.3 or greater.
-- The .[NET Core 2.0 SDK](https://www.microsoft.com/net/download/core)
+- [Visual Studio 2017](https://www.visualstudio.com/downloads/) 15.8 or greater.
+- The .[NET Core 2.1 SDK](https://www.microsoft.com/net/download/core) (version 2.1.3 or greater).
 
 ## Database Setup
 
@@ -21,28 +21,19 @@ Scaffold EF Core models using Handlebars templates.
 ## Usage
 
 1. Create a new **.NET Core** class library.
+    - If necessary, edit the csproj file to update the **TargetFramework** to 2.1.
 
     > **Note**: Using the EF Core toolchain with a _.NET Standard_ class library is currently not supported. Instead, you can add a .NET Standard class library to the same solution as the .NET Core library, then add existing items and select **Add As Link** to include entity classes.
 
 2. Add EF Core SQL Server and Tools NuGet packages.  
-   Open the Package Manager Console, select the default project and enter:
-    - `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
-    - `Install-Package Microsoft.EntityFrameworkCore.Tools`
+    - Open the Package Manager Console, select the default project and enter:
+        + `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
+    - If needed update EF Core to version 2.1.
 
-3. Edit the **.csproj** file to add the following section:
-
-    ```xml
-    <ItemGroup>
-        <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
-    </ItemGroup>
-    ```
-
-    - Open a command prompt at the project location and run: `dotnet restore`.
-
-4. Add the **EntityFrameworkCore.Scaffolding.Handlebars** NuGet package:
+3. Add the **EntityFrameworkCore.Scaffolding.Handlebars** NuGet package:
     - `Install-Package EntityFrameworkCore.Scaffolding.Handlebars -Pre`
 
-5. Remove Class1.cs and add a **ScaffoldingDesignTimeServices** class.
+4. Remove Class1.cs and add a **ScaffoldingDesignTimeServices** class.
     - Implement `IDesignTimeServices` by adding a `ConfigureDesignTimeServices` method
       that calls `services.AddHandlebarsScaffolding`.
     - You can optionally pass a `ReverseEngineerOptions` enum to indicate if you wish 
@@ -59,12 +50,12 @@ Scaffold EF Core models using Handlebars templates.
     }
     ```
 
-5. Open a command prompt and use the **EF .NET CLI** tools to reverse engineer a context and models from an existing database.
+5. Open a command prompt at the project level and use the **EF .NET Core CLI** tools to reverse engineer a context and models from an existing database.
     - Get help on _dotnet-ef-dbcontext-scaffold_ at the command line: `dotnet ef dbcontext scaffold -h`
     - Execute the following command to reverse engineer classes from the NorthwindSlim database:
 
     ```
-    dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -o Models -c NorthwindSlimContext -f
+    dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -o Models -c NorthwindSlimContext -f --context-dir Contexts
     ```
 
     - You should see context and/or entity classes appear in the _Models_ folder of the project.

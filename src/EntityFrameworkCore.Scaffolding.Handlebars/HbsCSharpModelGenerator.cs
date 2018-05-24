@@ -3,7 +3,9 @@
 
 // Modifications copyright(C) 2018 Tony Sneed.
 
+using System;
 using System.IO;
+using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
@@ -19,6 +21,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         private const string FileExtension = ".cs";
 
         /// <summary>
+        /// DbContext template service.
+        /// </summary>
+        public virtual IDbContextTemplateService DbContextTemplateService { get; }
+
+        /// <summary>
+        /// Entity type template service.
+        /// </summary>
+        public virtual IEntityTypeTemplateService EntityTypeTemplateService { get; }
+
+        /// <summary>
         /// DbContext generator.
         /// </summary>
         public virtual ICSharpDbContextGenerator CSharpDbContextGenerator { get; }
@@ -32,14 +44,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Constructor for the HbsCSharpModelGenerator.
         /// </summary>
         /// <param name="dependencies">Service dependencies parameter class for HbsCSharpModelGenerator.</param>
+        /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
+        /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         /// <param name="cSharpDbContextGenerator">DbContext generator.</param>
         /// <param name="cSharpEntityTypeGenerator">Entity type generator.</param>
         public HbsCSharpModelGenerator(ModelCodeGeneratorDependencies dependencies,
+            IDbContextTemplateService dbContextTemplateService,
+            IEntityTypeTemplateService entityTypeTemplateService,
             ICSharpDbContextGenerator cSharpDbContextGenerator,
             ICSharpEntityTypeGenerator cSharpEntityTypeGenerator) : base(dependencies)
         {
-            CSharpDbContextGenerator = cSharpDbContextGenerator;
-            CSharpEntityTypeGenerator = cSharpEntityTypeGenerator;
+            DbContextTemplateService = dbContextTemplateService ?? throw new ArgumentNullException(nameof(dbContextTemplateService));
+            EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
+            CSharpDbContextGenerator = cSharpDbContextGenerator ?? throw new ArgumentNullException(nameof(cSharpDbContextGenerator));
+            CSharpEntityTypeGenerator = cSharpEntityTypeGenerator ?? throw new ArgumentNullException(nameof(cSharpEntityTypeGenerator));
         }
 
         /// <summary>Generates code for a model.</summary>
@@ -57,19 +75,40 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             string connectionString,
             ModelCodeGenerationOptions options)
         {
+            if (model == null) throw new ArgumentNullException(nameof(model));
+            if (string.IsNullOrWhiteSpace(@namespace)) throw new ArgumentNullException(nameof(@namespace));
+            if (contextDir == null) throw new ArgumentNullException(nameof(contextDir));
+            if (string.IsNullOrWhiteSpace(contextName)) throw new ArgumentNullException(nameof(contextName));
+            if (string.IsNullOrWhiteSpace(connectionString)) throw new ArgumentNullException(nameof(connectionString));
+            if (contextDir == null) throw new ArgumentNullException(nameof(contextDir));
+            if (options == null) throw new ArgumentNullException(nameof(options));
+
+            // Register Hbs helpers and partial templates
+            DbContextTemplateService.RegisterHelper(Constants.SpacesHelper, HandlebarsHelpers.GetSpacesHelper());
+            DbContextTemplateService.RegisterPartialTemplates();
+            EntityTypeTemplateService.RegisterPartialTemplates();
+
             var resultingFiles = new ScaffoldedModel();
 
-            var generatedCode = CSharpDbContextGenerator.WriteCode(model, @namespace, contextName, connectionString, options.UseDataAnnotations, options.SuppressConnectionStringWarning);
+            string generatedCode;
 
-            var dbContextFileName = contextName + FileExtension;
-            resultingFiles.ContextFile = new ScaffoldedFile { Path = Path.Combine(contextDir, dbContextFileName), Code = generatedCode };
-
-            foreach (var entityType in model.GetEntityTypes())
+            if (!(CSharpDbContextGenerator is NullCSharpDbContextGenerator))
             {
-                generatedCode = CSharpEntityTypeGenerator.WriteCode(entityType, @namespace, options.UseDataAnnotations);
+                generatedCode = CSharpDbContextGenerator.WriteCode(model, @namespace, contextName, connectionString, options.UseDataAnnotations, options.SuppressConnectionStringWarning);
 
-                var entityTypeFileName = entityType.DisplayName() + FileExtension;
-                resultingFiles.AdditionalFiles.Add(new ScaffoldedFile { Path = entityTypeFileName, Code = generatedCode });
+                var dbContextFileName = contextName + FileExtension;
+                resultingFiles.ContextFile = new ScaffoldedFile { Path = Path.Combine(contextDir, dbContextFileName), Code = generatedCode };
+            }
+
+            if (!(CSharpEntityTypeGenerator is NullCSharpEntityTypeGenerator))
+            {
+                foreach (var entityType in model.GetEntityTypes())
+                {
+                    generatedCode = CSharpEntityTypeGenerator.WriteCode(entityType, @namespace, options.UseDataAnnotations);
+
+                    var entityTypeFileName = entityType.DisplayName() + FileExtension;
+                    resultingFiles.AdditionalFiles.Add(new ScaffoldedFile { Path = entityTypeFileName, Code = generatedCode });
+                }
             }
 
             return resultingFiles;

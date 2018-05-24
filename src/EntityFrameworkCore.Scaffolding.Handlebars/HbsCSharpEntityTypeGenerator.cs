@@ -38,11 +38,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Constructor for the Handlebars entity types generator.
         /// </summary>
-        /// <param name="cSharpHelper">CSharp helper.</param>
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
+        /// <param name="cSharpHelper">CSharp helper.</param>
         public HbsCSharpEntityTypeGenerator(
-            ICSharpHelper cSharpHelper,
-            IEntityTypeTemplateService entityTypeTemplateService)
+            IEntityTypeTemplateService entityTypeTemplateService,
+            ICSharpHelper cSharpHelper)
         {
             _code = cSharpHelper ?? throw new ArgumentNullException(nameof(cSharpHelper));
             EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));

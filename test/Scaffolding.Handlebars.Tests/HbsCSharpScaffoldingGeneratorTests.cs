@@ -1,23 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-//using EntityFrameworkCore.Scaffolding.Handlebars;
-using Microsoft.EntityFrameworkCore;
+using EntityFrameworkCore.Scaffolding.Handlebars;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore.Design.Internal;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.SqlServer.Design.Internal;
-using Microsoft.EntityFrameworkCore.SqlServer.Scaffolding.Internal;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using Scaffolding.Handlebars.Tests.Fakes;
 using Scaffolding.Handlebars.Tests.Helpers;
 using Xunit;
 
-/* namespace Scaffolding.Handlebars.Tests
+namespace Scaffolding.Handlebars.Tests
 {
     [Collection("NorthwindDbContext")]
     public partial class HbsCSharpScaffoldingGeneratorTests
@@ -141,93 +134,75 @@ using Xunit;
 
         private Dictionary<string, string> ReverseEngineerFiles(ReverseEngineerOptions options, bool useDataAnnotations)
         {
-            //var fileService = new InMemoryTemplateFileService();
-            //fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate, ContextDbSetsTemplate,
-            //    EntityClassTemplate, EntityImportsTemplate, EntityCtorTemplate, EntityPropertiesTemplate);
-            //var dbContextTemplateService = new HbsDbContextTemplateService(fileService);
-            //var entityTypeTemplateService = new HbsEntityTypeTemplateService(fileService);
+            var fileService = new InMemoryTemplateFileService();
+            fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate, ContextDbSetsTemplate,
+                EntityClassTemplate, EntityImportsTemplate, EntityCtorTemplate, EntityPropertiesTemplate);
 
-            //ICSharpUtilities cSharpUtilities = new CSharpUtilities();
-            //ICSharpDbContextGenerator realContextGenerator = new HbsCSharpDbContextGenerator(
-            //    new SqlServerScaffoldingCodeGenerator(),
-            //    new SqlServerAnnotationCodeGenerator(new AnnotationCodeGeneratorDependencies()),
-            //    cSharpUtilities,
-            //    new HbsDbContextTemplateService(fileService));
-            //ICSharpDbContextGenerator contextGenerator =
-            //    options == ReverseEngineerOptions.DbContextOnly || options == ReverseEngineerOptions.DbContextOnly
-            //    ? realContextGenerator
-            //    : new NullCSharpDbContextGenerator();
-            //ICSharpEntityTypeGenerator realEntityGenerator = new HbsCSharpEntityTypeGenerator(
-            //    cSharpUtilities,
-            //    new HbsEntityTypeTemplateService(fileService));
-            //ICSharpEntityTypeGenerator entityGenerator =
-            //    options == ReverseEngineerOptions.EntitiesOnly || options == ReverseEngineerOptions.DbContextAndEntities
-            //    ? realEntityGenerator
-            //    : new NullCSharpEntityTypeGenerator();
-            //IScaffoldingCodeGenerator scaffoldingGenerator = new HbsCSharpScaffoldingGenerator(
-            //    fileService, dbContextTemplateService, entityTypeTemplateService, 
-            //    contextGenerator, entityGenerator);
-
-            //var modelFactory = new SqlServerDatabaseModelFactory(
-            //    new DiagnosticsLogger<DbLoggerCategory.Scaffolding>(
-            //        new TestSqlLoggerFactory(),
-            //        new LoggingOptions(),
-            //        new DiagnosticListener("Fake")));
-
-            //var reverseEngineer = new ReverseEngineerScaffolder(
-            //    modelFactory,
-            //    new FakeScaffoldingModelFactory(new TestOperationReporter()),
-            //    scaffoldingGenerator,
-            //    cSharpUtilities);
-
-            var reverseEngineer = new ServiceCollection()
+            var services = new ServiceCollection()
                 .AddEntityFrameworkDesignTimeServices()
-                .AddSingleton<IRelationalTypeMappingSource, TestRelationalTypeMappingSource>()
-                //.AddSingleton<IAnnotationCodeGenerator, AnnotationCodeGenerator>()
-                //.AddSingleton<IDatabaseModelFactory, FakeDatabaseModelFactory>()
-                //.AddSingleton<IProviderConfigurationCodeGenerator, TestProviderCodeGenerator>()
-                //.AddSingleton<IScaffoldingModelFactory, FakeScaffoldingModelFactory>()
-                //.BuildServiceProvider()
-                //.GetRequiredService<IReverseEngineerScaffolder>();
+                .AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>()
+                .AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>()
+                .AddSingleton<ITemplateFileService>(fileService)
+                .AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>()
+                .AddSingleton(provider =>
+                {
+                    ICSharpDbContextGenerator contextGenerator = new HbsCSharpDbContextGenerator(
+#pragma warning disable 618
+                        provider.GetRequiredService<IEnumerable<IScaffoldingProviderCodeGenerator>>(),
+#pragma warning restore 618
+                        provider.GetRequiredService<IEnumerable<IProviderConfigurationCodeGenerator>>(),
+                        provider.GetRequiredService<IAnnotationCodeGenerator>(),
+                        provider.GetRequiredService<IDbContextTemplateService>(),
+                        provider.GetRequiredService<ICSharpHelper>());
+                    return options == ReverseEngineerOptions.DbContextOnly ||
+                           options == ReverseEngineerOptions.DbContextAndEntities
+                        ? contextGenerator
+                        : new NullCSharpDbContextGenerator();
+                })
+                .AddSingleton(provider =>
+                {
+                    ICSharpEntityTypeGenerator entityGenerator = new HbsCSharpEntityTypeGenerator(
+                        provider.GetRequiredService<IEntityTypeTemplateService>(),
+                        provider.GetRequiredService<ICSharpHelper>());
+                    return options == ReverseEngineerOptions.EntitiesOnly ||
+                           options == ReverseEngineerOptions.DbContextAndEntities
+                        ? entityGenerator
+                        : new NullCSharpEntityTypeGenerator();
+                });
+
+            new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);
+            var scaffolder = services
+                .BuildServiceProvider()
+                .GetRequiredService<IReverseEngineerScaffolder>();
 
             // Act
-            var files = reverseEngineer.Generate(
+            var model = scaffolder.ScaffoldModel(
                 connectionString: Constants.Connections.SqlServerConnection,
                 tables: Enumerable.Empty<string>(),
                 schemas: Enumerable.Empty<string>(),
-                projectPath: Constants.Parameters.ProjectPath,
-                outputPath: null,
-                rootNamespace: Constants.Parameters.RootNamespace,
+                @namespace: Constants.Parameters.RootNamespace,
+                language: "C#",
                 contextName: Constants.Parameters.ContextName,
-                useDataAnnotations: useDataAnnotations,
-                overwriteFiles: false,
-                useDatabaseNames: false);
+                modelOptions: new ModelReverseEngineerOptions(),
+                contextDir: Constants.Parameters.ProjectPath,
+                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = useDataAnnotations });
 
             var generatedFiles = new Dictionary<string, string>();
 
             if (options == ReverseEngineerOptions.DbContextOnly
                 || options == ReverseEngineerOptions.DbContextAndEntities)
             {
-                var contextPath = files.ContextFile;
-                var context = fileService.RetrieveTemplateFileContents(
-                    Path.GetDirectoryName(contextPath), Path.GetFileName(contextPath));
-                generatedFiles.Add(Constants.Files.DbContextFile, context);
+                generatedFiles.Add(Constants.Files.DbContextFile, model.ContextFile.Code);
             }
 
             if (options == ReverseEngineerOptions.EntitiesOnly
                 || options == ReverseEngineerOptions.DbContextAndEntities)
             {
-                var categoryPath = files.EntityTypeFiles[0];
-                var category = fileService.RetrieveTemplateFileContents(
-                    Path.GetDirectoryName(categoryPath), Path.GetFileName(categoryPath));
-                var productPath = files.EntityTypeFiles[1];
-                var product = fileService.RetrieveTemplateFileContents(
-                    Path.GetDirectoryName(productPath), Path.GetFileName(productPath));
-                generatedFiles.Add(Constants.Files.CategoryFile, category);
-                generatedFiles.Add(Constants.Files.ProductFile, product);
+                generatedFiles.Add(Constants.Files.CategoryFile, model.AdditionalFiles[0].Code);
+                generatedFiles.Add(Constants.Files.ProductFile, model.AdditionalFiles[1].Code);
             }
 
             return generatedFiles;
         }
     }
-} */
+}

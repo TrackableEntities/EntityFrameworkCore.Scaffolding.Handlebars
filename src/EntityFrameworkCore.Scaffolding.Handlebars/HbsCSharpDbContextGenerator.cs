@@ -51,16 +51,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
         /// <param name="cSharpHelper">CSharp helper.</param>
         public HbsCSharpDbContextGenerator(
-            //IScaffoldingProviderCodeGenerator providerCodeGenerator,
-            //IAnnotationCodeGenerator annotationCodeGenerator,
 #pragma warning disable CS0618 // Type or member is obsolete
             IEnumerable<IScaffoldingProviderCodeGenerator> legacyProviderCodeGenerators,
 #pragma warning restore CS0618 // Type or member is obsolete
             IEnumerable<IProviderConfigurationCodeGenerator> providerCodeGenerators,
             IAnnotationCodeGenerator annotationCodeGenerator,
             IDbContextTemplateService dbContextTemplateService,
-            ICSharpHelper cSharpHelper
-            )
+            ICSharpHelper cSharpHelper)
         {
             if (!legacyProviderCodeGenerators.Any() && !providerCodeGenerators.Any())
             {

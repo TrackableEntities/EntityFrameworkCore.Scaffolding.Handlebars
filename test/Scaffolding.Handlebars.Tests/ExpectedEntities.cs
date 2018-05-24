@@ -31,19 +31,18 @@ using System.Collections.Generic;
 
 namespace FakeNamespace
 {
-    public partial class Category
+    public partial class Product
     {
-        public Category()
-        {
-            Product = new HashSet<Product>();
-        }
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public bool Discontinued { get; set; }
+        public byte[] RowVersion { get; set; }
+        public int? CategoryId { get; set; }
 
-        public int CategoryId { get; set; }
-        public string CategoryName { get; set; }
-
-        public ICollection<Product> Product { get; set; }
-        }
+        public Category Category { get; set; }
     }
+}
 ";
         }
 
@@ -86,14 +85,14 @@ namespace FakeNamespace
     public partial class Product
     {
         public int ProductId { get; set; }
-        public int? CategoryId { get; set; }
-        public bool Discontinued { get; set; }
         [Required]
         [StringLength(40)]
         public string ProductName { get; set; }
-        public byte[] RowVersion { get; set; }
         [Column(TypeName = ""money"")]
         public decimal? UnitPrice { get; set; }
+        public bool Discontinued { get; set; }
+        public byte[] RowVersion { get; set; }
+        public int? CategoryId { get; set; }
 
         [ForeignKey(""CategoryId"")]
         [InverseProperty(""Product"")]

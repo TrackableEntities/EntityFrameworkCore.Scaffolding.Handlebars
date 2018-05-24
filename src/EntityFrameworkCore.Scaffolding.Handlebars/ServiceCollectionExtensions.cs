@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,28 +28,28 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public static IServiceCollection AddHandlebarsScaffolding(this IServiceCollection services,
             ReverseEngineerOptions options = ReverseEngineerOptions.DbContextAndEntities)
         {
-            //Type dbContextGeneratorImpl;
-            //var dbContextGeneratorType = typeof(ICSharpDbContextGenerator);
-            //if (options == ReverseEngineerOptions.DbContextOnly
-            //    || options == ReverseEngineerOptions.DbContextAndEntities)
-            //    dbContextGeneratorImpl = typeof(HbsCSharpDbContextGenerator);
-            //else
-            //    dbContextGeneratorImpl = typeof(NullCSharpDbContextGenerator);
-            //services.AddSingleton(dbContextGeneratorType, dbContextGeneratorImpl);
+            Type dbContextGeneratorImpl;
+            var dbContextGeneratorType = typeof(ICSharpDbContextGenerator);
+            if (options == ReverseEngineerOptions.DbContextOnly
+                || options == ReverseEngineerOptions.DbContextAndEntities)
+                dbContextGeneratorImpl = typeof(HbsCSharpDbContextGenerator);
+            else
+                dbContextGeneratorImpl = typeof(NullCSharpDbContextGenerator);
+            services.AddSingleton(dbContextGeneratorType, dbContextGeneratorImpl);
 
-            //Type entityGeneratorImpl;
-            //var entityGeneratorType = typeof(ICSharpEntityTypeGenerator);
-            //if (options == ReverseEngineerOptions.EntitiesOnly
-            //    || options == ReverseEngineerOptions.DbContextAndEntities)
-            //    entityGeneratorImpl = typeof(HbsCSharpEntityTypeGenerator);
-            //else
-            //    entityGeneratorImpl = typeof(NullCSharpEntityTypeGenerator);
-            //services.AddSingleton(entityGeneratorType, entityGeneratorImpl);
+            Type entityGeneratorImpl;
+            var entityGeneratorType = typeof(ICSharpEntityTypeGenerator);
+            if (options == ReverseEngineerOptions.EntitiesOnly
+                || options == ReverseEngineerOptions.DbContextAndEntities)
+                entityGeneratorImpl = typeof(HbsCSharpEntityTypeGenerator);
+            else
+                entityGeneratorImpl = typeof(NullCSharpEntityTypeGenerator);
+            services.AddSingleton(entityGeneratorType, entityGeneratorImpl);
 
-            //services.AddSingleton<ITemplateFileService, FileSystemTemplateFileService>();
-            //services.AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>();
-            //services.AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>();
-            //services.AddSingleton<IScaffoldingCodeGenerator, HbsCSharpScaffoldingGenerator>();
+            services.AddSingleton<ITemplateFileService, FileSystemTemplateFileService>();
+            services.AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>();
+            services.AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>();
+            services.AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
             return services;
         }
     }

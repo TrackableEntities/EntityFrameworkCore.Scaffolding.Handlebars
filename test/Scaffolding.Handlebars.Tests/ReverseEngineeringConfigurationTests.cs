@@ -25,28 +25,6 @@ namespace Scaffolding.Handlebars.Tests
         [InlineData("volatile")]
         public void ValidateContextNameInReverseEngineerGenerator(string contextName)
         {
-            //var cSharpUtilities = new CSharpUtilities();
-            //var fileService = new InMemoryTemplateFileService();
-            //var dbContextTemplateService = new HbsDbContextTemplateService(fileService);
-            //var entityTypeTemplateService = new HbsEntityTypeTemplateService(fileService);
-
-            //var reverseEngineer_old = new ReverseEngineerScaffolder(
-            //    new FakeDatabaseModelFactory(),
-            //    new FakeScaffoldingModelFactory(new TestOperationReporter()),
-            //    new HbsCSharpScaffoldingGenerator(
-            //        fileService,
-            //        dbContextTemplateService,
-            //        entityTypeTemplateService,
-            //        new HbsCSharpDbContextGenerator(
-            //            new FakeScaffoldingProviderCodeGenerator(),
-            //            new FakeAnnotationCodeGenerator(),
-            //            cSharpUtilities,
-            //            new HbsDbContextTemplateService(fileService)),
-            //        new HbsCSharpEntityTypeGenerator(
-            //            cSharpUtilities,
-            //            new HbsEntityTypeTemplateService(fileService))),
-            //            cSharpUtilities);
-
             var reverseEngineer = new ServiceCollection()
                 .AddEntityFrameworkDesignTimeServices()
                 .AddSingleton<IRelationalTypeMappingSource, TestRelationalTypeMappingSource>()
@@ -62,22 +40,6 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>()
                .BuildServiceProvider()
                 .GetRequiredService<IReverseEngineerScaffolder>();
-
-            //Assert.Equal(
-            //    DesignStrings.ContextClassNotValidCSharpIdentifier(contextName),
-            //    Assert.Throws<ArgumentException>(
-            //            () => reverseEngineer.Generate(
-            //                connectionString: "connectionstring",
-            //                tables: Enumerable.Empty<string>(),
-            //                schemas: Enumerable.Empty<string>(),
-            //                projectPath: "FakeProjectPath",
-            //                outputPath: null,
-            //                rootNamespace: "FakeNamespace",
-            //                contextName: contextName,
-            //                useDataAnnotations: false,
-            //                overwriteFiles: false,
-            //                useDatabaseNames: false))
-            //        .Message);
 
             Assert.Equal(
                 DesignStrings.ContextClassNotValidCSharpIdentifier(contextName),

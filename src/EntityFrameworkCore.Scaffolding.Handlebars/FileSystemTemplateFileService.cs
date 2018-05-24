@@ -1,8 +1,7 @@
-﻿/* using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -58,4 +57,4 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return contents;
         }
     }
-} */
+}

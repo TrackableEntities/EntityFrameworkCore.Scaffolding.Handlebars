@@ -4,8 +4,11 @@
 // Modifications copyright(C) 2018 Tony Sneed.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars;
+using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
@@ -38,8 +41,13 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>()
                 .AddSingleton<ITemplateFileService, InMemoryTemplateFileService>()
                 .AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>()
+                .AddSingleton<IHbsHelperService>(provider => new HbsHelperService(
+                    new Dictionary<string, Action<TextWriter, object, object[]>>
+                    {
+                        {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
+                    }))
                .BuildServiceProvider()
-                .GetRequiredService<IReverseEngineerScaffolder>();
+               .GetRequiredService<IReverseEngineerScaffolder>();
 
             Assert.Equal(
                 DesignStrings.ContextClassNotValidCSharpIdentifier(contextName),

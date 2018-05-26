@@ -12,9 +12,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars.Helpers
         /// Get the spaces Handlebars helper.
         /// </summary>
         /// <returns>Spaces Handlebars helper.</returns>
-        public static Action<TextWriter, object, object[]> GetSpacesHelper()
-        {
-            return (writer, context, parameters) =>
+        public static Action<TextWriter, object, object[]> SpacesHelper
+            => (writer, context, parameters) =>
             {
                 var spaces = string.Empty;
                 if (parameters.Length > 0
@@ -26,6 +25,5 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars.Helpers
                 }
                 writer.Write(spaces);
             };
-        }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic; // Comment
 
 namespace ScaffoldingSample.Models
 { // Comment
-    public partial class Order
+    public partial class Order // My Handlebars Helper
     {
         public Order()
         {

@@ -25,16 +25,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         }
 
         /// <summary>
-        /// Register Handlebars helpers.
-        /// </summary>
-        /// <param name="helperName">Helper name.</param>
-        /// <param name="helper">Helper delegate.</param>
-        public virtual void RegisterHelper(string helperName, Action<TextWriter, object, object[]> helper)
-        {
-            HandlebarsLib.RegisterHelper(helperName, (output, context, args) => helper(output, context, args));
-        }
-
-        /// <summary>
         /// Register partial templates.
         /// </summary>
         public virtual void RegisterPartialTemplates()

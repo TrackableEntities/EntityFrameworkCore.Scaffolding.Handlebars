@@ -21,6 +21,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         private const string FileExtension = ".cs";
 
         /// <summary>
+        /// Handlebars helper service.
+        /// </summary>
+        public virtual IHbsHelperService HandlebarsHelperService { get; }
+
+        /// <summary>
         /// DbContext template service.
         /// </summary>
         public virtual IDbContextTemplateService DbContextTemplateService { get; }
@@ -44,16 +49,19 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Constructor for the HbsCSharpModelGenerator.
         /// </summary>
         /// <param name="dependencies">Service dependencies parameter class for HbsCSharpModelGenerator.</param>
+        /// <param name="handlebarsHelperService">Handlebars helper service.</param>
         /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         /// <param name="cSharpDbContextGenerator">DbContext generator.</param>
         /// <param name="cSharpEntityTypeGenerator">Entity type generator.</param>
         public HbsCSharpModelGenerator(ModelCodeGeneratorDependencies dependencies,
+            IHbsHelperService handlebarsHelperService,
             IDbContextTemplateService dbContextTemplateService,
             IEntityTypeTemplateService entityTypeTemplateService,
             ICSharpDbContextGenerator cSharpDbContextGenerator,
             ICSharpEntityTypeGenerator cSharpEntityTypeGenerator) : base(dependencies)
         {
+            HandlebarsHelperService = handlebarsHelperService ?? throw new ArgumentNullException(nameof(handlebarsHelperService));
             DbContextTemplateService = dbContextTemplateService ?? throw new ArgumentNullException(nameof(dbContextTemplateService));
             EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
             CSharpDbContextGenerator = cSharpDbContextGenerator ?? throw new ArgumentNullException(nameof(cSharpDbContextGenerator));
@@ -84,7 +92,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (options == null) throw new ArgumentNullException(nameof(options));
 
             // Register Hbs helpers and partial templates
-            DbContextTemplateService.RegisterHelper(Constants.SpacesHelper, HandlebarsHelpers.GetSpacesHelper());
+            HandlebarsHelperService.RegisterHelpers();
             DbContextTemplateService.RegisterPartialTemplates();
             EntityTypeTemplateService.RegisterPartialTemplates();
 

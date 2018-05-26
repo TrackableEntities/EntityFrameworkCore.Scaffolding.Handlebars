@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars;
+using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
@@ -9,6 +11,7 @@ using Microsoft.EntityFrameworkCore.SqlServer.Design.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Scaffolding.Handlebars.Tests.Helpers;
 using Xunit;
+using Constants = Scaffolding.Handlebars.Tests.Helpers.Constants;
 
 namespace Scaffolding.Handlebars.Tests
 {
@@ -168,7 +171,12 @@ namespace Scaffolding.Handlebars.Tests
                            options == ReverseEngineerOptions.DbContextAndEntities
                         ? entityGenerator
                         : new NullCSharpEntityTypeGenerator();
-                });
+                })
+                .AddSingleton<IHbsHelperService>(provider =>
+                new HbsHelperService(new Dictionary<string, Action<TextWriter, object, object[]>>
+                {
+                    {EntityFrameworkCore.Scaffolding.Handlebars.Helpers.Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
+                }));
 
             new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);
             var scaffolder = services

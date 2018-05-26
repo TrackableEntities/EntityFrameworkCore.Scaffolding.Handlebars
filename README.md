@@ -67,3 +67,33 @@ Scaffold EF Core models using Handlebars templates.
     specific interfaces.
     - When you run the _dotnet-ef-dbcontext-scaffold_ command again, you will see your updated reflected in the generated classes.
 
+## Handlebars Helpers
+
+You can register Handlebars helpers in the `ScaffoldingDesignTimeServices` where setup takes place.
+- Create a named tuple as shown with `myHelper` below.
+- Pass the tuple to the `AddHandlebarsScaffolding` extension method.
+- You may register as many helpers as you wish.
+
+```csharp
+public class ScaffoldingDesignTimeServices : IDesignTimeServices
+{
+    public void ConfigureDesignTimeServices(IServiceCollection services)
+    {
+        // Generate both context and entitites
+        var options = ReverseEngineerOptions.DbContextAndEntities;
+
+        // Register Handlebars helper
+        var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, object, object[]>) MyHbsHelper);
+
+        // Add Handlebars scaffolding templates
+        services.AddHandlebarsScaffolding(options, myHelper);
+    }
+
+    // Sample Handlebars helper
+    void MyHbsHelper(TextWriter writer, object context, object[] parameters)
+    {
+        writer.Write("// My Handlebars Helper");
+    }
+}
+```
+- To use Handlebars helper defined above, add the following to any of the .hbs files within the CodeTemplates folder: `{{my-helper}}`

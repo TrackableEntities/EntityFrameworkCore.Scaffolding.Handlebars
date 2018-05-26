@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,9 +28,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
         /// <param name="options">Options for reverse engineering classes from an existing database.</param>
+        /// <param name="handlebarsHelpers">Additional Handlebars helpers.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsScaffolding(this IServiceCollection services,
-            ReverseEngineerOptions options = ReverseEngineerOptions.DbContextAndEntities)
+            ReverseEngineerOptions options = ReverseEngineerOptions.DbContextAndEntities,
+            params (string helperName, Action<TextWriter, object, object[]> helperFunction)[] handlebarsHelpers)
         {
             Type dbContextGeneratorImpl;
             var dbContextGeneratorType = typeof(ICSharpDbContextGenerator);
@@ -49,6 +55,15 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             services.AddSingleton<ITemplateFileService, FileSystemTemplateFileService>();
             services.AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>();
             services.AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>();
+            services.AddSingleton<IHbsHelperService>(provider =>
+            {
+                var helpers = new Dictionary<string, Action<TextWriter, object, object[]>>
+                {
+                    {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
+                };
+                handlebarsHelpers.ToList().ForEach(h => helpers.Add(h.helperName, h.helperFunction));
+                return new HbsHelperService(helpers);
+            });
             services.AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
             return services;
         }

@@ -6,14 +6,23 @@ namespace ScaffoldingSample.Models
 { // Comment
     public partial class NorthwindSlimContext : DbContext
     {
+        // My Handlebars Helper
         public virtual DbSet<Category> Category { get; set; }
+        // My Handlebars Helper
         public virtual DbSet<Customer> Customer { get; set; }
+        // My Handlebars Helper
         public virtual DbSet<CustomerSetting> CustomerSetting { get; set; }
+        // My Handlebars Helper
         public virtual DbSet<Employee> Employee { get; set; }
+        // My Handlebars Helper
         public virtual DbSet<EmployeeTerritories> EmployeeTerritories { get; set; }
+        // My Handlebars Helper
         public virtual DbSet<Order> Order { get; set; }
+        // My Handlebars Helper
         public virtual DbSet<OrderDetail> OrderDetail { get; set; }
+        // My Handlebars Helper
         public virtual DbSet<Product> Product { get; set; }
+        // My Handlebars Helper
         public virtual DbSet<Territory> Territory { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -21,7 +30,7 @@ namespace ScaffoldingSample.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True");
+                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True");
             }
         }
 
@@ -37,7 +46,7 @@ namespace ScaffoldingSample.Models
             modelBuilder.Entity<Customer>(entity =>
             {
                 entity.Property(e => e.CustomerId)
-                    .HasColumnType("nchar(5)")
+                    .HasMaxLength(5)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.City).HasMaxLength(15);
@@ -56,7 +65,7 @@ namespace ScaffoldingSample.Models
                 entity.HasKey(e => e.CustomerId);
 
                 entity.Property(e => e.CustomerId)
-                    .HasColumnType("nchar(5)")
+                    .HasMaxLength(5)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.Setting)
@@ -108,7 +117,7 @@ namespace ScaffoldingSample.Models
 
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.Property(e => e.CustomerId).HasColumnType("nchar(5)");
+                entity.Property(e => e.CustomerId).HasMaxLength(5);
 
                 entity.Property(e => e.Freight)
                     .HasColumnType("money")
@@ -126,13 +135,9 @@ namespace ScaffoldingSample.Models
 
             modelBuilder.Entity<OrderDetail>(entity =>
             {
-                entity.Property(e => e.Discount).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.Quantity).HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.UnitPrice)
-                    .HasColumnType("money")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.UnitPrice).HasColumnType("money");
 
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderDetail)
@@ -149,8 +154,6 @@ namespace ScaffoldingSample.Models
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.Property(e => e.Discontinued).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.ProductName)
                     .IsRequired()
                     .HasMaxLength(40);

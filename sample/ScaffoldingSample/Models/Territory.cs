@@ -3,7 +3,7 @@ using System.Collections.Generic; // Comment
 
 namespace ScaffoldingSample.Models
 { // Comment
-    public partial class Territory
+    public partial class Territory // My Handlebars Helper
     {
         public Territory()
         {

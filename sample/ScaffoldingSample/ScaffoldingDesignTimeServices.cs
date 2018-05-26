@@ -1,4 +1,6 @@
-﻿using EntityFrameworkCore.Scaffolding.Handlebars;
+﻿using System;
+using System.IO;
+using EntityFrameworkCore.Scaffolding.Handlebars;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,8 +17,20 @@ namespace ScaffoldingSample
     {
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
+            // Generate both context and entitites
             var options = ReverseEngineerOptions.DbContextAndEntities;
-            services.AddHandlebarsScaffolding(options);
+
+            // Register Handlebars helper
+            var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, object, object[]>) MyHbsHelper);
+
+            // Add Handlebars scaffolding templates
+            services.AddHandlebarsScaffolding(options, myHelper);
+        }
+
+        // Sample Handlebars helper
+        void MyHbsHelper(TextWriter writer, object context, object[] parameters)
+        {
+            writer.Write("// My Handlebars Helper");
         }
     }
 }

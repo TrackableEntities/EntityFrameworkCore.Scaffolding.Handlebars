@@ -31,7 +31,7 @@ Scaffold EF Core models using Handlebars templates.
     - If needed update EF Core to version 2.1.
 
 3. Add the **EntityFrameworkCore.Scaffolding.Handlebars** NuGet package:
-    - `Install-Package EntityFrameworkCore.Scaffolding.Handlebars -Pre`
+    - `Install-Package EntityFrameworkCore.Scaffolding.Handlebars`
 
 4. Remove Class1.cs and add a **ScaffoldingDesignTimeServices** class.
     - Implement `IDesignTimeServices` by adding a `ConfigureDesignTimeServices` method

@@ -1,4 +1,5 @@
-﻿namespace EntityFrameworkCore.Scaffolding.Handlebars
+﻿// ReSharper disable once CheckNamespace
+namespace Microsoft.EntityFrameworkCore.Design
 {
     /// <summary>
     /// Options for reverse engineering classes from an existing database.

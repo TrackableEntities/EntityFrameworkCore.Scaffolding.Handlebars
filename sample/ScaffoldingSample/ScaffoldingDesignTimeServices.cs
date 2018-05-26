@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using EntityFrameworkCore.Scaffolding.Handlebars;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.DependencyInjection;
 

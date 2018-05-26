@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EntityFrameworkCore.Scaffolding.Handlebars
+// ReSharper disable once CheckNamespace
+namespace Microsoft.EntityFrameworkCore.Design
 {
     /// <summary>
     /// Helper methods for configuring code generation for Entity Framework Core using Handlebars templates.

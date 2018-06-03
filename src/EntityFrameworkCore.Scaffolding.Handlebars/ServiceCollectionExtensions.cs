@@ -67,6 +67,7 @@ namespace Microsoft.EntityFrameworkCore.Design
                 return new HbsHelperService(helpers);
             });
             services.AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
+            services.AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
             return services;
         }
     }

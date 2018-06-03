@@ -99,8 +99,24 @@ namespace Scaffolding.Handlebars.Tests
         [InlineData(true)]
         public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations)
         {
+            // Arrange
+            var options = ReverseEngineerOptions.DbContextOnly;
+            var scaffolder = CreateScaffolder(options);
+
             // Act
-            Dictionary<string, string> files = ReverseEngineerFiles(ReverseEngineerOptions.DbContextOnly, useDataAnnotations);
+            var model = scaffolder.ScaffoldModel(
+                connectionString: Constants.Connections.SqlServerConnection,
+                tables: Enumerable.Empty<string>(),
+                schemas: Enumerable.Empty<string>(),
+                @namespace: Constants.Parameters.RootNamespace,
+                language: "C#",
+                contextName: Constants.Parameters.ContextName,
+                modelOptions: new ModelReverseEngineerOptions(),
+                contextDir: Constants.Parameters.ProjectPath,
+                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = useDataAnnotations });
+
+            // Act
+            var files = GetGeneratedFiles(model, options);
 
             // Assert
             object expectedContext = useDataAnnotations
@@ -117,8 +133,24 @@ namespace Scaffolding.Handlebars.Tests
         [InlineData(true)]
         public void WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations)
         {
+            // Arrange
+            var options = ReverseEngineerOptions.EntitiesOnly;
+            var scaffolder = CreateScaffolder(options);
+
             // Act
-            Dictionary<string, string> files = ReverseEngineerFiles(ReverseEngineerOptions.EntitiesOnly, useDataAnnotations);
+            var model = scaffolder.ScaffoldModel(
+                connectionString: Constants.Connections.SqlServerConnection,
+                tables: Enumerable.Empty<string>(),
+                schemas: Enumerable.Empty<string>(),
+                @namespace: Constants.Parameters.RootNamespace,
+                language: "C#",
+                contextName: Constants.Parameters.ContextName,
+                modelOptions: new ModelReverseEngineerOptions(),
+                contextDir: Constants.Parameters.ProjectPath,
+                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = useDataAnnotations });
+
+            // Act
+            var files = GetGeneratedFiles(model, options);
 
             // Assert
             var category = files[Constants.Files.CategoryFile];
@@ -135,7 +167,150 @@ namespace Scaffolding.Handlebars.Tests
             Assert.Equal(expectedProduct, product);
         }
 
-        private Dictionary<string, string> ReverseEngineerFiles(ReverseEngineerOptions options, bool useDataAnnotations)
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void WriteCode_Should_Generate_Context_and_Entity_Files(bool useDataAnnotations)
+        {
+            // Arrange
+            var options = ReverseEngineerOptions.DbContextAndEntities;
+            var scaffolder = CreateScaffolder(options);
+
+            // Act
+            var model = scaffolder.ScaffoldModel(
+                connectionString: Constants.Connections.SqlServerConnection,
+                tables: Enumerable.Empty<string>(),
+                schemas: Enumerable.Empty<string>(),
+                @namespace: Constants.Parameters.RootNamespace,
+                language: "C#",
+                contextName: Constants.Parameters.ContextName,
+                modelOptions: new ModelReverseEngineerOptions(),
+                contextDir: Constants.Parameters.ProjectPath,
+                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = useDataAnnotations });
+
+            // Act
+            Dictionary<string, string> files = GetGeneratedFiles(model, options);
+
+            // Assert
+            object expectedContext = useDataAnnotations
+                ? ExpectedContextsWithAnnotations.ContextClass
+                : ExpectedContexts.ContextClass;
+            object expectedCategory = useDataAnnotations
+                ? ExpectedEntitiesWithAnnotations.CategoryClass
+                : ExpectedEntities.CategoryClass;
+            object expectedProduct = useDataAnnotations
+                ? ExpectedEntitiesWithAnnotations.ProductClass
+                : ExpectedEntities.ProductClass;
+
+            var context = files[Constants.Files.DbContextFile];
+            var category = files[Constants.Files.CategoryFile];
+            var product = files[Constants.Files.ProductFile];
+
+            Assert.Equal(expectedContext, context);
+            Assert.Equal(expectedCategory, category);
+            Assert.Equal(expectedProduct, product);
+        }
+
+        [Fact]
+        public void Save_Should_Write_Context_File()
+        {
+            using (var directory = new TempDirectory())
+            {
+                // Arrange
+                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextOnly);
+                var model = scaffolder.ScaffoldModel(
+                    connectionString: Constants.Connections.SqlServerConnection,
+                    tables: Enumerable.Empty<string>(),
+                    schemas: Enumerable.Empty<string>(),
+                    @namespace: Constants.Parameters.RootNamespace,
+                    language: "C#",
+                    contextName: Constants.Parameters.ContextName,
+                    modelOptions: new ModelReverseEngineerOptions(),
+                    contextDir: Path.Combine(directory.Path, "Contexts"),
+                    codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = false });
+
+                // Act
+                var result = scaffolder.Save(model,
+                    Path.Combine(directory.Path, "Models"),
+                    overwriteFiles: false);
+
+                // Assert
+                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.DbContextFile);
+                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.CategoryFile);
+                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.ProductFile);
+                Assert.Equal(expectedContextPath, result.ContextFile);
+                Assert.False(File.Exists(expectedCategoryPath));
+                Assert.False(File.Exists(expectedProductPath));
+            }
+        }
+
+        [Fact]
+        public void Save_Should_Write_Entity_Files()
+        {
+            using (var directory = new TempDirectory())
+            {
+                // Arrange
+                var scaffolder = CreateScaffolder(ReverseEngineerOptions.EntitiesOnly);
+                var model = scaffolder.ScaffoldModel(
+                    connectionString: Constants.Connections.SqlServerConnection,
+                    tables: Enumerable.Empty<string>(),
+                    schemas: Enumerable.Empty<string>(),
+                    @namespace: Constants.Parameters.RootNamespace,
+                    language: "C#",
+                    contextName: Constants.Parameters.ContextName,
+                    modelOptions: new ModelReverseEngineerOptions(),
+                    contextDir: Path.Combine(directory.Path, "Contexts"),
+                    codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = false });
+
+                // Act
+                var result = scaffolder.Save(model,
+                    Path.Combine(directory.Path, "Models"),
+                    overwriteFiles: false);
+
+                // Assert
+                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.DbContextFile);
+                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.CategoryFile);
+                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.ProductFile);
+                Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
+                Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
+                Assert.False(File.Exists(expectedContextPath));
+            }
+        }
+
+        [Fact]
+        public void Save_Should_Write_Context_and_Entity_Files()
+        {
+            using (var directory = new TempDirectory())
+            {
+                // Arrange
+                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities);
+                var model = scaffolder.ScaffoldModel(
+                    connectionString: Constants.Connections.SqlServerConnection,
+                    tables: Enumerable.Empty<string>(),
+                    schemas: Enumerable.Empty<string>(),
+                    @namespace: Constants.Parameters.RootNamespace,
+                    language: "C#",
+                    contextName: Constants.Parameters.ContextName,
+                    modelOptions: new ModelReverseEngineerOptions(),
+                    contextDir: Path.Combine(directory.Path, "Contexts"),
+                    codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = false });
+
+                // Act
+                var result = scaffolder.Save(model,
+                    Path.Combine(directory.Path, "Models"),
+                    overwriteFiles: false);
+
+                // Assert
+                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.DbContextFile);
+                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.CategoryFile);
+                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.ProductFile);
+                Assert.Equal(expectedContextPath, result.ContextFile);
+                Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
+                Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
+            }
+        }
+
+        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options)
         {
             var fileService = new InMemoryTemplateFileService();
             fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate, ContextDbSetsTemplate,
@@ -176,25 +351,18 @@ namespace Scaffolding.Handlebars.Tests
                 new HbsHelperService(new Dictionary<string, Action<TextWriter, object, object[]>>
                 {
                     {EntityFrameworkCore.Scaffolding.Handlebars.Helpers.Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
-                }));
+                }))
+                .AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
 
             new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);
             var scaffolder = services
                 .BuildServiceProvider()
                 .GetRequiredService<IReverseEngineerScaffolder>();
+            return scaffolder;
+        }
 
-            // Act
-            var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
-                tables: Enumerable.Empty<string>(),
-                schemas: Enumerable.Empty<string>(),
-                @namespace: Constants.Parameters.RootNamespace,
-                language: "C#",
-                contextName: Constants.Parameters.ContextName,
-                modelOptions: new ModelReverseEngineerOptions(),
-                contextDir: Constants.Parameters.ProjectPath,
-                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = useDataAnnotations });
-
+        private Dictionary<string, string> GetGeneratedFiles(ScaffoldedModel model, ReverseEngineerOptions options)
+        {
             var generatedFiles = new Dictionary<string, string>();
 
             if (options == ReverseEngineerOptions.DbContextOnly

@@ -88,7 +88,7 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
         // Add Handlebars scaffolding templates
         services.AddHandlebarsScaffolding(options);
 
-		// Register Handlebars helper
+        // Register Handlebars helper
         services.AddHandlebarsHelpers(myHelper);
     }
 

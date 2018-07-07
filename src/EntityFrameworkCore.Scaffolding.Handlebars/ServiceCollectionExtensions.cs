@@ -57,11 +57,22 @@ namespace Microsoft.EntityFrameworkCore.Design
             services.AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>();
             services.AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
             services.AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
+            services.AddSingleton<IHbsHelperService>(provider =>
+            {
+                var helpers = new Dictionary<string, Action<TextWriter, object, object[]>>
+                {
+                    {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
+                };
+                return new HbsHelperService(helpers);
+            });
             return services;
         }
 
         /// <summary>
         /// Register Handlebars helpers.
+        ///     <para>
+        ///         Note: You must first call AddHandlebarsScaffolding before calling AddHandlebarsHelpers.
+        ///     </para>
         /// </summary>
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
         /// <param name="handlebarsHelpers">Handlebars helpers.</param>
@@ -69,15 +80,8 @@ namespace Microsoft.EntityFrameworkCore.Design
         public static IServiceCollection AddHandlebarsHelpers(this IServiceCollection services,
             params (string helperName, Action<TextWriter, object, object[]> helperFunction)[] handlebarsHelpers)
         {
-            services.AddSingleton<IHbsHelperService>(provider =>
-            {
-                var helpers = new Dictionary<string, Action<TextWriter, object, object[]>>
-                {
-                    {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
-                };
-                handlebarsHelpers.ToList().ForEach(h => helpers.Add(h.helperName, h.helperFunction));
-                return new HbsHelperService(helpers);
-            });
+            var helperService = services.BuildServiceProvider().GetRequiredService<IHbsHelperService>();
+            handlebarsHelpers.ToList().ForEach(h => helperService.Helpers.Add(h.helperName, h.helperFunction));
             return services;
         }
     }

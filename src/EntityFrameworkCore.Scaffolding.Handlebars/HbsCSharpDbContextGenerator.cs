@@ -201,7 +201,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                             .Append(
                                 _providerConfigurationCodeGenerator != null
                                     ? _code.Fragment(
-                                        _providerConfigurationCodeGenerator.GenerateUseProvider(connectionString))
+                                        _providerConfigurationCodeGenerator.GenerateUseProvider(connectionString, null))
 #pragma warning disable CS0618 // Type or member is obsolete
                                     : _legacyProviderCodeGenerator.GenerateUseProvider(connectionString, Language))
 #pragma warning restore CS0618 // Type or member is obsolete

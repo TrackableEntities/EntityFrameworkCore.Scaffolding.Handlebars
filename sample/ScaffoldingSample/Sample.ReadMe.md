@@ -4,8 +4,8 @@ Demonstrates how to reverse engineer an existing database using the EF Core tool
 
 ## Prerequisites
 
-- [Visual Studio 2017](https://www.visualstudio.com/downloads/) 15.8 or greater.
-- The .[NET Core 2.1 SDK](https://www.microsoft.com/net/download/core) (version 2.1.3 or greater).
+- [Visual Studio 2017](https://www.visualstudio.com/downloads/) 15.9 or greater.
+- The .[NET Core 2.2 SDK](https://www.microsoft.com/net/download/core) (version 2.2.100 or greater).
 
 ## Database Setup
 
@@ -32,10 +32,7 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
         var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, object, object[]>) MyHbsHelper);
 
         // Add Handlebars scaffolding templates
-        services.AddHandlebarsScaffolding(options);
-
-		// Register Handlebars helper
-        services.AddHandlebarsHelpers(myHelper);
+        services.AddHandlebarsScaffolding(options, myHelper);
     }
 
     // Sample Handlebars helper

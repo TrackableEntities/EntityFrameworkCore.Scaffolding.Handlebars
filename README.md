@@ -6,8 +6,8 @@ Scaffold EF Core models using Handlebars templates.
  
 ## Prerequisites
 
-- [Visual Studio 2017](https://www.visualstudio.com/downloads/) 15.8 or greater.
-- The .[NET Core 2.1 SDK](https://www.microsoft.com/net/download/core) (version 2.1.3 or greater).
+- [Visual Studio 2017](https://www.visualstudio.com/downloads/) 15.9 or greater.
+- The .[NET Core 2.2 SDK](https://www.microsoft.com/net/download/core) (version 2.2.100 or greater).
 
 ## Database Setup
 
@@ -21,14 +21,14 @@ Scaffold EF Core models using Handlebars templates.
 ## Usage
 
 1. Create a new **.NET Core** class library.
-    - If necessary, edit the csproj file to update the **TargetFramework** to 2.1.
+    - If necessary, edit the csproj file to update the **TargetFramework** to 2.2.
 
     > **Note**: Using the EF Core toolchain with a _.NET Standard_ class library is currently not supported. Instead, you can add a .NET Standard class library to the same solution as the .NET Core library, then add existing items and select **Add As Link** to include entity classes.
 
 2. Add EF Core SQL Server and Tools NuGet packages.  
     - Open the Package Manager Console, select the default project and enter:
         + `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
-    - If needed update EF Core to version 2.1.
+    - If needed update EF Core to version 2.2.
 
 3. Add the **EntityFrameworkCore.Scaffolding.Handlebars** NuGet package:
     - `Install-Package EntityFrameworkCore.Scaffolding.Handlebars`
@@ -86,10 +86,7 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
         var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, object, object[]>) MyHbsHelper);
 
         // Add Handlebars scaffolding templates
-        services.AddHandlebarsScaffolding(options);
-
-        // Register Handlebars helper
-        services.AddHandlebarsHelpers(myHelper);
+        services.AddHandlebarsScaffolding(options, myHelper);
     }
 
     // Sample Handlebars helper

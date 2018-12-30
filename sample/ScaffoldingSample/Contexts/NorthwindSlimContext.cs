@@ -36,6 +36,8 @@ namespace ScaffoldingSample.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasAnnotation("ProductVersion", "2.2.0-rtm-35687");
+
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.Property(e => e.CategoryName)
@@ -62,7 +64,8 @@ namespace ScaffoldingSample.Models
 
             modelBuilder.Entity<CustomerSetting>(entity =>
             {
-                entity.HasKey(e => e.CustomerId);
+                entity.HasKey(e => e.CustomerId)
+                    .HasName("PK_dbo.CustomerSetting");
 
                 entity.Property(e => e.CustomerId)
                     .HasMaxLength(5)
@@ -100,7 +103,8 @@ namespace ScaffoldingSample.Models
 
             modelBuilder.Entity<EmployeeTerritories>(entity =>
             {
-                entity.HasKey(e => new { e.EmployeeId, e.TerritoryId });
+                entity.HasKey(e => new { e.EmployeeId, e.TerritoryId })
+                    .HasName("PK_dbo.EmployeeTerritories");
 
                 entity.Property(e => e.TerritoryId).HasMaxLength(20);
 

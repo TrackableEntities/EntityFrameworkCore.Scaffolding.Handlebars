@@ -23,10 +23,7 @@ namespace ScaffoldingSample
             var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, object, object[]>) MyHbsHelper);
 
             // Add Handlebars scaffolding templates
-            services.AddHandlebarsScaffolding(options);
-
-            // Register Handlebars helper
-            services.AddHandlebarsHelpers(myHelper);
+            services.AddHandlebarsScaffolding(options, myHelper);
         }
 
         // Sample Handlebars helper

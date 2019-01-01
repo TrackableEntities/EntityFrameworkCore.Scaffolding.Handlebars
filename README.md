@@ -79,7 +79,7 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
 {
     public void ConfigureDesignTimeServices(IServiceCollection services)
     {
-        // Generate both context and entitites
+        // Generate both context and entities
         var options = ReverseEngineerOptions.DbContextAndEntities;
 
         // Register Handlebars helper

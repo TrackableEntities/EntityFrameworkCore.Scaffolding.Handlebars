@@ -34,8 +34,16 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
         // Add Handlebars scaffolding templates
         services.AddHandlebarsScaffolding(options);
 
-        // Add Handlebars helpers
+        // Add optional Handlebars helpers
         services.AddHandlebarsHelpers(myHelper);
+
+        // Add optional Handlebars transformers
+        services.AddHandlebarsTransformers(
+            entityNameTransformer: n => n + "Foo",
+            entityFileNameTransformer: n => n + "Foo",
+            constructorTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"),
+            propertyTransformer: e => new EntityPropertyInfo(e.PropertyType, e.PropertyName + "Foo"),
+            navPropertyTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"));
     }
 
     // Sample Handlebars helper

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using EntityFrameworkCore.Scaffolding.Handlebars;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,10 +27,10 @@ namespace ScaffoldingSample
             // Add Handlebars scaffolding templates
             services.AddHandlebarsScaffolding(options);
 
-            // Add Handlebars helpers
+            // Add optional Handlebars helpers
             services.AddHandlebarsHelpers(myHelper);
 
-            // Add Handlebars transformers
+            // Add optional Handlebars transformers
             //services.AddHandlebarsTransformers(
             //    entityNameTransformer: n => n + "Foo",
             //    entityFileNameTransformer: n => n + "Foo",

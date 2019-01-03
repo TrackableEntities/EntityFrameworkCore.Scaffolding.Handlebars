@@ -30,11 +30,9 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// </summary>
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
         /// <param name="options">Options for reverse engineering classes from an existing database.</param>
-        /// <param name="handlebarsHelpers">Handlebars helpers.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsScaffolding(this IServiceCollection services,
-            ReverseEngineerOptions options = ReverseEngineerOptions.DbContextAndEntities,
-            params (string helperName, Action<TextWriter, object, object[]> helperFunction)[] handlebarsHelpers)
+            ReverseEngineerOptions options = ReverseEngineerOptions.DbContextAndEntities)
         {
             Type dbContextGeneratorImpl;
             var dbContextGeneratorType = typeof(ICSharpDbContextGenerator);
@@ -59,15 +57,7 @@ namespace Microsoft.EntityFrameworkCore.Design
             services.AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>();
             services.AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
             services.AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
-            services.AddSingleton<IHbsHelperService>(provider =>
-            {
-                var helpers = new Dictionary<string, Action<TextWriter, object, object[]>>
-                {
-                    {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
-                };
-                handlebarsHelpers.ToList().ForEach(h => helpers.Add(h.helperName, h.helperFunction));
-                return new HbsHelperService(helpers);
-            });
+            services.AddSingleton<IHbsHelperService, HbsHelperService>();
             return services;
         }
 
@@ -80,12 +70,18 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
         /// <param name="handlebarsHelpers">Handlebars helpers.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
-        [Obsolete("AddHandlebarsHelpers has been deprecated. Pass helpers to AddHandlebarsScaffolding instead.")]
         public static IServiceCollection AddHandlebarsHelpers(this IServiceCollection services,
             params (string helperName, Action<TextWriter, object, object[]> helperFunction)[] handlebarsHelpers)
         {
-            var helperService = services.BuildServiceProvider().GetRequiredService<IHbsHelperService>();
-            handlebarsHelpers.ToList().ForEach(h => helperService.Helpers.Add(h.helperName, h.helperFunction));
+            services.AddSingleton<IHbsHelperService>(provider =>
+            {
+                var helpers = new Dictionary<string, Action<TextWriter, object, object[]>>
+                {
+                    {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
+                };
+                handlebarsHelpers.ToList().ForEach(h => helpers.Add(h.helperName, h.helperFunction));
+                return new HbsHelperService(helpers);
+            });
             return services;
         }
     }

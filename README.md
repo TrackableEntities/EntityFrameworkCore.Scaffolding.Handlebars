@@ -71,7 +71,7 @@ Scaffold EF Core models using Handlebars templates.
 
 You can register Handlebars helpers in the `ScaffoldingDesignTimeServices` where setup takes place.
 - Create a named tuple as shown with `myHelper` below.
-- Pass the tuple to the `AddHandlebarsScaffolding` extension method.
+- Pass the tuple to the `AddHandlebarsHelpers` extension method.
 - You may register as many helpers as you wish.
 
 ```csharp
@@ -86,7 +86,10 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
         var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, object, object[]>) MyHbsHelper);
 
         // Add Handlebars scaffolding templates
-        services.AddHandlebarsScaffolding(options, myHelper);
+        services.AddHandlebarsScaffolding(options);
+
+        // Add Handlebars helpers
+        services.AddHandlebarsHelpers(myHelper);
     }
 
     // Sample Handlebars helper

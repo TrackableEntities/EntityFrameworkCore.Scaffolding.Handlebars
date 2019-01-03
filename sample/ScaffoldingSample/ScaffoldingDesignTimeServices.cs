@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,7 @@ namespace ScaffoldingSample
 {
     public class ScaffoldingDesignTimeServices : IDesignTimeServices
     {
-        public void ConfigureDesignTimeServices(IServiceCollection services)    
+        public void ConfigureDesignTimeServices(IServiceCollection services)
         {
             // Generate both context and entities
             var options = ReverseEngineerOptions.DbContextAndEntities;
@@ -27,6 +28,14 @@ namespace ScaffoldingSample
 
             // Add Handlebars helpers
             services.AddHandlebarsHelpers(myHelper);
+
+            // Add Handlebars transformers
+            //services.AddHandlebarsTransformers(
+            //    entityNameTransformer: n => n + "Foo",
+            //    entityFileNameTransformer: n => n + "Foo",
+            //    constructorTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"),
+            //    propertyTransformer: e => new EntityPropertyInfo(e.PropertyType, e.PropertyName + "Foo"),
+            //    navPropertyTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"));
         }
 
         // Sample Handlebars helper

@@ -55,16 +55,24 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public virtual IEntityTypeTemplateService EntityTypeTemplateService { get; }
 
         /// <summary>
+        /// Service for transforming entity definitions.
+        /// </summary>
+        public virtual IEntityTypeTransformationService EntityTypeTransformationService { get; }
+
+        /// <summary>
         /// Constructor for the Handlebars entity types generator.
         /// </summary>
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
+        /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="cSharpHelper">CSharp helper.</param>
         public HbsCSharpEntityTypeGenerator(
             IEntityTypeTemplateService entityTypeTemplateService,
+            IEntityTypeTransformationService entityTypeTransformationService,
             ICSharpHelper cSharpHelper)
         {
             CSharpHelper = cSharpHelper ?? throw new ArgumentNullException(nameof(cSharpHelper));
             EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
+            EntityTypeTransformationService = entityTypeTransformationService ?? throw new ArgumentNullException(nameof(entityTypeTransformationService));
         }
 
         /// <summary>
@@ -127,7 +135,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 GenerateEntityTypeDataAnnotations(entityType);
             }
 
-            TemplateData.Add("class", entityType.Name);
+            var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
+
+            TemplateData.Add("class", transformedEntityName);
 
             GenerateConstructor(entityType);
             GenerateProperties(entityType);
@@ -157,7 +167,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     });
                 }
 
-                TemplateData.Add("lines", lines);
+                var transformedLines = EntityTypeTransformationService.TransformConstructor(lines);
+
+                TemplateData.Add("lines", transformedLines);
             }
         }
 
@@ -184,11 +196,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     { "property-type", CSharpHelper.Reference(property.ClrType) },
                     { "property-name", property.Name },
-                    { "property-annotations",  PropertyAnnotationsData}
+                    { "property-annotations",  PropertyAnnotationsData }
                 });
             }
 
-            TemplateData.Add("properties", properties);
+            var transformedProperties = EntityTypeTransformationService.TransformProperties(properties);
+
+            TemplateData.Add("properties", transformedProperties);
         }
 
         /// <summary>
@@ -225,7 +239,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     });
                 }
 
-                TemplateData.Add("nav-properties", navProperties);
+                var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(navProperties);
+
+                TemplateData.Add("nav-properties", transformedNavProperties);
             }
         }
 

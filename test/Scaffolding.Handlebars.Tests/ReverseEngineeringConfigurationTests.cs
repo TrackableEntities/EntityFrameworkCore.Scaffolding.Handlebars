@@ -42,6 +42,7 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<ITemplateFileService, InMemoryTemplateFileService>()
                 .AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>()
                 .AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>()
+                .AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>()
                 .AddSingleton<IHbsHelperService>(provider => new HbsHelperService(
                     new Dictionary<string, Action<TextWriter, object, object[]>>
                     {

@@ -35,6 +35,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public virtual IEntityTypeTemplateService EntityTypeTemplateService { get; }
 
         /// <summary>
+        /// Service for transforming entity definitions.
+        /// </summary>
+        public virtual IEntityTypeTransformationService EntityTypeTransformationService { get; }
+
+        /// <summary>
         /// DbContext generator.
         /// </summary>
         public virtual ICSharpDbContextGenerator CSharpDbContextGenerator { get; }
@@ -51,18 +56,21 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="handlebarsHelperService">Handlebars helper service.</param>
         /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
+        /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="cSharpDbContextGenerator">DbContext generator.</param>
         /// <param name="cSharpEntityTypeGenerator">Entity type generator.</param>
         public HbsCSharpModelGenerator(ModelCodeGeneratorDependencies dependencies,
             IHbsHelperService handlebarsHelperService,
             IDbContextTemplateService dbContextTemplateService,
             IEntityTypeTemplateService entityTypeTemplateService,
+            IEntityTypeTransformationService entityTypeTransformationService,
             ICSharpDbContextGenerator cSharpDbContextGenerator,
             ICSharpEntityTypeGenerator cSharpEntityTypeGenerator) : base(dependencies)
         {
             HandlebarsHelperService = handlebarsHelperService ?? throw new ArgumentNullException(nameof(handlebarsHelperService));
             DbContextTemplateService = dbContextTemplateService ?? throw new ArgumentNullException(nameof(dbContextTemplateService));
             EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
+            EntityTypeTransformationService = entityTypeTransformationService ?? throw new ArgumentNullException(nameof(entityTypeTransformationService));
             CSharpDbContextGenerator = cSharpDbContextGenerator ?? throw new ArgumentNullException(nameof(cSharpDbContextGenerator));
             CSharpEntityTypeGenerator = cSharpEntityTypeGenerator ?? throw new ArgumentNullException(nameof(cSharpEntityTypeGenerator));
         }
@@ -113,7 +121,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     generatedCode = CSharpEntityTypeGenerator.WriteCode(entityType, @namespace, options.UseDataAnnotations);
 
-                    var entityTypeFileName = entityType.DisplayName() + FileExtension;
+                    var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.DisplayName());
+                    var entityTypeFileName = transformedFileName + FileExtension;
                     resultingFiles.AdditionalFiles.Add(new ScaffoldedFile { Path = entityTypeFileName, Code = generatedCode });
                 }
             }

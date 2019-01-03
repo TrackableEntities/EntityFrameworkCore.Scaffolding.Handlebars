@@ -320,6 +320,7 @@ namespace Scaffolding.Handlebars.Tests
                 .AddEntityFrameworkDesignTimeServices()
                 .AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>()
                 .AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>()
+                .AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>()
                 .AddSingleton<ITemplateFileService>(fileService)
                 .AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>()
                 .AddSingleton(provider =>
@@ -331,6 +332,7 @@ namespace Scaffolding.Handlebars.Tests
                         provider.GetRequiredService<IEnumerable<IProviderConfigurationCodeGenerator>>(),
                         provider.GetRequiredService<IAnnotationCodeGenerator>(),
                         provider.GetRequiredService<IDbContextTemplateService>(),
+                        provider.GetRequiredService<IEntityTypeTransformationService>(),
                         provider.GetRequiredService<ICSharpHelper>());
                     return options == ReverseEngineerOptions.DbContextOnly ||
                            options == ReverseEngineerOptions.DbContextAndEntities
@@ -341,6 +343,7 @@ namespace Scaffolding.Handlebars.Tests
                 {
                     ICSharpEntityTypeGenerator entityGenerator = new HbsCSharpEntityTypeGenerator(
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
+                        provider.GetRequiredService<IEntityTypeTransformationService>(),
                         provider.GetRequiredService<ICSharpHelper>());
                     return options == ReverseEngineerOptions.EntitiesOnly ||
                            options == ReverseEngineerOptions.DbContextAndEntities

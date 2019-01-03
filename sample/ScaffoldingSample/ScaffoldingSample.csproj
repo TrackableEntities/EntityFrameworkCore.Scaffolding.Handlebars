@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Contexts\" />
     <Folder Include="Models\" />
   </ItemGroup>
 

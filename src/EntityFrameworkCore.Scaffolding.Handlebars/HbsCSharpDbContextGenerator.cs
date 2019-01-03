@@ -66,12 +66,18 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public virtual IDbContextTemplateService DbContextTemplateService { get; }
 
         /// <summary>
+        /// Service for transforming entity definitions.
+        /// </summary>
+        public virtual IEntityTypeTransformationService EntityTypeTransformationService { get; }
+
+        /// <summary>
         /// Constructor for the Handlebars DbContext generator.
         /// </summary>
         /// <param name="legacyProviderCodeGenerators">Legacy provider code generators.</param>
         /// <param name="providerCodeGenerators">Generator for scaffolding provider.</param>
         /// <param name="annotationCodeGenerator">Annotation code generator.</param>
         /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
+        /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="cSharpHelper">CSharp helper.</param>
         public HbsCSharpDbContextGenerator(
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -80,6 +86,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             IEnumerable<IProviderConfigurationCodeGenerator> providerCodeGenerators,
             IAnnotationCodeGenerator annotationCodeGenerator,
             IDbContextTemplateService dbContextTemplateService,
+            IEntityTypeTransformationService entityTypeTransformationService,
             ICSharpHelper cSharpHelper)
         {
             if (!legacyProviderCodeGenerators.Any() && !providerCodeGenerators.Any())
@@ -91,6 +98,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             ProviderConfigurationCodeGenerator = providerCodeGenerators.LastOrDefault();
             CodeGenerator = annotationCodeGenerator ?? throw new ArgumentNullException(nameof(annotationCodeGenerator));
             DbContextTemplateService = dbContextTemplateService ?? throw new ArgumentNullException(nameof(dbContextTemplateService));
+            EntityTypeTransformationService = entityTypeTransformationService ?? throw new ArgumentNullException(nameof(entityTypeTransformationService));
             CSharpHelper = cSharpHelper ?? throw new ArgumentNullException(nameof(cSharpHelper));
         }
 
@@ -156,9 +164,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             foreach (var entityType in model.GetEntityTypes())
             {
+                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
                 dbSets.Add(new Dictionary<string, object>
                 {
-                    { "set-property-type", entityType.Name },
+                    { "set-property-type", transformedEntityName },
                     { "set-property-name", entityType.Scaffolding().DbSetName },
                 });
             }
@@ -341,8 +350,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             if (!EntityTypeBuilderInitialized)
             {
+                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
                 sb.AppendLine();
-                sb.AppendLine($"modelBuilder.Entity<{entityType.Name}>({EntityLambdaIdentifier} =>");
+                sb.AppendLine($"modelBuilder.Entity<{transformedEntityName}>({EntityLambdaIdentifier} =>");
                 sb.Append("{");
             }
 
@@ -398,12 +408,15 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             foreach (var property in entityType.GetProperties())
             {
-                GenerateProperty(property, useDataAnnotations, sb);
+                var transformedPropName = EntityTypeTransformationService.TransformPropertyName(property.Name);
+                GenerateProperty(property, transformedPropName, useDataAnnotations, sb);
             }
 
             foreach (var foreignKey in entityType.GetForeignKeys())
             {
-                GenerateRelationship(foreignKey, useDataAnnotations, sb);
+                var transformedDepPropName = EntityTypeTransformationService.TransformPropertyName(foreignKey.DependentToPrincipal.Name);
+                var transformedPrincipalPropName = EntityTypeTransformationService.TransformPropertyName(foreignKey.PrincipalToDependent.Name);
+                GenerateRelationship(foreignKey, transformedDepPropName, transformedPrincipalPropName, useDataAnnotations, sb);
             }
         }
 
@@ -584,12 +597,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             AppendMultiLineFluentApi(index.DeclaringEntityType, lines, sb);
         }
 
-        private void GenerateProperty(IProperty property, bool useDataAnnotations,
+        private void GenerateProperty(IProperty property, string propertyName, bool useDataAnnotations,
             IndentedStringBuilder sb)
         {
+            //var transformedPropertyName = EntityTypeTransformationService.TransformProperties(entityType.Name);
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.Property)}(e => e.{property.Name})"
+                $".{nameof(EntityTypeBuilder.Property)}(e => e.{propertyName})"
             };
 
             var annotations = property.GetAnnotations().ToList();
@@ -751,31 +765,35 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             AppendMultiLineFluentApi(property.DeclaringEntityType, lines, sb);
         }
 
-        private void GenerateRelationship(IForeignKey foreignKey, bool useDataAnnotations,
-            IndentedStringBuilder sb)
+        private void GenerateRelationship(IForeignKey foreignKey, string dependentPropName, string principalPropName,
+            bool useDataAnnotations, IndentedStringBuilder sb)
         {
             var canUseDataAnnotations = true;
             var annotations = foreignKey.GetAnnotations().ToList();
 
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.HasOne)}(d => d.{foreignKey.DependentToPrincipal.Name})",
+                $".{nameof(EntityTypeBuilder.HasOne)}(d => d.{dependentPropName})",
                 $".{(foreignKey.IsUnique ? nameof(ReferenceNavigationBuilder.WithOne) : nameof(ReferenceNavigationBuilder.WithMany))}"
-                + $"(p => p.{foreignKey.PrincipalToDependent.Name})"
+                + $"(p => p.{principalPropName})"
             };
 
             if (!foreignKey.PrincipalKey.IsPrimaryKey())
             {
                 canUseDataAnnotations = false;
+                var principlePropDisplayName = EntityTypeTransformationService
+                    .TransformPropertyName(foreignKey.PrincipalEntityType.DisplayName());
                 lines.Add(
                     $".{nameof(ReferenceReferenceBuilder.HasPrincipalKey)}"
-                    + $"{(foreignKey.IsUnique ? $"<{foreignKey.PrincipalEntityType.DisplayName()}>" : "")}"
+                    + $"{(foreignKey.IsUnique ? $"<{principlePropDisplayName}>" : "")}"
                     + $"(p => {GenerateLambdaToKey(foreignKey.PrincipalKey.Properties, "p")})");
             }
 
+            var dependentPropDisplayName = EntityTypeTransformationService
+                .TransformPropertyName(foreignKey.DeclaringEntityType.DisplayName());
             lines.Add(
                 $".{nameof(ReferenceReferenceBuilder.HasForeignKey)}"
-                + $"{(foreignKey.IsUnique ? $"<{foreignKey.DeclaringEntityType.DisplayName()}>" : "")}"
+                + $"{(foreignKey.IsUnique ? $"<{dependentPropDisplayName}>" : "")}"
                 + $"(d => {GenerateLambdaToKey(foreignKey.Properties, "d")})");
 
             var defaultOnDeleteAction = foreignKey.IsRequired
@@ -911,8 +929,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
 
             return properties.Count == 1
-                ? $"{lambdaIdentifier}.{properties[0].Name}"
-                : $"new {{ {string.Join(", ", properties.Select(p => lambdaIdentifier + "." + p.Name))} }}";
+                ? $"{lambdaIdentifier}.{EntityTypeTransformationService.TransformPropertyName(properties[0].Name)}"
+                : $"new {{ {string.Join(", ", properties.Select(p => lambdaIdentifier + "." + EntityTypeTransformationService.TransformPropertyName(p.Name)))} }}";
         }
 
         private void RemoveAnnotation(ref List<IAnnotation> annotations, string annotationName)

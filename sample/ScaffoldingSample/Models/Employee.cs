@@ -16,7 +16,7 @@ namespace ScaffoldingSample.Models
         public DateTime? BirthDate { get; set; }
         public DateTime? HireDate { get; set; }
         public string City { get; set; }
-        public string Country { get; set; }
+        public Country Country { get; set; }
 
         public ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
     }

@@ -52,7 +52,11 @@ namespace FakeNamespace
                     .WithMany(p => p.Product)
                     .HasForeignKey(d => d.CategoryId);
             });
+
+            OnModelCreatingExt(modelBuilder);
         }
+
+        partial void OnModelCreatingExt(ModelBuilder modelBuilder);
     }
 }
 ";
@@ -91,7 +95,11 @@ namespace FakeNamespace
 
                 entity.Property(e => e.RowVersion).IsRowVersion();
             });
+
+            OnModelCreatingExt(modelBuilder);
         }
+
+        partial void OnModelCreatingExt(ModelBuilder modelBuilder);
     }
 }
 ";

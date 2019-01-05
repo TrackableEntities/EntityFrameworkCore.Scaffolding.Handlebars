@@ -44,6 +44,9 @@
         /// <summary>DbContext imports template.</summary>
         public const string DbContextImportTemplate = "DbImports";
 
+        /// <summary>DbContext constructor template.</summary>
+        public const string DbContextCtorTemplate = "DbConstructor";
+
         /// <summary>DbContext DbSets template.</summary>
         public const string DbContextDbSetsTemplate = "DbSets";
     }

@@ -60,6 +60,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var importTemplate = FileService.RetrieveTemplateFileContents(
                 Constants.DbContextPartialsDirectory,
                 Constants.DbContextImportTemplate + Constants.TemplateExtension);
+            var ctorTemplate = FileService.RetrieveTemplateFileContents(
+                Constants.DbContextPartialsDirectory,
+                Constants.DbContextCtorTemplate + Constants.TemplateExtension);
             var propertyTemplate = FileService.RetrieveTemplateFileContents(
                 Constants.DbContextPartialsDirectory,
                 Constants.DbContextDbSetsTemplate + Constants.TemplateExtension);
@@ -69,6 +72,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     Constants.DbContextImportTemplate.ToLower(),
                     importTemplate
+                },
+                {
+                    Constants.DbContextCtorTemplate.ToLower(),
+                    ctorTemplate
                 },
                 {
                     Constants.DbContextDbSetsTemplate.ToLower(),

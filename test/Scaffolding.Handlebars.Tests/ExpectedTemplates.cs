@@ -11,13 +11,15 @@ namespace {{namespace}}
 {
     public partial class {{class}} : DbContext
     {
-{{> dbsets}}
+{{{> dbsets}}}
 {{#if entity-type-errors}}
 {{#each entity-type-errors}}
 {{spaces 8}}{{{entity-type-error}}}
 {{/each}}
 
 {{/if}}
+
+{{{> dbconstructor}}}
 
 {{{on-configuring}}}
 {{{on-model-creating}}}
@@ -36,7 +38,7 @@ namespace {{namespace}}
     public partial class {{class}}
     {
         {{{> constructor}}}
-        {{> properties}}
+        {{{> properties}}}
     }
 }
 ";

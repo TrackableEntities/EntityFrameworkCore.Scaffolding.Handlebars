@@ -58,7 +58,14 @@ namespace Microsoft.EntityFrameworkCore.Design
             services.AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
             services.AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
             services.AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>();
-            services.AddSingleton<IHbsHelperService, HbsHelperService>();
+            services.AddSingleton<IHbsHelperService, HbsHelperService>(provider =>
+            {
+                var helpers = new Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>>
+                {
+                    {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
+                };
+                return new HbsHelperService(helpers);
+            });
             return services;
         }
 

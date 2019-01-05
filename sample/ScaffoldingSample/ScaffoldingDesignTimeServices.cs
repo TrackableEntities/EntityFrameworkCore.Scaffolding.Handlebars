@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars;
@@ -22,7 +23,7 @@ namespace ScaffoldingSample
             var options = ReverseEngineerOptions.DbContextAndEntities;
 
             // Register Handlebars helper
-            var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, object, object[]>) MyHbsHelper);
+            var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, Dictionary<string, object>, object[]>) MyHbsHelper);
 
             // Add Handlebars scaffolding templates
             services.AddHandlebarsScaffolding(options);
@@ -47,7 +48,7 @@ namespace ScaffoldingSample
         }
 
         // Sample Handlebars helper
-        void MyHbsHelper(TextWriter writer, object context, object[] parameters)
+        void MyHbsHelper(TextWriter writer, Dictionary<string, object> context, object[] parameters)
         {
             writer.Write("// My Handlebars Helper");
         }

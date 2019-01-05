@@ -71,7 +71,9 @@ Scaffold EF Core models using Handlebars templates.
 
 You can register Handlebars helpers in the `ScaffoldingDesignTimeServices` where setup takes place.
 - Create a named tuple as shown with `myHelper` below.
+- The `context` parameter of the helper method provides model data injected by the Handlebars scaffolding extension.
 - Pass the tuple to the `AddHandlebarsHelpers` extension method.
+- To use Handlebars helper defined above, add the following to any of the .hbs files within the CodeTemplates folder: `{{my-helper}}`
 - You may register as many helpers as you wish.
 
 You can pass transform functions to `AddHandlebarsTransformers` in order to customize generation of entity type definitions, including class names, constructors and properties.
@@ -93,23 +95,29 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
         // Add optional Handlebars helpers
         services.AddHandlebarsHelpers(myHelper);
 
-        // Add optional Handlebars transformers
+        // Add Handlebars transformer for Country property
         services.AddHandlebarsTransformers(
-            entityNameTransformer: n => n + "Foo",
-            entityFileNameTransformer: n => n + "Foo",
-            constructorTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"),
-            propertyTransformer: e => new EntityPropertyInfo(e.PropertyType, e.PropertyName + "Foo"),
-            navPropertyTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"));
+            propertyTransformer: e =>
+                e.PropertyName == "Country"
+                    ? new EntityPropertyInfo("Country", e.PropertyName)
+                    : new EntityPropertyInfo(e.PropertyType, e.PropertyName));
+
+        // Add optional Handlebars transformers
+        //services.AddHandlebarsTransformers(
+        //    entityNameTransformer: n => n + "Foo",
+        //    entityFileNameTransformer: n => n + "Foo",
+        //    constructorTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"),
+        //    propertyTransformer: e => new EntityPropertyInfo(e.PropertyType, e.PropertyName + "Foo"),
+        //    navPropertyTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"));
     }
 
     // Sample Handlebars helper
-    void MyHbsHelper(TextWriter writer, object context, object[] parameters)
+    void MyHbsHelper(TextWriter writer, Dictionary<string, object> context, object[] parameters)
     {
         writer.Write("// My Handlebars Helper");
     }
 }
 ```
-- To use Handlebars helper defined above, add the following to any of the .hbs files within the CodeTemplates folder: `{{my-helper}}`
 
 ## Extending the OnModelCreating Method
 

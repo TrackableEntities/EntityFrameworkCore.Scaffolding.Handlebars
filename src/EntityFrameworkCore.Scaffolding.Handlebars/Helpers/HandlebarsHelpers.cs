@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars.Helpers
         /// Get the spaces Handlebars helper.
         /// </summary>
         /// <returns>Spaces Handlebars helper.</returns>
-        public static Action<TextWriter, object, object[]> SpacesHelper
+        public static Action<TextWriter, dynamic, object[]> SpacesHelper
             => (writer, context, parameters) =>
             {
                 var spaces = string.Empty;

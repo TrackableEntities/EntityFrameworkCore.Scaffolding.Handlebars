@@ -13,14 +13,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Handlebars helpers.
         /// </summary>
-        public Dictionary<string, Action<TextWriter, object, object[]>> Helpers { get; }
+        public Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>> Helpers { get; }
 
         /// <summary>
         /// Constructor for the Handlebars helper service.
         /// </summary>
         /// <param name="helpers">Dictionary of Handlebars helpers.</param>
         public HbsHelperService(
-            Dictionary<string, Action<TextWriter, object, object[]>> helpers)
+            Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>> helpers)
         {
             Helpers = helpers;
         }

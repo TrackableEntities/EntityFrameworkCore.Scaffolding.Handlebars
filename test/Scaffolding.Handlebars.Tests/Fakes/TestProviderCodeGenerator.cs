@@ -15,7 +15,9 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         {
         }
 
+#pragma warning disable 672
         public override MethodCallCodeFragment GenerateUseProvider(string connectionString)
+#pragma warning restore 672
             => new MethodCallCodeFragment("UseTestProvider", connectionString);
     }
 }

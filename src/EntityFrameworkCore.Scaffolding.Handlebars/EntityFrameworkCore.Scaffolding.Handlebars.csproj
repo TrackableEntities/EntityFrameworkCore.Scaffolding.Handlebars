@@ -8,7 +8,7 @@
     <Company>Tony Sneed</Company>
     <Title>Entity Framework Core Scaffolding with Handlebars</Title>
     <Description>Allows customization of classes reverse engineered from an existing database using the Entity Framework Core toolchain with Handlebars templates.</Description>
-    <PackageLicenseUrl>https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars</PackageProjectUrl>
     <PackageIconUrl>https://user-images.githubusercontent.com/2836367/31976914-e533eec4-b8ff-11e7-95ce-394df5cbe72b.png</PackageIconUrl>
     <PackageTags>scaffolding reverse-engineer entity-framework-core handlebars</PackageTags>
@@ -27,10 +27,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\EntityFrameworkCore.Scaffolding.Handlebars.xml</DocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="CodeTemplates\CSharpEntityType\Partials\Constructor - Copy.hbs" />
-  </ItemGroup>
 
   <ItemGroup>
     <!-- pack  tempate files -->
@@ -54,10 +50,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="LICENSE" Pack="true" PackagePath=""/>
+  </ItemGroup>
+  
+  <ItemGroup>
     <None Update="CodeTemplates\CSharpDbContext\DbContext.hbs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="CodeTemplates\CSharpDbContext\Partials\DbImports.hbs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\CSharpDbContext\Partials\DbConstructor.hbs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="CodeTemplates\CSharpDbContext\Partials\DbSets.hbs">

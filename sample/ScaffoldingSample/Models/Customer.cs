@@ -14,7 +14,7 @@ namespace ScaffoldingSample.Models
         public string CompanyName { get; set; }
         public string ContactName { get; set; }
         public string City { get; set; }
-        public string Country { get; set; }
+        public Country Country { get; set; }
 
         public CustomerSetting CustomerSetting { get; set; }
         public ICollection<Order> Order { get; set; }

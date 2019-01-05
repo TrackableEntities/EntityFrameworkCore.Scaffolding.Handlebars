@@ -67,7 +67,7 @@ Scaffold EF Core models using Handlebars templates.
     specific interfaces.
     - When you run the _dotnet-ef-dbcontext-scaffold_ command again, you will see your updated reflected in the generated classes.
 
-## Handlebars Helpers
+## Handlebars Helpers and Transformers
 
 You can register Handlebars helpers in the `ScaffoldingDesignTimeServices` where setup takes place.
 - Create a named tuple as shown with `myHelper` below.
@@ -110,3 +110,30 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
 }
 ```
 - To use Handlebars helper defined above, add the following to any of the .hbs files within the CodeTemplates folder: `{{my-helper}}`
+
+## Extending the OnModelCreating Method
+
+There are times when you might like to modify generated code, for example, by adding a `HasConversion` method to an entity property in the `OnModelCreating` method of the generated class that extends `DbContext`. However, doing so may prove futile because added code would be overwritten the next time you run the `dotnet ef dbcontext scaffold` command.
+- Rather than modifying generated code, a better idea would be to extend it by using _partial classes and methods_. To enable this scenario, the generated `DbContext` class is already defined using the `partial` keyword, and it contains a partial `OnModelCreatingExt` method that is invoked at the end of the `OnModelCreating` method.
+- To implement the partial method, simply add a new class to your project with the same name as the generated `DbContext` class, and define it as `partial`. Then add a `OnModelCreatingExt` method with the same signature as the partial method defined in the generated `DbContext` class.
+
+```csharp
+// Place in separate class file (NorthwindSlimContextExt.cs)
+public partial class NorthwindSlimContext
+{
+    partial void OnModelCreatingExt(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Employee>()
+            .Property(e => e.Country)
+            .HasConversion(
+                v => v.ToString(),
+                v => (Country)Enum.Parse(typeof(Country), v));
+
+        modelBuilder.Entity<Customer>()
+            .Property(e => e.Country)
+            .HasConversion(
+                v => v.ToString(),
+                v => (Country)Enum.Parse(typeof(Country), v));
+    }
+}
+```

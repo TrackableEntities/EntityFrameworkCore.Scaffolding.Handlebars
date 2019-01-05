@@ -336,9 +336,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     {
                         GenerateSequence(sequence, sb);
                     }
+
+                    sb.AppendLine();
+                    sb.AppendLine("OnModelCreatingExt(modelBuilder);");
                 }
 
-                sb.Append("}");
+                sb.AppendLine("}");
+                sb.AppendLine();
+                sb.Append("partial void OnModelCreatingExt(ModelBuilder modelBuilder);");
 
                 var onModelCreating = sb.ToString();
                 TemplateData.Add("on-model-creating", onModelCreating);

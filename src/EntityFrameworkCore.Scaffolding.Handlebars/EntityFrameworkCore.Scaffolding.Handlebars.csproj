@@ -29,11 +29,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="CodeTemplates\CSharpEntityType\Partials\Constructor - Copy.hbs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- pack  tempate files -->
     <Content Include="CodeTemplates\CSharpDbContext\DbContext.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\" />
     <Content Include="CodeTemplates\CSharpDbContext\Partials\DbImports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\Partials\" />
     <Content Include="CodeTemplates\CSharpDbContext\Partials\DbSets.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\Partials\" />
     <Content Include="CodeTemplates\CSharpEntityType\Class.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\" />
+    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbConstructor.hbs">
+      <PackagePath>lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\</PackagePath>
+    </Content>
     <Content Include="CodeTemplates\CSharpEntityType\Partials\Constructor.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
     <Content Include="CodeTemplates\CSharpEntityType\Partials\Imports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
     <Content Include="CodeTemplates\CSharpEntityType\Partials\Properties.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />

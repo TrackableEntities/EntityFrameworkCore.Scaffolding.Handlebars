@@ -4,13 +4,15 @@ namespace {{namespace}}
 { // Comment
     public partial class {{class}} : DbContext
     {
-{{> dbsets}}
+{{{> dbsets}}}
 {{#if entity-type-errors}}
 {{#each entity-type-errors}}
 {{spaces 8}}{{{entity-type-error}}}
 {{/each}}
 
 {{/if}}
+
+{{{> dbconstructor}}}
 
 {{{on-model-creating}}}
     }

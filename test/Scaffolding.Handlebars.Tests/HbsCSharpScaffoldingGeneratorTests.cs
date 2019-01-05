@@ -22,6 +22,7 @@ namespace Scaffolding.Handlebars.Tests
 
         private InputFile ContextClassTemplate { get; }
         private InputFile ContextImportsTemplate { get; }
+        private InputFile ContextCtorTemplate { get; }
         private InputFile ContextDbSetsTemplate { get; }
         private InputFile EntityClassTemplate { get; }
         private InputFile EntityImportsTemplate { get; }
@@ -60,6 +61,12 @@ namespace Scaffolding.Handlebars.Tests
                 Directory = contextPartialsVirtualPath,
                 File = Constants.Templates.ContextImportsFile,
                 Contents = File.ReadAllText(Path.Combine(contextPartialTemplatesPath, Constants.Templates.ContextImportsFile))
+            };
+            ContextCtorTemplate = new InputFile
+            {
+                Directory = contextPartialsVirtualPath,
+                File = Constants.Templates.ContextCtorFile,
+                Contents = File.ReadAllText(Path.Combine(contextPartialTemplatesPath, Constants.Templates.ContextCtorFile))
             };
             ContextDbSetsTemplate = new InputFile
             {
@@ -313,7 +320,7 @@ namespace Scaffolding.Handlebars.Tests
         private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options)
         {
             var fileService = new InMemoryTemplateFileService();
-            fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate, ContextDbSetsTemplate,
+            fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate, ContextCtorTemplate, ContextDbSetsTemplate,
                 EntityClassTemplate, EntityImportsTemplate, EntityCtorTemplate, EntityPropertiesTemplate);
 
             var services = new ServiceCollection()

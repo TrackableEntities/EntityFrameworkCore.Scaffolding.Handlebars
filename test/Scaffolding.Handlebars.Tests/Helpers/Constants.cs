@@ -29,6 +29,7 @@
             public const string EntityPropertiesFile = "Properties.hbs";
             public const string ContextClassFile = "DbContext.hbs";
             public const string ContextImportsFile = "DbImports.hbs";
+            public const string ContextCtorFile = "DbConstructor.hbs";
             public const string ContextDbSetsFile = "DbSets.hbs";
         }
 

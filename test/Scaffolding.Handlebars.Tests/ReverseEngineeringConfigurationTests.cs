@@ -44,7 +44,7 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>()
                 .AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>()
                 .AddSingleton<IHbsHelperService>(provider => new HbsHelperService(
-                    new Dictionary<string, Action<TextWriter, object, object[]>>
+                    new Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>>
                     {
                         {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
                     }))

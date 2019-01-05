@@ -54,7 +54,7 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
     }
 
     // Sample Handlebars helper
-    void MyHbsHelper(TextWriter writer, object context, object[] parameters)
+    void MyHbsHelper(TextWriter writer, Dictionary<string, object> context, object[] parameters)
     {
         writer.Write("// My Handlebars Helper");
     }

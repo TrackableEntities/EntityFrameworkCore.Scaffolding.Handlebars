@@ -72,11 +72,11 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="handlebarsHelpers">Handlebars helpers.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsHelpers(this IServiceCollection services,
-            params (string helperName, Action<TextWriter, object, object[]> helperFunction)[] handlebarsHelpers)
+            params (string helperName, Action<TextWriter, Dictionary<string, object>, object[]> helperFunction)[] handlebarsHelpers)
         {
             services.AddSingleton<IHbsHelperService>(provider =>
             {
-                var helpers = new Dictionary<string, Action<TextWriter, object, object[]>>
+                var helpers = new Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>>
                 {
                     {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
                 };

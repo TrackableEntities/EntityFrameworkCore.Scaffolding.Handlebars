@@ -351,7 +351,7 @@ namespace Scaffolding.Handlebars.Tests
                         : new NullCSharpEntityTypeGenerator();
                 })
                 .AddSingleton<IHbsHelperService>(provider =>
-                new HbsHelperService(new Dictionary<string, Action<TextWriter, object, object[]>>
+                new HbsHelperService(new Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>>
                 {
                     {EntityFrameworkCore.Scaffolding.Handlebars.Helpers.Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
                 }))

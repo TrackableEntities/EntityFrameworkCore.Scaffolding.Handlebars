@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Handlebars helpers.
         /// </summary>
-        Dictionary<string, Action<TextWriter, object, object[]>> Helpers { get; }
+        Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>> Helpers { get; }
 
         /// <summary>
         /// Register Handlebars helpers.

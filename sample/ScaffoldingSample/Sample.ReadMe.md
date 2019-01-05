@@ -97,8 +97,9 @@ public partial class NorthwindSlimContext
 
 ## Usage
 
-- Open a command prompt at the project root and execute:
+- Open a command prompt at the **ScaffoldingSample** project root and execute:
 
 ```
 dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -o Models -c NorthwindSlimContext -f --context-dir Contexts
 ```
+- Set the solution startup project to the **ScaffoldingSample.Api** project and press Ctrl+F5 to start the project without debugging. You should see data displayed from the Employee table.

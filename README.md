@@ -28,6 +28,7 @@ Scaffold EF Core models using Handlebars templates.
 2. Add EF Core SQL Server and Tools NuGet packages.  
     - Open the Package Manager Console, select the default project and enter:
         + `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
+        + `Install-Package Microsoft.EntityFrameworkCore.Design`
     - If needed update EF Core to version 2.2.
 
 3. Add the **EntityFrameworkCore.Scaffolding.Handlebars** NuGet package:

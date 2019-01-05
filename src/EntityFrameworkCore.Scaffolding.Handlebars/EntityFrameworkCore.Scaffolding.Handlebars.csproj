@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>1.7.0</PackageVersion>
+    <PackageVersion>1.7.1</PackageVersion>
     <Authors>Tony Sneed</Authors>
     <Company>Tony Sneed</Company>
     <Title>Entity Framework Core Scaffolding with Handlebars</Title>
@@ -12,12 +12,12 @@
     <PackageProjectUrl>https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars</PackageProjectUrl>
     <PackageIconUrl>https://user-images.githubusercontent.com/2836367/31976914-e533eec4-b8ff-11e7-95ce-394df5cbe72b.png</PackageIconUrl>
     <PackageTags>scaffolding reverse-engineer entity-framework-core handlebars</PackageTags>
-    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v1.6.0</PackageReleaseNotes>
+    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v1.7.1</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
     <IncludeSource>true</IncludeSource>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
-    <Version>1.7.0</Version>
+    <Version>1.7.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -36,11 +36,9 @@
     <!-- pack  tempate files -->
     <Content Include="CodeTemplates\CSharpDbContext\DbContext.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\" />
     <Content Include="CodeTemplates\CSharpDbContext\Partials\DbImports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\Partials\" />
+    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbConstructor.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\Partials\" />
     <Content Include="CodeTemplates\CSharpDbContext\Partials\DbSets.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\Partials\" />
     <Content Include="CodeTemplates\CSharpEntityType\Class.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\" />
-    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbConstructor.hbs">
-      <PackagePath>lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\</PackagePath>
-    </Content>
     <Content Include="CodeTemplates\CSharpEntityType\Partials\Constructor.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
     <Content Include="CodeTemplates\CSharpEntityType\Partials\Imports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
     <Content Include="CodeTemplates\CSharpEntityType\Partials\Properties.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />

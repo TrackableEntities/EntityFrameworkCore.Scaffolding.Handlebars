@@ -13,6 +13,6 @@ namespace ScaffoldingSample.Models
         public string TerritoryId { get; set; }
         public string TerritoryDescription { get; set; }
 
-        public ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
+        public virtual ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
     }
 }

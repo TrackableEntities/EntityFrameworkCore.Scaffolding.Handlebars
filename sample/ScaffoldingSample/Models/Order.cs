@@ -17,7 +17,7 @@ namespace ScaffoldingSample.Models
         public int? ShipVia { get; set; }
         public decimal? Freight { get; set; }
 
-        public Customer Customer { get; set; }
-        public ICollection<OrderDetail> OrderDetail { get; set; }
+        public virtual Customer Customer { get; set; }
+        public virtual ICollection<OrderDetail> OrderDetail { get; set; }
     }
 }

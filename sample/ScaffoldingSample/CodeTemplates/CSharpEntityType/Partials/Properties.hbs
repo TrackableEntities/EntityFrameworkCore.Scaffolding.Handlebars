@@ -11,9 +11,9 @@
 {{spaces 8}}{{{nav-property-annotation}}}
 {{/each}}
 {{#if nav-property-collection}}
-{{spaces 8}}public ICollection<{{nav-property-type}}> {{nav-property-name}} { get; set; }
+{{spaces 8}}public virtual ICollection<{{nav-property-type}}> {{nav-property-name}} { get; set; }
 {{else}}
-{{spaces 8}}public {{nav-property-type}} {{nav-property-name}} { get; set; }
+{{spaces 8}}public virtual {{nav-property-type}} {{nav-property-name}} { get; set; }
 {{/if}}
 {{/each}}
 {{/if}}

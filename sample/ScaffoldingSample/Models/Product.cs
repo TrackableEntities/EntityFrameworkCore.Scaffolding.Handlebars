@@ -17,7 +17,7 @@ namespace ScaffoldingSample.Models
         public bool Discontinued { get; set; }
         public byte[] RowVersion { get; set; }
 
-        public Category Category { get; set; }
-        public ICollection<OrderDetail> OrderDetail { get; set; }
+        public virtual Category Category { get; set; }
+        public virtual ICollection<OrderDetail> OrderDetail { get; set; }
     }
 }

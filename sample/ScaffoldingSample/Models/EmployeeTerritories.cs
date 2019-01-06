@@ -8,7 +8,7 @@ namespace ScaffoldingSample.Models
         public int EmployeeId { get; set; }
         public string TerritoryId { get; set; }
 
-        public Employee Employee { get; set; }
-        public Territory Territory { get; set; }
+        public virtual Employee Employee { get; set; }
+        public virtual Territory Territory { get; set; }
     }
 }

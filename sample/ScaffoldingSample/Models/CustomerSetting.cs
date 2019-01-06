@@ -8,6 +8,6 @@ namespace ScaffoldingSample.Models
         public string CustomerId { get; set; }
         public string Setting { get; set; }
 
-        public Customer Customer { get; set; }
+        public virtual Customer Customer { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace ScaffoldingSample.Models
         public string City { get; set; }
         public Country Country { get; set; }
 
-        public CustomerSetting CustomerSetting { get; set; }
-        public ICollection<Order> Order { get; set; }
+        public virtual CustomerSetting CustomerSetting { get; set; }
+        public virtual ICollection<Order> Order { get; set; }
     }
 }

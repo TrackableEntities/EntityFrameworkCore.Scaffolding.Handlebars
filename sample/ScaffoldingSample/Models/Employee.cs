@@ -18,6 +18,6 @@ namespace ScaffoldingSample.Models
         public string City { get; set; }
         public Country Country { get; set; }
 
-        public ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
+        public virtual ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
     }
 }

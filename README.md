@@ -88,7 +88,7 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
         var options = ReverseEngineerOptions.DbContextAndEntities;
 
         // Register Handlebars helper
-        var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, object, object[]>) MyHbsHelper);
+        var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, Dictionary<string, object>, object[]>) MyHbsHelper);
 
         // Add Handlebars scaffolding templates
         services.AddHandlebarsScaffolding(options);

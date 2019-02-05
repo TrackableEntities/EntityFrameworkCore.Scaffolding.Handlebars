@@ -5,10 +5,12 @@
 
 using System;
 using System.IO;
+using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -18,6 +20,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     public class HbsCSharpModelGenerator : ModelCodeGenerator
     {
         private const string FileExtension = ".cs";
+        private readonly IOptions<HandlebarsScaffoldingOptions> _options;
 
         /// <summary>
         /// Handlebars helper service.
@@ -59,14 +62,17 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="cSharpDbContextGenerator">DbContext generator.</param>
         /// <param name="cSharpEntityTypeGenerator">Entity type generator.</param>
+        /// <param name="options">Handlebar scaffolding options</param>
         public HbsCSharpModelGenerator(ModelCodeGeneratorDependencies dependencies,
             IHbsHelperService handlebarsHelperService,
             IDbContextTemplateService dbContextTemplateService,
             IEntityTypeTemplateService entityTypeTemplateService,
             IEntityTypeTransformationService entityTypeTransformationService,
             ICSharpDbContextGenerator cSharpDbContextGenerator,
-            ICSharpEntityTypeGenerator cSharpEntityTypeGenerator) : base(dependencies)
+            ICSharpEntityTypeGenerator cSharpEntityTypeGenerator,
+            IOptions<HandlebarsScaffoldingOptions> options) : base(dependencies)
         {
+            _options = options;
             HandlebarsHelperService = handlebarsHelperService ?? throw new ArgumentNullException(nameof(handlebarsHelperService));
             DbContextTemplateService = dbContextTemplateService ?? throw new ArgumentNullException(nameof(dbContextTemplateService));
             EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
@@ -117,7 +123,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             if (!(CSharpEntityTypeGenerator is NullCSharpEntityTypeGenerator))
             {
-                foreach (var entityType in model.GetEntityTypes())
+                foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
                 {
                     generatedCode = CSharpEntityTypeGenerator.WriteCode(entityType, @namespace, options.UseDataAnnotations);
 

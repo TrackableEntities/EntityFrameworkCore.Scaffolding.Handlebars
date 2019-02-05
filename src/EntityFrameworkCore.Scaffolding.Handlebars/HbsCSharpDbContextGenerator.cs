@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
+using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -27,6 +28,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     {
         private const string EntityLambdaIdentifier = "entity";
         private const string Language = "CSharp";
+        private readonly IOptions<HandlebarsScaffoldingOptions> _options;
 
         /// <summary>
         /// CSharp helper.
@@ -79,6 +81,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="cSharpHelper">CSharp helper.</param>
+        /// <param name="options">Handlebars scaffolding options.</param>
         public HbsCSharpDbContextGenerator(
 #pragma warning disable CS0618 // Type or member is obsolete
             IEnumerable<IScaffoldingProviderCodeGenerator> legacyProviderCodeGenerators,
@@ -87,13 +90,15 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             IAnnotationCodeGenerator annotationCodeGenerator,
             IDbContextTemplateService dbContextTemplateService,
             IEntityTypeTransformationService entityTypeTransformationService,
-            ICSharpHelper cSharpHelper)
+            ICSharpHelper cSharpHelper,
+            IOptions<HandlebarsScaffoldingOptions> options)
         {
             if (!legacyProviderCodeGenerators.Any() && !providerCodeGenerators.Any())
             {
                 throw new ArgumentException(AbstractionsStrings.CollectionArgumentIsEmpty(nameof(providerCodeGenerators)));
             }
 
+            _options = options;
             LegacyProviderCodeGenerator = legacyProviderCodeGenerators.LastOrDefault();
             ProviderConfigurationCodeGenerator = providerCodeGenerators.LastOrDefault();
             CodeGenerator = annotationCodeGenerator ?? throw new ArgumentNullException(nameof(annotationCodeGenerator));
@@ -123,6 +128,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (model == null) throw new ArgumentNullException(nameof(model));
 
             TemplateData = new Dictionary<string, object>();
+
+            // Add any user specified template data now so it can be overriden.
+            if (_options.Value.TemplateData != null)
+            {
+                foreach (KeyValuePair<string, object> entry in _options.Value.TemplateData)
+                {
+                    TemplateData.Add(entry.Key, entry.Value);
+                }
+            }
+
             TemplateData.Add("namespace", @namespace);
 
             GenerateClass(model, contextName, connectionString, useDataAnnotations, suppressConnectionStringWarning);
@@ -162,7 +177,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             var dbSets = new List<Dictionary<string, object>>();
 
-            foreach (var entityType in model.GetEntityTypes())
+            foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
             {
                 var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
                 dbSets.Add(new Dictionary<string, object>
@@ -320,7 +335,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 using (sb.Indent())
                 {
 
-                    foreach (var entityType in model.GetEntityTypes())
+                    foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
                     {
                         EntityTypeBuilderInitialized = false;
 

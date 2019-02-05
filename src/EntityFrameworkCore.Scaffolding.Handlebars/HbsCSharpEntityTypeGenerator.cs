@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -24,6 +25,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// </summary>
     public class HbsCSharpEntityTypeGenerator : ICSharpEntityTypeGenerator
     {
+        private readonly IOptions<HandlebarsScaffoldingOptions> _options;
+
         /// <summary>
         /// CSharp helper.
         /// </summary>
@@ -65,11 +68,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="cSharpHelper">CSharp helper.</param>
+        /// <param name="options">Handlebar scaffolding options.</param>
         public HbsCSharpEntityTypeGenerator(
             IEntityTypeTemplateService entityTypeTemplateService,
             IEntityTypeTransformationService entityTypeTransformationService,
-            ICSharpHelper cSharpHelper)
+            ICSharpHelper cSharpHelper,
+            IOptions<HandlebarsScaffoldingOptions> options)
         {
+            _options = options;
             CSharpHelper = cSharpHelper ?? throw new ArgumentNullException(nameof(cSharpHelper));
             EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
             EntityTypeTransformationService = entityTypeTransformationService ?? throw new ArgumentNullException(nameof(entityTypeTransformationService));
@@ -89,6 +95,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             UseDataAnnotations = useDataAnnotations;
             TemplateData = new Dictionary<string, object>();
+
+            // Add any user specified template data now so it can be overriden.
+            if (_options.Value.TemplateData != null)
+            {
+                foreach (KeyValuePair<string, object> entry in _options.Value.TemplateData)
+                {
+                    TemplateData.Add(entry.Key, entry.Value);
+                }
+            }
+
             TemplateData.Add("use-data-annotations", UseDataAnnotations);
 
             GenerateImports(entityType);

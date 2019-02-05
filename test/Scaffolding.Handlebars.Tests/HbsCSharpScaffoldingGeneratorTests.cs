@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.SqlServer.Design.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Scaffolding.Handlebars.Tests.Helpers;
 using Xunit;
 using Constants = Scaffolding.Handlebars.Tests.Helpers.Constants;
@@ -317,7 +318,7 @@ namespace Scaffolding.Handlebars.Tests
             }
         }
 
-        private IReverseEngineerScaffolder CreateScaffolder(ScaffoldingGeneration options)
+        private IReverseEngineerScaffolder CreateScaffolder(ScaffoldingGeneration scaffoldingGeneration)
         {
             var fileService = new InMemoryTemplateFileService();
             fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate, ContextCtorTemplate, ContextDbSetsTemplate,
@@ -340,9 +341,10 @@ namespace Scaffolding.Handlebars.Tests
                         provider.GetRequiredService<IAnnotationCodeGenerator>(),
                         provider.GetRequiredService<IDbContextTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
-                        provider.GetRequiredService<ICSharpHelper>());
-                    return options == ScaffoldingGeneration.DbContextOnly ||
-                           options == ScaffoldingGeneration.DbContextAndEntities
+                        provider.GetRequiredService<ICSharpHelper>(),
+                        provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());
+                    return scaffoldingGeneration == ScaffoldingGeneration.DbContextOnly ||
+                           scaffoldingGeneration == ScaffoldingGeneration.DbContextAndEntities
                         ? contextGenerator
                         : new NullCSharpDbContextGenerator();
                 })
@@ -351,9 +353,10 @@ namespace Scaffolding.Handlebars.Tests
                     ICSharpEntityTypeGenerator entityGenerator = new HbsCSharpEntityTypeGenerator(
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
-                        provider.GetRequiredService<ICSharpHelper>());
-                    return options == ScaffoldingGeneration.EntitiesOnly ||
-                           options == ScaffoldingGeneration.DbContextAndEntities
+                        provider.GetRequiredService<ICSharpHelper>(),
+                        provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());
+                    return scaffoldingGeneration == ScaffoldingGeneration.EntitiesOnly ||
+                           scaffoldingGeneration == ScaffoldingGeneration.DbContextAndEntities
                         ? entityGenerator
                         : new NullCSharpEntityTypeGenerator();
                 })

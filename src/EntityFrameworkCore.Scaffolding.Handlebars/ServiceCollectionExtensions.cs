@@ -36,6 +36,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         {
             var options = new HandlebarsScaffoldingOptions();
             configureOptions(options);
+            services.Configure(configureOptions);
 
             Type dbContextGeneratorImpl;
             var dbContextGeneratorType = typeof(ICSharpDbContextGenerator);
@@ -55,7 +56,16 @@ namespace Microsoft.EntityFrameworkCore.Design
                 entityGeneratorImpl = typeof(NullCSharpEntityTypeGenerator);
             services.AddSingleton(entityGeneratorType, entityGeneratorImpl);
 
-            services.AddSingleton<ITemplateFileService, FileSystemTemplateFileService>();
+            if (options.EmbeddedTemplatesAssembly != null)
+            {
+                services.AddSingleton<ITemplateFileService>(new EmbeddedResourceTemplateFileService(
+                    options.EmbeddedTemplatesAssembly, options.EmbeddedTemplatesNamespace));
+            }
+            else
+            {
+                services.AddSingleton<ITemplateFileService, FileSystemTemplateFileService>();
+            }
+
             services.AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>();
             services.AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>();
             services.AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();

@@ -19,14 +19,12 @@ namespace ScaffoldingSample
     {
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
-            // Generate both context and entities
-            var options = ReverseEngineerOptions.DbContextAndEntities;
-
             // Register Handlebars helper
             var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, Dictionary<string, object>, object[]>) MyHbsHelper);
 
             // Add Handlebars scaffolding templates
-            services.AddHandlebarsScaffolding(options);
+            // Generate both context and entities
+            services.AddHandlebarsScaffolding(options => options.ScaffoldingGeneration = ScaffoldingGeneration.DbContextAndEntities);
 
             // Add optional Handlebars helpers
             services.AddHandlebarsHelpers(myHelper);

@@ -4,7 +4,7 @@ namespace Microsoft.EntityFrameworkCore.Design
     /// <summary>
     /// Options for reverse engineering classes from an existing database.
     /// </summary>
-    public enum ReverseEngineerOptions
+    public enum ScaffoldingGeneration
     {
         /// <summary>
         /// Generate DbContext class only.

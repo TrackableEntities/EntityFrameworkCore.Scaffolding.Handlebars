@@ -40,6 +40,7 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<ICSharpEntityTypeGenerator, HbsCSharpEntityTypeGenerator>()
                 .AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>()
                 .AddSingleton<ITemplateFileService, InMemoryTemplateFileService>()
+                .AddSingleton<ITemplateLanguageService, CSharpTemplateLanguageService>()
                 .AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>()
                 .AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>()
                 .AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>()

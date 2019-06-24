@@ -20,7 +20,7 @@ namespace FakeNamespace
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
 
-        public ICollection<Product> Product { get; set; }
+        public virtual ICollection<Product> Product { get; set; }
     }
 }
 ";
@@ -40,7 +40,7 @@ namespace FakeNamespace
         public byte[] RowVersion { get; set; }
         public int? CategoryId { get; set; }
 
-        public Category Category { get; set; }
+        public virtual Category Category { get; set; }
     }
 }
 ";
@@ -69,7 +69,7 @@ namespace FakeNamespace
         public string CategoryName { get; set; }
 
         [InverseProperty(""Category"")]
-        public ICollection<Product> Product { get; set; }
+        public virtual ICollection<Product> Product { get; set; }
     }
 }
 ";
@@ -96,7 +96,7 @@ namespace FakeNamespace
 
         [ForeignKey(""CategoryId"")]
         [InverseProperty(""Product"")]
-        public Category Category { get; set; }
+        public virtual Category Category { get; set; }
     }
 }
 ";

@@ -20,8 +20,6 @@
             public const string ProjectFolder = "EntityFrameworkCore.Scaffolding.Handlebars";
             public const string CodeTemplatesFolder = "CodeTemplates";
             public const string CodeTemplatesAltFolder = "CodeTemplatesAlt";
-            public const string EntityTypeFolder = "CSharpEntityType";
-            public const string ContextFolder = "CSharpDbContext";
             public const string PartialsFolder = "Partials";
             public const string EntityClassFile = "Class.hbs";
             public const string EntityImportsFile = "Imports.hbs";
@@ -31,13 +29,32 @@
             public const string ContextImportsFile = "DbImports.hbs";
             public const string ContextCtorFile = "DbConstructor.hbs";
             public const string ContextDbSetsFile = "DbSets.hbs";
+            public static class CSharpTemplateDirectories
+            {
+                public const string EntityTypeFolder = "CSharpEntityType";
+                public const string ContextFolder = "CSharpDbContext";
+            }
+            public static class TypeScriptTemplateDirectories
+            {
+                public const string EntityTypeFolder = "TypeScriptEntityType";
+                public const string ContextFolder = "TypeScriptDbContext";
+            }
         }
 
         public static class Files
         {
-            public const string DbContextFile = Parameters.ContextName + ".cs";
-            public const string CategoryFile = "Category.cs";
-            public const string ProductFile = "Product.cs";
+            public static class CSharpFiles
+            {
+                public const string DbContextFile = Parameters.ContextName + ".cs";
+                public const string CategoryFile = "Category.cs";
+                public const string ProductFile = "Product.cs";
+            }
+            public static class TypeScriptFiles
+            {
+                public const string DbContextFile = Parameters.ContextName + ".cs";
+                public const string CategoryFile = "Category.ts";
+                public const string ProductFile = "Product.ts";
+            }
         }
     }
 }

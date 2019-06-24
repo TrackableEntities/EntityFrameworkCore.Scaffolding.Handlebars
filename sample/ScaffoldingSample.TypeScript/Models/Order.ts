@@ -1,17 +1,13 @@
 ﻿import { Customer } from './Customer';
 import { OrderDetail } from './OrderDetail';
 
-export class Order {
-
-    OrderId: number;
-    CustomerId: string;
-    OrderDate: Date;
-    ShippedDate: Date;
-    ShipVia: number;
-    Freight: number;
-    Customer: Customer;
-    OrderDetail: OrderDetail[];
-
-    constructor() {
-    }
+export interface Order {
+    orderId: number;
+    customerId: string;
+    orderDate: Date;
+    shippedDate: Date;
+    shipVia: number;
+    freight: number;
+    customer: Customer;
+    orderDetail: OrderDetail[];
 }

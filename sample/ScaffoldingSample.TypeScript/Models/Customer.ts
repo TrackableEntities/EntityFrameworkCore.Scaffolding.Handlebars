@@ -1,16 +1,12 @@
 ﻿import { CustomerSetting } from './CustomerSetting';
 import { Order } from './Order';
 
-export class Customer {
-
-    CustomerId: string;
-    CompanyName: string;
-    ContactName: string;
-    City: string;
-    Country: string;
-    CustomerSetting: CustomerSetting;
-    Order: Order[];
-
-    constructor() {
-    }
+export interface Customer {
+    customerId: string;
+    companyName: string;
+    contactName: string;
+    city: string;
+    country: string;
+    customerSetting: CustomerSetting;
+    order: Order[];
 }

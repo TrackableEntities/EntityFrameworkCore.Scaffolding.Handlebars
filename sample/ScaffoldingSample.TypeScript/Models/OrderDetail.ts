@@ -1,17 +1,13 @@
 ﻿import { Order } from './Order';
 import { Product } from './Product';
 
-export class OrderDetail {
-
-    OrderDetailId: number;
-    OrderId: number;
-    ProductId: number;
-    UnitPrice: number;
-    Quantity: number;
-    Discount: number;
-    Order: Order;
-    Product: Product;
-
-    constructor() {
-    }
+export interface OrderDetail {
+    orderDetailId: number;
+    orderId: number;
+    productId: number;
+    unitPrice: number;
+    quantity: number;
+    discount: number;
+    order: Order;
+    product: Product;
 }

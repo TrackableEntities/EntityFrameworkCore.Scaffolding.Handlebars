@@ -1,17 +1,13 @@
 ﻿import { Category } from './Category';
 import { OrderDetail } from './OrderDetail';
 
-export class Product {
-
-    ProductId: number;
-    ProductName: string;
-    CategoryId: number;
-    UnitPrice: number;
-    Discontinued: boolean;
-    RowVersion: any;
-    Category: Category;
-    OrderDetail: OrderDetail[];
-
-    constructor() {
-    }
+export interface Product {
+    productId: number;
+    productName: string;
+    categoryId: number;
+    unitPrice: number;
+    discontinued: boolean;
+    rowVersion: any;
+    category: Category;
+    orderDetail: OrderDetail[];
 }

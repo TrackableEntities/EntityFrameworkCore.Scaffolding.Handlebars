@@ -1,16 +1,12 @@
 ﻿import { EmployeeTerritories } from './EmployeeTerritories';
 
-export class Employee {
-
-    EmployeeId: number;
-    LastName: string;
-    FirstName: string;
-    BirthDate: Date;
-    HireDate: Date;
-    City: string;
-    Country: string;
-    EmployeeTerritories: EmployeeTerritories[];
-
-    constructor() {
-    }
+export interface Employee {
+    employeeId: number;
+    lastName: string;
+    firstName: string;
+    birthDate: Date;
+    hireDate: Date;
+    city: string;
+    country: string;
+    employeeTerritories: EmployeeTerritories[];
 }

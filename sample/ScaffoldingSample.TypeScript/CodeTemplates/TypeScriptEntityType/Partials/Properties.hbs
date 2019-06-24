@@ -1,0 +1,12 @@
+﻿{{#each properties}}
+{{spaces 4}}{{property-name}}: {{property-type}};
+{{/each}}
+{{#if nav-properties}}
+{{#each nav-properties}}
+{{#if nav-property-collection}}
+{{spaces 4}}{{nav-property-name}}: {{nav-property-type}}[];
+{{else}}
+{{spaces 4}}{{nav-property-name}}: {{nav-property-type}};
+{{/if}}
+{{/each}}
+{{/if}}

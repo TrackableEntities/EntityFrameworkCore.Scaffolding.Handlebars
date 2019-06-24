@@ -30,7 +30,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// </summary>
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
         /// <param name="options">Options for reverse engineering classes from an existing database.</param>
-        /// <param name="language">Programming language.</param>
+        /// <param name="language">Language option.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsScaffolding(this IServiceCollection services,
             ReverseEngineerOptions options = ReverseEngineerOptions.DbContextAndEntities,
@@ -63,9 +63,13 @@ namespace Microsoft.EntityFrameworkCore.Design
             {
                 services.AddSingleton<ITypeScriptHelper, TypeScriptHelper>();
                 services.AddSingleton<IModelCodeGenerator, HbsTypeScriptModelGenerator>();
+                services.AddSingleton<ITemplateLanguageService, TypeScriptTemplateLanguageService>();
             }
             else
+            {
                 services.AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
+                services.AddSingleton<ITemplateLanguageService, CSharpTemplateLanguageService>();
+            }
 
             services.AddSingleton<ITemplateFileService, FileSystemTemplateFileService>();
             services.AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>();

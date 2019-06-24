@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Design;
 using System.Collections.Generic;
-using System.IO;
 using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -16,12 +15,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         protected readonly ITemplateFileService FileService;
 
         /// <summary>
+        /// Template language service.
+        /// </summary>
+        protected readonly ITemplateLanguageService LanguageService;
+
+        /// <summary>
         /// Constructor for the template service.
         /// </summary>
         /// <param name="fileService">Template file service.</param>
-        protected HbsTemplateService(ITemplateFileService fileService)
+        /// <param name="languageService">Template language service.</param>
+        protected HbsTemplateService(ITemplateFileService fileService,
+            ITemplateLanguageService languageService)
         {
             FileService = fileService;
+            LanguageService = languageService;
         }
 
         /// <summary>
@@ -39,7 +46,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Get partial templates.
         /// </summary>
+        /// <param name="language">Language option.</param>
         /// <returns>Partial templates.</returns>
-        protected abstract IDictionary<string, string> GetPartialTemplates();
+        protected abstract IDictionary<string, string> GetPartialTemplates(
+            LanguageOptions language = LanguageOptions.CSharp);
     }
 }

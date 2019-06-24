@@ -168,7 +168,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 properties.Add(new Dictionary<string, object>
                 {
                     { "property-type", TypeScriptHelper.TypeName(property.ClrType) },
-                    { "property-name", property.Name },
+                    { "property-name",  TypeScriptHelper.ToCamelCase(property.Name) },
                     { "property-annotations",  new List<Dictionary<string, object>>() },
                 });
             }
@@ -200,7 +200,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     {
                         { "nav-property-collection", navigation.IsCollection() },
                         { "nav-property-type", navigation.GetTargetType().Name },
-                        { "nav-property-name", navigation.Name },
+                        { "nav-property-name", TypeScriptHelper.ToCamelCase(navigation.Name) },
                         { "nav-property-annotations", new List<Dictionary<string, object>>() },
                     });
                 }

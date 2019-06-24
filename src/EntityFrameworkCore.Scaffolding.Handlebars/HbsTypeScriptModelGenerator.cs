@@ -111,7 +111,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 generatedCode = CSharpDbContextGenerator.WriteCode(model, @namespace, contextName, connectionString, options.UseDataAnnotations, options.SuppressConnectionStringWarning);
 
-                var dbContextFileName = contextName + FileExtension;
+                var dbContextFileName = contextName + ".cs";
                 resultingFiles.ContextFile = new ScaffoldedFile { Path = Path.Combine(contextDir, dbContextFileName), Code = generatedCode };
             }
 

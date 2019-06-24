@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
+using Microsoft.EntityFrameworkCore.Design;
 using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -10,6 +11,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// </summary>
     public class HbsDbContextTemplateService : HbsTemplateService, IDbContextTemplateService
     {
+        private Dictionary<string, TemplateFileInfo> DbContextTemplateFiles { get; }
+
         /// <summary>
         /// DbContext template.
         /// </summary>
@@ -19,8 +22,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Constructor for the DbContext template service.
         /// </summary>
         /// <param name="fileService">Template file service.</param>
-        public HbsDbContextTemplateService(ITemplateFileService fileService) : base(fileService)
+        /// <param name="languageService">Template language service.</param>
+        public HbsDbContextTemplateService(ITemplateFileService fileService,
+            ITemplateLanguageService languageService) : base(fileService, languageService)
         {
+            DbContextTemplateFiles = LanguageService.GetDbContextTemplateFileInfo();
         }
 
         /// <summary>
@@ -41,45 +47,51 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Compile the DbContext template.
         /// </summary>
+        /// <param name="language">Language option.</param>
         /// <returns>DbContext template.</returns>
-        protected virtual Func<object, string> CompileDbContextTemplate()
+        protected virtual Func<object, string> CompileDbContextTemplate(
+            LanguageOptions language = LanguageOptions.CSharp)
         {
-            var template = FileService.RetrieveTemplateFileContents(
-                Constants.DbContextDirectory,
-                Constants.DbContextTemplate + Constants.TemplateExtension);
-            var contextTemplate = HandlebarsLib.Compile(template);
+            DbContextTemplateFiles.TryGetValue(Constants.DbContextTemplate, out TemplateFileInfo contextFile);
+            var contextTemplateFile = FileService.RetrieveTemplateFileContents(
+                contextFile.RelativeDirectory, contextFile.FileName);
+            var contextTemplate = HandlebarsLib.Compile(contextTemplateFile);
             return contextTemplate;
         }
 
         /// <summary>
         /// Get DbContext partial templates.
         /// </summary>
+        /// <param name="language">Language option.</param>
         /// <returns>Partial templates.</returns>
-        protected override IDictionary<string, string> GetPartialTemplates()
+        protected override IDictionary<string, string> GetPartialTemplates(
+            LanguageOptions language = LanguageOptions.CSharp)
         {
-            var importTemplate = FileService.RetrieveTemplateFileContents(
-                Constants.DbContextPartialsDirectory,
-                Constants.DbContextImportTemplate + Constants.TemplateExtension);
-            var ctorTemplate = FileService.RetrieveTemplateFileContents(
-                Constants.DbContextPartialsDirectory,
-                Constants.DbContextCtorTemplate + Constants.TemplateExtension);
-            var propertyTemplate = FileService.RetrieveTemplateFileContents(
-                Constants.DbContextPartialsDirectory,
-                Constants.DbContextDbSetsTemplate + Constants.TemplateExtension);
+            DbContextTemplateFiles.TryGetValue(Constants.DbContextImportTemplate, out TemplateFileInfo importFile);
+            var importTemplateFile = FileService.RetrieveTemplateFileContents(
+                importFile.RelativeDirectory, importFile.FileName);
+
+            DbContextTemplateFiles.TryGetValue(Constants.DbContextCtorTemplate, out TemplateFileInfo ctorFile);
+            var ctorTemplateFile = FileService.RetrieveTemplateFileContents(
+                ctorFile.RelativeDirectory, ctorFile.FileName);
+
+            DbContextTemplateFiles.TryGetValue(Constants.DbContextDbSetsTemplate, out TemplateFileInfo propertyFile);
+            var propertyTemplateFile = FileService.RetrieveTemplateFileContents(
+                propertyFile.RelativeDirectory, propertyFile.FileName);
 
             var templates = new Dictionary<string, string>
             {
                 {
                     Constants.DbContextImportTemplate.ToLower(),
-                    importTemplate
+                    importTemplateFile
                 },
                 {
                     Constants.DbContextCtorTemplate.ToLower(),
-                    ctorTemplate
+                    ctorTemplateFile
                 },
                 {
                     Constants.DbContextDbSetsTemplate.ToLower(),
-                    propertyTemplate
+                    propertyTemplateFile
                 },
             };
             return templates;

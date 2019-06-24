@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -35,6 +36,25 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 || clrType == typeof(float) || clrType == typeof(float?))
                 result = "number";
             return result;
+        }
+
+        /// <summary>
+        /// Convert string to camel case.
+        /// </summary>
+        /// <param name="s">Input string.</param>
+        /// <returns>Input string in camel case.</returns>
+        public string ToCamelCase(string s)
+        {
+            if (s == null || s.Length < 2)
+                return s;
+            var chars = s.ToCharArray();
+            var sb = new StringBuilder();
+            sb.Append(chars[0].ToString().ToLower());
+            for (int i = 1; i < chars.Length; i++)
+            {
+                sb.Append(chars[i]);
+            }
+            return sb.ToString();
         }
     }
 }

@@ -2,23 +2,18 @@
 namespace Microsoft.EntityFrameworkCore.Design
 {
     /// <summary>
-    /// Options for reverse engineering classes from an existing database.
+    /// Language options for reverse engineering classes from an existing database.
     /// </summary>
-    public enum ReverseEngineerOptions
+    public enum LanguageOptions
     {
         /// <summary>
-        /// Generate DbContext class only.
+        /// C# language.
         /// </summary>
-        DbContextOnly,
+        CSharp,
 
         /// <summary>
-        /// Generate entity type classes only.
+        /// TypeScript language.
         /// </summary>
-        EntitiesOnly,
-
-        /// <summary>
-        /// Generate both DbContext and entity type classes.
-        /// </summary>
-        DbContextAndEntities
+        TypeScript
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CE438F3D-E03D-4DF5-A4A1-6FA57576F9A4}"
 EndProject
@@ -22,7 +22,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{B16E9B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScaffoldingSample", "sample\ScaffoldingSample\ScaffoldingSample.csproj", "{02EC28F3-AA15-4429-9D49-6CE1F2ACCEFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScaffoldingSample.Api", "sample\ScaffoldingSample.Api\ScaffoldingSample.Api.csproj", "{6141959E-72B2-4FA5-AE75-E0053BFE16D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScaffoldingSample.Api", "sample\ScaffoldingSample.Api\ScaffoldingSample.Api.csproj", "{6141959E-72B2-4FA5-AE75-E0053BFE16D1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScaffoldingSample.TypeScript", "sample\ScaffoldingSample.TypeScript\ScaffoldingSample.TypeScript.csproj", "{2713D6F6-6ADE-4E3F-8D07-30E19C14AD68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +48,10 @@ Global
 		{6141959E-72B2-4FA5-AE75-E0053BFE16D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6141959E-72B2-4FA5-AE75-E0053BFE16D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6141959E-72B2-4FA5-AE75-E0053BFE16D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2713D6F6-6ADE-4E3F-8D07-30E19C14AD68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2713D6F6-6ADE-4E3F-8D07-30E19C14AD68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2713D6F6-6ADE-4E3F-8D07-30E19C14AD68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2713D6F6-6ADE-4E3F-8D07-30E19C14AD68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{CF5E7978-FC4B-4620-8CDF-EA622B6159C0} = {0C310C69-DDCB-4A47-A286-601C74BE5D96}
 		{02EC28F3-AA15-4429-9D49-6CE1F2ACCEFA} = {B16E9B06-FE29-413E-B98F-6123DCB92394}
 		{6141959E-72B2-4FA5-AE75-E0053BFE16D1} = {B16E9B06-FE29-413E-B98F-6123DCB92394}
+		{2713D6F6-6ADE-4E3F-8D07-30E19C14AD68} = {B16E9B06-FE29-413E-B98F-6123DCB92394}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15011E43-4689-4DD6-A1F4-C388E5012B58}

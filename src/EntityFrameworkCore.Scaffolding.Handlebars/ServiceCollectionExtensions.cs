@@ -30,9 +30,11 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// </summary>
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
         /// <param name="options">Options for reverse engineering classes from an existing database.</param>
+        /// <param name="language">Language option.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsScaffolding(this IServiceCollection services,
-            ReverseEngineerOptions options = ReverseEngineerOptions.DbContextAndEntities)
+            ReverseEngineerOptions options = ReverseEngineerOptions.DbContextAndEntities,
+            LanguageOptions language = LanguageOptions.CSharp)
         {
             Type dbContextGeneratorImpl;
             var dbContextGeneratorType = typeof(ICSharpDbContextGenerator);
@@ -47,15 +49,31 @@ namespace Microsoft.EntityFrameworkCore.Design
             var entityGeneratorType = typeof(ICSharpEntityTypeGenerator);
             if (options == ReverseEngineerOptions.EntitiesOnly
                 || options == ReverseEngineerOptions.DbContextAndEntities)
-                entityGeneratorImpl = typeof(HbsCSharpEntityTypeGenerator);
+            {
+                if (language == LanguageOptions.TypeScript)
+                    entityGeneratorImpl = typeof(HbsTypeScriptEntityTypeGenerator);
+                else
+                    entityGeneratorImpl = typeof(HbsCSharpEntityTypeGenerator);
+            }
             else
                 entityGeneratorImpl = typeof(NullCSharpEntityTypeGenerator);
             services.AddSingleton(entityGeneratorType, entityGeneratorImpl);
 
+            if (language == LanguageOptions.TypeScript)
+            {
+                services.AddSingleton<ITypeScriptHelper, TypeScriptHelper>();
+                services.AddSingleton<IModelCodeGenerator, HbsTypeScriptModelGenerator>();
+                services.AddSingleton<ITemplateLanguageService, TypeScriptTemplateLanguageService>();
+            }
+            else
+            {
+                services.AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
+                services.AddSingleton<ITemplateLanguageService, CSharpTemplateLanguageService>();
+            }
+
             services.AddSingleton<ITemplateFileService, FileSystemTemplateFileService>();
             services.AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>();
             services.AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>();
-            services.AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
             services.AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
             services.AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>();
             services.AddSingleton<IHbsHelperService, HbsHelperService>(provider =>

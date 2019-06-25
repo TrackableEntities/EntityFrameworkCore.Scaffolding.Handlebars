@@ -20,11 +20,11 @@ namespace Scaffolding.Handlebars.Tests
 
         [Theory]
         [InlineData(
-            Constants.Templates.ContextFolder,
+            Constants.Templates.CSharpTemplateDirectories.ContextFolder,
             Constants.Templates.ContextClassFile,
             ExpectedTemplates.ContextTemplate)]
         [InlineData(
-            Constants.Templates.EntityTypeFolder,
+            Constants.Templates.CSharpTemplateDirectories.EntityTypeFolder,
             Constants.Templates.EntityClassFile,
             ExpectedTemplates.EntityTemplate)]
         public void Template_File_Service_Should_Retrieve_Template(

@@ -16,7 +16,7 @@ using Constants = Scaffolding.Handlebars.Tests.Helpers.Constants;
 namespace Scaffolding.Handlebars.Tests
 {
     [Collection("NorthwindDbContext")]
-    public partial class HbsCSharpScaffoldingGeneratorTests
+    public partial class HbsTypeScriptScaffoldingGeneratorTests
     {
         private NorthwindDbContextFixture Fixture { get; }
 
@@ -29,7 +29,7 @@ namespace Scaffolding.Handlebars.Tests
         private InputFile EntityCtorTemplate { get; }
         private InputFile EntityPropertiesTemplate { get; }
 
-        public HbsCSharpScaffoldingGeneratorTests(NorthwindDbContextFixture fixture)
+        public HbsTypeScriptScaffoldingGeneratorTests(NorthwindDbContextFixture fixture)
         {
             Fixture = fixture;
             Fixture.Initialize(useInMemory: false);
@@ -37,17 +37,17 @@ namespace Scaffolding.Handlebars.Tests
             var projectRootDir = Path.Combine("..", "..", "..", "..", "..");
 
             var contextTemplatesVirtualPath =
-                $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.CSharpTemplateDirectories.ContextFolder}";
+                $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.TypeScriptTemplateDirectories.ContextFolder}";
             var contextPartialsVirtualPath = contextTemplatesVirtualPath + $"/{Constants.Templates.PartialsFolder}";
             var contextTemplatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder,
-                Constants.Templates.CodeTemplatesFolder, Constants.Templates.CSharpTemplateDirectories.ContextFolder);
+                Constants.Templates.CodeTemplatesFolder, Constants.Templates.TypeScriptTemplateDirectories.ContextFolder);
             var contextPartialTemplatesPath = Path.Combine(contextTemplatesPath, Constants.Templates.PartialsFolder);
 
             var entityTemplatesVirtualPath =
-                $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.CSharpTemplateDirectories.EntityTypeFolder}";
+                $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.TypeScriptTemplateDirectories.EntityTypeFolder}";
             var entityPartialsVirtualPath = entityTemplatesVirtualPath + $"/{Constants.Templates.PartialsFolder}";
             var entityTemplatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder, 
-                Constants.Templates.CodeTemplatesFolder, Constants.Templates.CSharpTemplateDirectories.EntityTypeFolder);
+                Constants.Templates.CodeTemplatesFolder, Constants.Templates.TypeScriptTemplateDirectories.EntityTypeFolder);
             var entityPartialTemplatesPath = Path.Combine(entityTemplatesPath, Constants.Templates.PartialsFolder);
 
             ContextClassTemplate = new InputFile
@@ -101,10 +101,8 @@ namespace Scaffolding.Handlebars.Tests
             };
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations)
+        [Fact]
+        public void WriteCode_Should_Generate_Context_File()
         {
             // Arrange
             var options = ReverseEngineerOptions.DbContextOnly;
@@ -120,25 +118,21 @@ namespace Scaffolding.Handlebars.Tests
                 contextName: Constants.Parameters.ContextName,
                 modelOptions: new ModelReverseEngineerOptions(),
                 contextDir: Constants.Parameters.ProjectPath,
-                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = useDataAnnotations });
+                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = false });
 
             // Act
             var files = GetGeneratedFiles(model, options);
 
             // Assert
-            object expectedContext = useDataAnnotations
-                ? ExpectedContextsWithAnnotations.ContextClass
-                : ExpectedContexts.ContextClass;
+            object expectedContext = ExpectedContexts.ContextClass;
 
-            var context = files[Constants.Files.CSharpFiles.DbContextFile];
+            var context = files[Constants.Files.TypeScriptFiles.DbContextFile];
 
             Assert.Equal(expectedContext, context);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations)
+        [Fact]
+        public void WriteCode_Should_Generate_Entity_Files()
         {
             // Arrange
             var options = ReverseEngineerOptions.EntitiesOnly;
@@ -154,30 +148,24 @@ namespace Scaffolding.Handlebars.Tests
                 contextName: Constants.Parameters.ContextName,
                 modelOptions: new ModelReverseEngineerOptions(),
                 contextDir: Constants.Parameters.ProjectPath,
-                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = useDataAnnotations });
+                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = false });
 
             // Act
             var files = GetGeneratedFiles(model, options);
 
             // Assert
-            var category = files[Constants.Files.CSharpFiles.CategoryFile];
-            var product = files[Constants.Files.CSharpFiles.ProductFile];
+            var category = files[Constants.Files.TypeScriptFiles.CategoryFile];
+            var product = files[Constants.Files.TypeScriptFiles.ProductFile];
 
-            object expectedCategory = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.CategoryClass
-                : ExpectedEntities.CategoryClass;
-            object expectedProduct = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.ProductClass
-                : ExpectedEntities.ProductClass;
+            object expectedCategory = ExpectedEntities.CategoryClass;
+            object expectedProduct = ExpectedEntities.ProductClass;
 
             Assert.Equal(expectedCategory, category);
             Assert.Equal(expectedProduct, product);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WriteCode_Should_Generate_Context_and_Entity_Files(bool useDataAnnotations)
+        [Fact]
+        public void WriteCode_Should_Generate_Context_and_Entity_Files()
         {
             // Arrange
             var options = ReverseEngineerOptions.DbContextAndEntities;
@@ -193,25 +181,19 @@ namespace Scaffolding.Handlebars.Tests
                 contextName: Constants.Parameters.ContextName,
                 modelOptions: new ModelReverseEngineerOptions(),
                 contextDir: Constants.Parameters.ProjectPath,
-                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = useDataAnnotations });
+                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = false });
 
             // Act
             Dictionary<string, string> files = GetGeneratedFiles(model, options);
 
             // Assert
-            object expectedContext = useDataAnnotations
-                ? ExpectedContextsWithAnnotations.ContextClass
-                : ExpectedContexts.ContextClass;
-            object expectedCategory = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.CategoryClass
-                : ExpectedEntities.CategoryClass;
-            object expectedProduct = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.ProductClass
-                : ExpectedEntities.ProductClass;
+            object expectedContext = ExpectedContexts.ContextClass;
+            object expectedCategory = ExpectedEntities.CategoryClass;
+            object expectedProduct = ExpectedEntities.ProductClass;
 
-            var context = files[Constants.Files.CSharpFiles.DbContextFile];
-            var category = files[Constants.Files.CSharpFiles.CategoryFile];
-            var product = files[Constants.Files.CSharpFiles.ProductFile];
+            var context = files[Constants.Files.TypeScriptFiles.DbContextFile];
+            var category = files[Constants.Files.TypeScriptFiles.CategoryFile];
+            var product = files[Constants.Files.TypeScriptFiles.ProductFile];
 
             Assert.Equal(expectedContext, context);
             Assert.Equal(expectedCategory, category);
@@ -242,9 +224,9 @@ namespace Scaffolding.Handlebars.Tests
                     overwriteFiles: false);
 
                 // Assert
-                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.CSharpFiles.DbContextFile);
-                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.CategoryFile);
-                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.ProductFile);
+                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.TypeScriptFiles.DbContextFile);
+                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.CategoryFile);
+                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.ProductFile);
                 Assert.Equal(expectedContextPath, result.ContextFile);
                 Assert.False(File.Exists(expectedCategoryPath));
                 Assert.False(File.Exists(expectedProductPath));
@@ -275,9 +257,9 @@ namespace Scaffolding.Handlebars.Tests
                     overwriteFiles: false);
 
                 // Assert
-                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.CSharpFiles.DbContextFile);
-                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.CategoryFile);
-                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.ProductFile);
+                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.TypeScriptFiles.DbContextFile);
+                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.CategoryFile);
+                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.ProductFile);
                 Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
                 Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
                 Assert.False(File.Exists(expectedContextPath));
@@ -308,9 +290,9 @@ namespace Scaffolding.Handlebars.Tests
                     overwriteFiles: false);
 
                 // Assert
-                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.CSharpFiles.DbContextFile);
-                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.CategoryFile);
-                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.ProductFile);
+                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.TypeScriptFiles.DbContextFile);
+                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.CategoryFile);
+                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.ProductFile);
                 Assert.Equal(expectedContextPath, result.ContextFile);
                 Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
                 Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
@@ -328,9 +310,10 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>()
                 .AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>()
                 .AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>()
+                .AddSingleton<ITypeScriptHelper, TypeScriptHelper>()
                 .AddSingleton<ITemplateFileService>(fileService)
-                .AddSingleton<ITemplateLanguageService, CSharpTemplateLanguageService>()
-                .AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>()
+                .AddSingleton<ITemplateLanguageService, TypeScriptTemplateLanguageService>()
+                .AddSingleton<IModelCodeGenerator, HbsTypeScriptModelGenerator>()
                 .AddSingleton(provider =>
                 {
                     ICSharpDbContextGenerator contextGenerator = new HbsCSharpDbContextGenerator(
@@ -349,10 +332,11 @@ namespace Scaffolding.Handlebars.Tests
                 })
                 .AddSingleton(provider =>
                 {
-                    ICSharpEntityTypeGenerator entityGenerator = new HbsCSharpEntityTypeGenerator(
+                    ICSharpEntityTypeGenerator entityGenerator = new HbsTypeScriptEntityTypeGenerator(
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
-                        provider.GetRequiredService<ICSharpHelper>());
+                        provider.GetRequiredService<ICSharpHelper>(),
+                        provider.GetRequiredService<ITypeScriptHelper>());
                     return options == ReverseEngineerOptions.EntitiesOnly ||
                            options == ReverseEngineerOptions.DbContextAndEntities
                         ? entityGenerator
@@ -379,14 +363,14 @@ namespace Scaffolding.Handlebars.Tests
             if (options == ReverseEngineerOptions.DbContextOnly
                 || options == ReverseEngineerOptions.DbContextAndEntities)
             {
-                generatedFiles.Add(Constants.Files.CSharpFiles.DbContextFile, model.ContextFile.Code);
+                generatedFiles.Add(Constants.Files.TypeScriptFiles.DbContextFile, model.ContextFile.Code);
             }
 
             if (options == ReverseEngineerOptions.EntitiesOnly
                 || options == ReverseEngineerOptions.DbContextAndEntities)
             {
-                generatedFiles.Add(Constants.Files.CSharpFiles.CategoryFile, model.AdditionalFiles[0].Code);
-                generatedFiles.Add(Constants.Files.CSharpFiles.ProductFile, model.AdditionalFiles[1].Code);
+                generatedFiles.Add(Constants.Files.TypeScriptFiles.CategoryFile, model.AdditionalFiles[0].Code);
+                generatedFiles.Add(Constants.Files.TypeScriptFiles.ProductFile, model.AdditionalFiles[1].Code);
             }
 
             return generatedFiles;

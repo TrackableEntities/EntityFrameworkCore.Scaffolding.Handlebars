@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>1.7.2</PackageVersion>
+    <PackageVersion>2.0.0</PackageVersion>
     <Authors>Tony Sneed</Authors>
     <Company>Tony Sneed</Company>
     <Title>Entity Framework Core Scaffolding with Handlebars</Title>
@@ -17,7 +17,7 @@
     <IncludeSource>true</IncludeSource>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
-    <Version>1.7.2</Version>
+    <Version>2.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -38,10 +38,19 @@
     <Content Include="CodeTemplates\CSharpEntityType\Partials\Constructor.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
     <Content Include="CodeTemplates\CSharpEntityType\Partials\Imports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
     <Content Include="CodeTemplates\CSharpEntityType\Partials\Properties.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptDbContext\DbContext.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptDbContext\" />
+    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbImports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptDbContext\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbConstructor.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptDbContext\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbSets.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptDbContext\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptEntityType\Class.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\" />
+    <Content Include="CodeTemplates\TypeScriptEntityType\Partials\Constructor.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptEntityType\Partials\Imports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptEntityType\Partials\Properties.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\Partials\" />
   </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Handlebars.Net" Version="1.9.5" />
+    <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.0" />
   </ItemGroup>
 
@@ -50,9 +59,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="LICENSE" Pack="true" PackagePath=""/>
+    <None Include="LICENSE" Pack="true" PackagePath="" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Update="CodeTemplates\CSharpDbContext\DbContext.hbs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -76,6 +85,30 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="CodeTemplates\CSharpEntityType\Partials\Properties.hbs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\TypeScriptDbContext\DbContext.hbs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\TypeScriptDbContext\Partials\DbImports.hbs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\TypeScriptDbContext\Partials\DbConstructor.hbs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\TypeScriptDbContext\Partials\DbSets.hbs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\TypeScriptEntityType\Class.hbs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\TypeScriptEntityType\Partials\Constructor.hbs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\TypeScriptEntityType\Partials\Imports.hbs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\TypeScriptEntityType\Partials\Properties.hbs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

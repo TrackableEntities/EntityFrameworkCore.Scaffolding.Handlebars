@@ -29,7 +29,6 @@ Scaffold EF Core models using Handlebars templates.
     - Open the Package Manager Console, select the default project and enter:
         + `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
         + `Install-Package Microsoft.EntityFrameworkCore.Design`
-    - If needed update EF Core to version 2.2.
 
 3. Add the **EntityFrameworkCore.Scaffolding.Handlebars** NuGet package:
     - `Install-Package EntityFrameworkCore.Scaffolding.Handlebars`
@@ -146,3 +145,32 @@ public partial class NorthwindSlimContext
     }
 }
 ```
+
+## Generating TypeScript Entities
+
+To generate TypeScript entities simply pass `LanguageOptions.TypeScript` to `AddHandlebarsScaffolding`. Since generating a `DbContext` class is strictly a server-side concern, you should also pass `ReverseEngineerOptions.EntitiesOnly` to `AddHandlebarsScaffolding`.
+
+```csharp
+public class ScaffoldingDesignTimeServices : IDesignTimeServices
+{
+    public void ConfigureDesignTimeServices(IServiceCollection services)
+    {
+        // Generate both context and entities
+        var options = ReverseEngineerOptions.EntitiesOnly;
+
+        // Generate TypeScript files
+        var language = LanguageOptions.TypeScript;
+
+        // Add Handlebars scaffolding templates
+        services.AddHandlebarsScaffolding(options, language);
+    }
+}
+```
+
+- You can also omit `c` and `--context-dir` arguments from the EF Core scaffolding command.
+
+```
+dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -o Models -f
+```
+
+

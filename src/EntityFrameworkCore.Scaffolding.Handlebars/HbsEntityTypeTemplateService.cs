@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
+using Microsoft.EntityFrameworkCore.Design;
 using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -10,6 +11,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// </summary>
     public class HbsEntityTypeTemplateService : HbsTemplateService, IEntityTypeTemplateService
     {
+        private Dictionary<string, TemplateFileInfo> EntitiesTemplateFiles { get; }
+
         /// <summary>
         /// Entity type template.
         /// </summary>
@@ -19,8 +22,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Constructor for entity type template service.
         /// </summary>
         /// <param name="fileService">Template file service.</param>
-        public HbsEntityTypeTemplateService(ITemplateFileService fileService) : base(fileService)
+        /// <param name="languageService">Template language service.</param>
+        public HbsEntityTypeTemplateService(ITemplateFileService fileService,
+            ITemplateLanguageService languageService) : base(fileService, languageService)
         {
+            EntitiesTemplateFiles = LanguageService.GetEntitiesTemplateFileInfo();
         }
 
         /// <summary>
@@ -41,45 +47,51 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Compile entity type template.
         /// </summary>
+        /// <param name="language">Language option.</param>
         /// <returns>Entity type template.</returns>
-        protected virtual Func<object, string> CompileEntityTypeTemplate()
+        protected virtual Func<object, string> CompileEntityTypeTemplate(
+            LanguageOptions language = LanguageOptions.CSharp)
         {
-            var template = FileService.RetrieveTemplateFileContents(
-                Constants.EntityTypeDirectory,
-                Constants.EntityTypeTemplate + Constants.TemplateExtension);
-            var entityTemplate = HandlebarsLib.Compile(template);
+            EntitiesTemplateFiles.TryGetValue(Constants.EntityTypeTemplate, out TemplateFileInfo classFile);
+            var entityTemplateFile = FileService.RetrieveTemplateFileContents(
+                classFile.RelativeDirectory, classFile.FileName);
+            var entityTemplate = HandlebarsLib.Compile(entityTemplateFile);
             return entityTemplate;
         }
 
         /// <summary>
         /// Get partial templates.
         /// </summary>
+        /// <param name="language">Language option.</param>
         /// <returns>Partial templates.</returns>
-        protected override IDictionary<string, string> GetPartialTemplates()
+        protected override IDictionary<string, string> GetPartialTemplates(
+            LanguageOptions language = LanguageOptions.CSharp)
         {
-            var ctorTemplate = FileService.RetrieveTemplateFileContents(
-                Constants.EntityTypePartialsDirectory,
-                Constants.EntityTypeCtorTemplate + Constants.TemplateExtension);
-            var importTemplate = FileService.RetrieveTemplateFileContents(
-                Constants.EntityTypePartialsDirectory,
-                Constants.EntityTypeImportTemplate + Constants.TemplateExtension);
-            var propertyTemplate = FileService.RetrieveTemplateFileContents(
-                Constants.EntityTypePartialsDirectory,
-                Constants.EntityTypePropertyTemplate + Constants.TemplateExtension);
+            EntitiesTemplateFiles.TryGetValue(Constants.EntityTypeCtorTemplate, out TemplateFileInfo ctorFile);
+            var ctorTemplateFile = FileService.RetrieveTemplateFileContents(
+                ctorFile.RelativeDirectory, ctorFile.FileName);
+
+            EntitiesTemplateFiles.TryGetValue(Constants.EntityTypeImportTemplate, out TemplateFileInfo importFile);
+            var importTemplateFile = FileService.RetrieveTemplateFileContents(
+                importFile.RelativeDirectory, importFile.FileName);
+
+            EntitiesTemplateFiles.TryGetValue(Constants.EntityTypePropertyTemplate, out TemplateFileInfo propertyFile);
+            var propertyTemplateFile = FileService.RetrieveTemplateFileContents(
+                propertyFile.RelativeDirectory, propertyFile.FileName);
 
             var templates = new Dictionary<string, string>
             {
                 {
                     Constants.EntityTypeCtorTemplate.ToLower(),
-                    ctorTemplate
+                    ctorTemplateFile
                 },
                 {
                     Constants.EntityTypeImportTemplate.ToLower(),
-                    importTemplate
+                    importTemplateFile
                 },
                 {
                     Constants.EntityTypePropertyTemplate.ToLower(),
-                    propertyTemplate
+                    propertyTemplateFile
                 },
             };
             return templates;

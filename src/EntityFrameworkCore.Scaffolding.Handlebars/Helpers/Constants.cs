@@ -14,18 +14,6 @@
         /// <summary>Code templates folder.</summary>
         public const string CodeTemplatesDirectory = "CodeTemplates";
 
-        /// <summary>DbContext template folder.</summary>
-        public const string DbContextDirectory = CodeTemplatesDirectory + "/CSharpDbContext";
-
-        /// <summary>DbContext partial templates folder.</summary>
-        public const string DbContextPartialsDirectory = DbContextDirectory + "/Partials";
-
-        /// <summary>Entity type template folder.</summary>
-        public const string EntityTypeDirectory = CodeTemplatesDirectory + "/CSharpEntityType";
-
-        /// <summary>Entity type partial templates folder.</summary>
-        public const string EntityTypePartialsDirectory = EntityTypeDirectory + "/Partials";
-
         /// <summary>Entity type template.</summary>
         public const string EntityTypeTemplate = "Class";
 
@@ -49,5 +37,37 @@
 
         /// <summary>DbContext DbSets template.</summary>
         public const string DbContextDbSetsTemplate = "DbSets";
+
+        /// <summary>C# template folders.</summary>
+        public static class CSharpTemplateDirectories
+        {
+            /// <summary>DbContext C# template folder.</summary>
+            public const string DbContextDirectory = CodeTemplatesDirectory + "/CSharpDbContext";
+
+            /// <summary>DbContext partial C# templates folder.</summary>
+            public const string DbContextPartialsDirectory = DbContextDirectory + "/Partials";
+
+            /// <summary>Entity type C# template folder.</summary>
+            public const string EntityTypeDirectory = CodeTemplatesDirectory + "/CSharpEntityType";
+
+            /// <summary>Entity type partial C# templates folder.</summary>
+            public const string EntityTypePartialsDirectory = EntityTypeDirectory + "/Partials";
+        }
+
+        /// <summary>TypeScript template folders.</summary>
+        public static class TypeScriptTemplateDirectories
+        {
+            /// <summary>DbContext TypeScript template folder.</summary>
+            public const string DbContextDirectory = CodeTemplatesDirectory + "/TypeScriptDbContext";
+
+            /// <summary>DbContext partial TypeScript templates folder.</summary>
+            public const string DbContextPartialsDirectory = DbContextDirectory + "/Partials";
+
+            /// <summary>Entity type TypeScript template folder.</summary>
+            public const string EntityTypeDirectory = CodeTemplatesDirectory + "/TypeScriptEntityType";
+
+            /// <summary>Entity type partial TypeScript templates folder.</summary>
+            public const string EntityTypePartialsDirectory = EntityTypeDirectory + "/Partials";
+        }
     }
 }

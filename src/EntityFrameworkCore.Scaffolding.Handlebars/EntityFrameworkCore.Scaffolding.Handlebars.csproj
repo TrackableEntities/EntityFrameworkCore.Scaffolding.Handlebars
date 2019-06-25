@@ -12,7 +12,7 @@
     <PackageProjectUrl>https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars</PackageProjectUrl>
     <PackageIconUrl>https://user-images.githubusercontent.com/2836367/31976914-e533eec4-b8ff-11e7-95ce-394df5cbe72b.png</PackageIconUrl>
     <PackageTags>scaffolding reverse-engineer entity-framework-core handlebars</PackageTags>
-    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v1.7.2</PackageReleaseNotes>
+    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v2.0.0</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
     <IncludeSource>true</IncludeSource>
     <SignAssembly>true</SignAssembly>

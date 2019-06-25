@@ -6,28 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="TypeScriptEntityType\Class.hbs" />
-    <None Remove="TypeScriptEntityType\Partials\Constructor.hbs" />
-    <None Remove="TypeScriptEntityType\Partials\Imports.hbs" />
-    <None Remove="TypeScriptEntityType\Partials\Properties.hbs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="TypeScriptEntityType\Class.hbs">
-      <PackagePath>lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\</PackagePath>
-    </Content>
-    <Content Include="TypeScriptEntityType\Partials\Constructor.hbs">
-      <PackagePath>lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\Partials\</PackagePath>
-    </Content>
-    <Content Include="TypeScriptEntityType\Partials\Imports.hbs">
-      <PackagePath>lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\Partials\</PackagePath>
-    </Content>
-    <Content Include="TypeScriptEntityType\Partials\Properties.hbs">
-      <PackagePath>lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\Partials\</PackagePath>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.0" />
   </ItemGroup>

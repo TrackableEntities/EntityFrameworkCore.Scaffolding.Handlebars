@@ -20,13 +20,21 @@ Demonstrates how to reverse engineer an existing database using the EF Core tool
 
 The `ScaffoldingDesignTimeServices` class is where the setup takes place.
 
+- Add EF Core SQL Server and Tools NuGet packages.  
+    - Open the Package Manager Console, select the default project and enter:
+        + `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
+        + `Install-Package Microsoft.EntityFrameworkCore.Design`
+
+- Add the **EntityFrameworkCore.Scaffolding.Handlebars** NuGet package:
+    - `Install-Package EntityFrameworkCore.Scaffolding.Handlebars`
+
 ```csharp
 public class ScaffoldingDesignTimeServices : IDesignTimeServices
 {
     public void ConfigureDesignTimeServices(IServiceCollection services)
     {
         // Generate both context and entities
-        var options = ReverseEngineerOptions.DbContextAndEntities;
+        var options = ReverseEngineerOptions.EntitiesOnly;
 
         // Generate TypeScript files
         var language = LanguageOptions.TypeScript;

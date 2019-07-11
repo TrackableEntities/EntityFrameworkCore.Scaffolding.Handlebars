@@ -96,10 +96,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 .OrderBy(n => n.IsDependentToPrincipal() ? 0 : 1)
                 .ThenBy(n => n.IsCollection() ? 1 : 0);
 
-            if (sortedNavigations.Any())
+            var sortedNavigationsDistinct = sortedNavigations.GroupBy(n => n.GetTargetType().Name).Select(g => g.First());
+
+            if (sortedNavigationsDistinct.Any())
             {
                 var imports = new List<Dictionary<string, object>>();
-                foreach (var navigation in sortedNavigations)
+                foreach (var navigation in sortedNavigationsDistinct)
                 {
                     imports.Add(new Dictionary<string, object> { { "import", navigation.GetTargetType().Name } });
                 }

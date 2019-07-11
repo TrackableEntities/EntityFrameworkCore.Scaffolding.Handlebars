@@ -25,6 +25,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public virtual IHbsHelperService HandlebarsHelperService { get; }
 
         /// <summary>
+        /// Handlebars helper service.
+        /// </summary>
+        public virtual IHbsBlockHelperService HandlebarsBlockHelperService { get; }
+
+        /// <summary>
         /// DbContext template service.
         /// </summary>
         public virtual IDbContextTemplateService DbContextTemplateService { get; }
@@ -54,6 +59,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         /// <param name="dependencies">Service dependencies parameter class for HbsCSharpModelGenerator.</param>
         /// <param name="handlebarsHelperService">Handlebars helper service.</param>
+        /// <param name="handlebarsBlockHelperService">Handlebars block helper service.</param>
         /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
@@ -61,6 +67,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="cSharpEntityTypeGenerator">Entity type generator.</param>
         public HbsTypeScriptModelGenerator(ModelCodeGeneratorDependencies dependencies,
             IHbsHelperService handlebarsHelperService,
+            IHbsBlockHelperService handlebarsBlockHelperService,
             IDbContextTemplateService dbContextTemplateService,
             IEntityTypeTemplateService entityTypeTemplateService,
             IEntityTypeTransformationService entityTypeTransformationService,
@@ -68,6 +75,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             ICSharpEntityTypeGenerator cSharpEntityTypeGenerator) : base(dependencies)
         {
             HandlebarsHelperService = handlebarsHelperService ?? throw new ArgumentNullException(nameof(handlebarsHelperService));
+            HandlebarsBlockHelperService = handlebarsBlockHelperService ?? throw new ArgumentNullException(nameof(handlebarsBlockHelperService));
             DbContextTemplateService = dbContextTemplateService ?? throw new ArgumentNullException(nameof(dbContextTemplateService));
             EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
             EntityTypeTransformationService = entityTypeTransformationService ?? throw new ArgumentNullException(nameof(entityTypeTransformationService));
@@ -100,6 +108,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             // Register Hbs helpers and partial templates
             HandlebarsHelperService.RegisterHelpers();
+            HandlebarsBlockHelperService.RegisterBlockHelpers();
             DbContextTemplateService.RegisterPartialTemplates();
             EntityTypeTemplateService.RegisterPartialTemplates();
 

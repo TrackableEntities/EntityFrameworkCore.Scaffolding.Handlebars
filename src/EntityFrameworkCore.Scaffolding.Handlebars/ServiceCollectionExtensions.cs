@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
+using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -107,6 +108,26 @@ namespace Microsoft.EntityFrameworkCore.Design
                 };
                 handlebarsHelpers.ToList().ForEach(h => helpers.Add(h.helperName, h.helperFunction));
                 return new HbsHelperService(helpers);
+            });
+            return services;
+        }
+
+        /// <summary>
+        /// Register Handlebars block helpers.
+        ///     <para>
+        ///         Note: You must first call AddHandlebarsScaffolding before calling AddHandlebarsHelpers.
+        ///     </para>        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add services to. </param>
+        /// <param name="handlebarsBlockHelpers">Handlebars block helpers.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddHandlebarsHelpers(this IServiceCollection services,
+            params (string helperName, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]> helperFunction)[] handlebarsBlockHelpers)
+        {
+            services.AddSingleton<IHbsBlockHelperService>(provider =>
+            {
+                var helpers = new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>();
+                handlebarsBlockHelpers.ToList().ForEach(h => helpers.Add(h.helperName, h.helperFunction));
+                return new HbsBlockHelperService(helpers);
             });
             return services;
         }

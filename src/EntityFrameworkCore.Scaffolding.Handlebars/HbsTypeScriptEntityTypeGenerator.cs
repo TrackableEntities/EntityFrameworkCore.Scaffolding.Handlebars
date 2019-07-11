@@ -91,10 +91,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         protected virtual void GenerateImports(IEntityType entityType)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
-            //var collectionNavigations = entityType.GetNavigations().Where(n => n.IsCollection()).ToList();
             var sortedNavigations = entityType.GetNavigations()
                 .OrderBy(n => n.IsDependentToPrincipal() ? 0 : 1)
-                .ThenBy(n => n.IsCollection() ? 1 : 0);
+                .ThenBy(n => n.IsCollection() ? 1 : 0)
+                .Distinct();
 
             if (sortedNavigations.Any())
             {

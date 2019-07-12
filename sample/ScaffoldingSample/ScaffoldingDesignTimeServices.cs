@@ -91,43 +91,43 @@ namespace ScaffoldingSample
                     case ">":
                         if (val1.Length > val2.Length)
                         {
-                            options.Template(writer, (object)context);
+                            options.Template(writer, context);
                         }
                         else
                         {
-                            options.Inverse(writer, (object)context);
+                            options.Inverse(writer, context);
                         }
                         break;
                     case "=":
                     case "==":
                         if (val1 == val2)
                         {
-                            options.Template(writer, (object)context);
+                            options.Template(writer, context);
                         }
                         else
                         {
-                            options.Inverse(writer, (object)context);
+                            options.Inverse(writer, context);
                         }
                         break;
                     case "<":
                         if (val1.Length < val2.Length)
                         {
-                            options.Template(writer, (object)context);
+                            options.Template(writer, context);
                         }
                         else
                         {
-                            options.Inverse(writer, (object)context);
+                            options.Inverse(writer, context);
                         }
                         break;
                     case "!=":
                     case "<>":
                         if (val1 != val2)
                         {
-                            options.Template(writer, (object)context);
+                            options.Template(writer, context);
                         }
                         else
                         {
-                            options.Inverse(writer, (object)context);
+                            options.Inverse(writer, context);
                         }
                         break;
                 }
@@ -142,43 +142,43 @@ namespace ScaffoldingSample
                     case ">":
                         if (val1 > val2)
                         {
-                            options.Template(writer, (object)context);
+                            options.Template(writer, context);
                         }
                         else
                         {
-                            options.Inverse(writer, (object)context);
+                            options.Inverse(writer, context);
                         }
                         break;
                     case "=":
                     case "==":
                         if (val1 == val2)
                         {
-                            options.Template(writer, (object)context);
+                            options.Template(writer, context);
                         }
                         else
                         {
-                            options.Inverse(writer, (object)context);
+                            options.Inverse(writer, context);
                         }
                         break;
                     case "<":
                         if (val1 < val2)
                         {
-                            options.Template(writer, (object)context);
+                            options.Template(writer, context);
                         }
                         else
                         {
-                            options.Inverse(writer, (object)context);
+                            options.Inverse(writer, context);
                         }
                         break;
                     case "!=":
                     case "<>":
                         if (val1 != val2)
                         {
-                            options.Template(writer, (object)context);
+                            options.Template(writer, context);
                         }
                         else
                         {
-                            options.Inverse(writer, (object)context);
+                            options.Inverse(writer, context);
                         }
                         break;
                 }

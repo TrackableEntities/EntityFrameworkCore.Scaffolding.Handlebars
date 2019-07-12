@@ -120,7 +120,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to. </param>
         /// <param name="handlebarsBlockHelpers">Handlebars block helpers.</param>
         /// <returns></returns>
-        public static IServiceCollection AddHandlebarsHelpers(this IServiceCollection services,
+        public static IServiceCollection AddHandlebarsBlockHelpers(this IServiceCollection services,
             params (string helperName, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]> helperFunction)[] handlebarsBlockHelpers)
         {
             services.AddSingleton<IHbsBlockHelperService>(provider =>

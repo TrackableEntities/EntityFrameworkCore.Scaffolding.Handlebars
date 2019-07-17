@@ -19,5 +19,11 @@ namespace ScaffoldingSample.Models
         public Country Country { get; set; }
 
         public virtual ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
+
+        // The following should output True
+        //True
+
+        // The following should output False
+        //False
     }
 }

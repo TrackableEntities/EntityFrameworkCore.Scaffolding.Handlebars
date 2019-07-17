@@ -10,5 +10,11 @@ namespace ScaffoldingSample.Models
 
         public virtual Employee Employee { get; set; }
         public virtual Territory Territory { get; set; }
+
+        // The following should output True
+        //True
+
+        // The following should output False
+        //False
     }
 }

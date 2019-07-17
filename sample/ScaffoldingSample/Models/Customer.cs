@@ -18,5 +18,11 @@ namespace ScaffoldingSample.Models
 
         public virtual CustomerSetting CustomerSetting { get; set; }
         public virtual ICollection<Order> Order { get; set; }
+
+        // The following should output True
+        //True
+
+        // The following should output False
+        //False
     }
 }

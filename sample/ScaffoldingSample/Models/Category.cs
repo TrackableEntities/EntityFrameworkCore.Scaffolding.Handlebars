@@ -14,5 +14,11 @@ namespace ScaffoldingSample.Models
         public string CategoryName { get; set; }
 
         public virtual ICollection<Product> Product { get; set; }
+
+        // The following should output True
+        //True
+
+        // The following should output False
+        //False
     }
 }

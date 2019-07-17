@@ -9,5 +9,11 @@ namespace ScaffoldingSample.Models
         public string Setting { get; set; }
 
         public virtual Customer Customer { get; set; }
+
+        // The following should output True
+        //True
+
+        // The following should output False
+        //False
     }
 }

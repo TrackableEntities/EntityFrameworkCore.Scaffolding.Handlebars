@@ -14,5 +14,11 @@ namespace ScaffoldingSample.Models
 
         public virtual Order Order { get; set; }
         public virtual Product Product { get; set; }
+
+        // The following should output True
+        //True
+
+        // The following should output False
+        //False
     }
 }

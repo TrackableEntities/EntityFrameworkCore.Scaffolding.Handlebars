@@ -19,10 +19,7 @@ namespace ScaffoldingSample.Models
         public virtual CustomerSetting CustomerSetting { get; set; }
         public virtual ICollection<Order> Order { get; set; }
 
-        // The following should output True
-        //True
-
-        // The following should output False
-        //False
+        // My Handlebars Block Helper: True
+        // My Handlebars Block Helper: False
     }
 }

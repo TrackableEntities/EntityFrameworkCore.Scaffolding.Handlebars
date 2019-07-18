@@ -20,10 +20,7 @@ namespace ScaffoldingSample.Models
 
         public virtual ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
 
-        // The following should output True
-        //True
-
-        // The following should output False
-        //False
+        // My Handlebars Block Helper: True
+        // My Handlebars Block Helper: False
     }
 }

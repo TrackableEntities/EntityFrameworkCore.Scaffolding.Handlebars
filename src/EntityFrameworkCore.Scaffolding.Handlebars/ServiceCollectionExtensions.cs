@@ -115,7 +115,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <summary>
         /// Register Handlebars block helpers.
         ///     <para>
-        ///         Note: You must first call AddHandlebarsScaffolding before calling AddHandlebarsHelpers.
+        ///         Note: You must first call AddHandlebarsScaffolding before calling AddHandlebarsBlockHelpers.
         ///     </para>        /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to. </param>
         /// <param name="handlebarsBlockHelpers">Handlebars block helpers.</param>

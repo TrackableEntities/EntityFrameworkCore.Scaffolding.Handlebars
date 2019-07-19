@@ -31,6 +31,7 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
         // Register Handlebars helper
         var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, Dictionary<string, object>, object[]>) MyHbsHelper);
 
+		// Register Handlebars block helper
         var ifCondHelper = (helperName: "ifCond", helperFunction: (Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>)MyHbsBlockHelper);
 
         // Add Handlebars scaffolding templates

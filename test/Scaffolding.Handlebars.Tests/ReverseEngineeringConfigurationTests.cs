@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
+using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
@@ -49,6 +50,8 @@ namespace Scaffolding.Handlebars.Tests
                     {
                         {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
                     }))
+                .AddSingleton<IHbsBlockHelperService>(provider =>
+                    new HbsBlockHelperService(new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>()))
                .BuildServiceProvider()
                .GetRequiredService<IReverseEngineerScaffolder>();
 

@@ -31,7 +31,7 @@ namespace FakeNamespace
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation(""ProductVersion"", ""2.2.0-rtm-35687"");
+            modelBuilder.HasAnnotation(""ProductVersion"", ""2.2.6-servicing-10079"");
 
             modelBuilder.Entity<Category>(entity =>
             {
@@ -95,7 +95,7 @@ namespace FakeNamespace
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation(""ProductVersion"", ""2.2.0-rtm-35687"");
+            modelBuilder.HasAnnotation(""ProductVersion"", ""2.2.6-servicing-10079"");
 
             modelBuilder.Entity<Product>(entity =>
             {

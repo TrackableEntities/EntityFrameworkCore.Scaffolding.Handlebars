@@ -19,5 +19,8 @@ namespace ScaffoldingSample.Models
         public Country Country { get; set; }
 
         public virtual ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
+
+        // My Handlebars Block Helper: True
+        // My Handlebars Block Helper: False
     }
 }

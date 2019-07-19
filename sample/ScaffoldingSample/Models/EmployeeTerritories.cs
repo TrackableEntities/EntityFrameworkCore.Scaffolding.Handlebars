@@ -10,5 +10,8 @@ namespace ScaffoldingSample.Models
 
         public virtual Employee Employee { get; set; }
         public virtual Territory Territory { get; set; }
+
+        // My Handlebars Block Helper: True
+        // My Handlebars Block Helper: False
     }
 }

@@ -19,5 +19,8 @@ namespace ScaffoldingSample.Models
 
         public virtual Category Category { get; set; }
         public virtual ICollection<OrderDetail> OrderDetail { get; set; }
+
+        // My Handlebars Block Helper: True
+        // My Handlebars Block Helper: False
     }
 }

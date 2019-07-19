@@ -9,5 +9,8 @@ namespace ScaffoldingSample.Models
         public string Setting { get; set; }
 
         public virtual Customer Customer { get; set; }
+
+        // My Handlebars Block Helper: True
+        // My Handlebars Block Helper: False
     }
 }

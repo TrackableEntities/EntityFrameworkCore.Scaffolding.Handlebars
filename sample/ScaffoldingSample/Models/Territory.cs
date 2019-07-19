@@ -14,5 +14,8 @@ namespace ScaffoldingSample.Models
         public string TerritoryDescription { get; set; }
 
         public virtual ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
+
+        // My Handlebars Block Helper: True
+        // My Handlebars Block Helper: False
     }
 }

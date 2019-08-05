@@ -85,6 +85,11 @@ namespace Microsoft.EntityFrameworkCore.Design
                 };
                 return new HbsHelperService(helpers);
             });
+            services.AddSingleton<IHbsBlockHelperService, HbsBlockHelperService>(provider =>
+            {
+                var helpers = new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>();
+                return new HbsBlockHelperService(helpers);
+            });
             return services;
         }
 

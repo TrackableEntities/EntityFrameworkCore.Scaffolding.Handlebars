@@ -1,7 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-// Modifications copyright(C) 2018 Tony Sneed.
+// Modifications copyright(C) 2019 Tony Sneed.
 
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Scaffolding;
@@ -15,9 +15,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         {
         }
 
-#pragma warning disable 672
-        public override MethodCallCodeFragment GenerateUseProvider(string connectionString)
-#pragma warning restore 672
+        public override MethodCallCodeFragment GenerateUseProvider(string connectionString, MethodCallCodeFragment providerOptions) 
             => new MethodCallCodeFragment("UseTestProvider", connectionString);
     }
 }

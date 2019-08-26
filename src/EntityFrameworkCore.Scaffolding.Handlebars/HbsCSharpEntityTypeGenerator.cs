@@ -1,7 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-// Modifications copyright(C) 2018 Tony Sneed.
+// Modifications copyright(C) 2019 Tony Sneed.
 
 using System;
 using System.Collections.Generic;
@@ -9,11 +9,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
+using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
@@ -22,7 +22,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// <summary>
     /// Generator for entity type classes using Handlebars templates.
     /// </summary>
-    public class HbsCSharpEntityTypeGenerator : ICSharpEntityTypeGenerator
+    public class HbsCSharpEntityTypeGenerator : CSharpEntityTypeGenerator
     {
         /// <summary>
         /// CSharp helper.
@@ -62,17 +62,18 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Constructor for the Handlebars entity types generator.
         /// </summary>
+        /// <param name="cSharpHelper">CSharp helper.</param>
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
-        /// <param name="cSharpHelper">CSharp helper.</param>
         public HbsCSharpEntityTypeGenerator(
-            IEntityTypeTemplateService entityTypeTemplateService,
-            IEntityTypeTransformationService entityTypeTransformationService,
-            ICSharpHelper cSharpHelper)
+            [NotNull] ICSharpHelper cSharpHelper,
+            [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
+            [NotNull] IEntityTypeTransformationService entityTypeTransformationService)
+            : base(cSharpHelper)
         {
-            CSharpHelper = cSharpHelper ?? throw new ArgumentNullException(nameof(cSharpHelper));
-            EntityTypeTemplateService = entityTypeTemplateService ?? throw new ArgumentNullException(nameof(entityTypeTemplateService));
-            EntityTypeTransformationService = entityTypeTransformationService ?? throw new ArgumentNullException(nameof(entityTypeTransformationService));
+            CSharpHelper = cSharpHelper;
+            EntityTypeTemplateService = entityTypeTemplateService;
+            EntityTypeTransformationService = entityTypeTransformationService;
         }
 
         /// <summary>
@@ -82,10 +83,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="namespace">Entity type namespace.</param>
         /// <param name="useDataAnnotations">If true use data annotations.</param>
         /// <returns>Generated entity type.</returns>
-        public virtual string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations)
+        public override string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations)
         {
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
-            if (@namespace == null) throw new ArgumentNullException(nameof(@namespace));
+            Check.NotNull(entityType, nameof(entityType));
+            Check.NotNull(@namespace, nameof(@namespace));
 
             UseDataAnnotations = useDataAnnotations;
             TemplateData = new Dictionary<string, object>();
@@ -107,7 +108,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
         protected virtual void GenerateImports(IEntityType entityType)
         {
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+            Check.NotNull(entityType, nameof(entityType));
 
             var imports = new List<Dictionary<string, object>>();
 
@@ -126,9 +127,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Generate entity type class.
         /// </summary>
         /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
-        protected virtual void GenerateClass(IEntityType entityType)
+        protected override void GenerateClass(IEntityType entityType)
         {
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+            Check.NotNull(entityType, nameof(entityType));
 
             if (UseDataAnnotations)
             {
@@ -148,9 +149,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Generate entity type constructor.
         /// </summary>
         /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
-        protected virtual void GenerateConstructor(IEntityType entityType)
+        protected override void GenerateConstructor(IEntityType entityType)
         {
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+            Check.NotNull(entityType, nameof(entityType));
 
             var collectionNavigations = entityType.GetNavigations().Where(n => n.IsCollection()).ToList();
 
@@ -177,13 +178,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Generate entity type properties.
         /// </summary>
         /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
-        protected virtual void GenerateProperties(IEntityType entityType)
+        protected override void GenerateProperties(IEntityType entityType)
         {
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+            Check.NotNull(entityType, nameof(entityType));
 
             var properties = new List<Dictionary<string, object>>();
 
-            foreach (var property in entityType.GetProperties().OrderBy(p => p.Scaffolding().ColumnOrdinal))
+            foreach (var property in entityType.GetProperties().OrderBy(p => p.GetColumnOrdinal()))
             {
                 PropertyAnnotationsData = new List<Dictionary<string, object>>();
 
@@ -209,9 +210,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Generate entity type navigation properties.
         /// </summary>
         /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
-        protected virtual void GenerateNavigationProperties(IEntityType entityType)
+        protected override void GenerateNavigationProperties(IEntityType entityType)
         {
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+            Check.NotNull(entityType, nameof(entityType));
 
             var sortedNavigations = entityType.GetNavigations()
                 .OrderBy(n => n.IsDependentToPrincipal() ? 0 : 1)
@@ -249,9 +250,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Generate entity type data annotations.
         /// </summary>
         /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
-        protected virtual void GenerateEntityTypeDataAnnotations(IEntityType entityType)
+        protected override void GenerateEntityTypeDataAnnotations(IEntityType entityType)
         {
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+            Check.NotNull(entityType, nameof(entityType));
 
             GenerateTableAttribute(entityType);
         }
@@ -260,9 +261,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Generate property data annotations.
         /// </summary>
         /// <param name="property">Represents a scalar property of an entity.</param>
-        protected virtual void GeneratePropertyDataAnnotations(IProperty property)
+        protected override void GeneratePropertyDataAnnotations(IProperty property)
         {
-            if (property == null) throw new ArgumentNullException(nameof(property));
+            Check.NotNull(property, nameof(property));
 
             GenerateKeyAttribute(property);
             GenerateRequiredAttribute(property);
@@ -272,12 +273,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         private void GenerateTableAttribute(IEntityType entityType)
         {
-            var tableName = entityType.Relational().TableName;
-            var schema = entityType.Relational().Schema;
-            var defaultSchema = entityType.Model.Relational().DefaultSchema;
+            var tableName = entityType.GetTableName();
+            var schema = entityType.GetSchema();
+            var defaultSchema = entityType.Model.GetDefaultSchema();
 
             var schemaParameterNeeded = schema != null && schema != defaultSchema;
-            var tableAttributeNeeded = schemaParameterNeeded || tableName != null && tableName != entityType.Scaffolding().DbSetName;
+            var tableAttributeNeeded = schemaParameterNeeded || tableName != null && tableName != entityType.GetDbSetName();
 
             if (tableAttributeNeeded)
             {
@@ -296,21 +297,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         private void GenerateKeyAttribute(IProperty property)
         {
-            var key = property.AsProperty().PrimaryKey;
-
-            if (key?.Properties.Count == 1)
+            var key = property.FindContainingPrimaryKey();
+            if (key != null)
             {
-                if (key is Key concreteKey
-                    && key.Properties.SequenceEqual(new KeyDiscoveryConvention(null).DiscoverKeyProperties(concreteKey.DeclaringEntityType, concreteKey.DeclaringEntityType.GetProperties().ToList())))
-                {
-                    return;
-                }
-
-                if (key.Relational().Name != ConstraintNamer.GetDefaultName(key))
-                {
-                    return;
-                }
-
                 PropertyAnnotationsData.Add(new Dictionary<string, object>
                 {
                     { "property-annotation", new AttributeWriter(nameof(KeyAttribute)) },
@@ -320,7 +309,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         private void GenerateColumnAttribute(IProperty property)
         {
-            var columnName = property.Relational().ColumnName;
+            var columnName = property.GetColumnName();
             var columnType = property.GetConfiguredColumnType();
 
             var delimitedColumnName = columnName != null && columnName != property.Name ? CSharpHelper.Literal(columnName) : null;

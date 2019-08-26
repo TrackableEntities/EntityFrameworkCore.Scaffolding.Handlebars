@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using HandlebarsDotNet;
@@ -20,7 +19,6 @@ namespace Scaffolding.Handlebars.Tests
     public partial class HbsCSharpScaffoldingGeneratorTests
     {
         private NorthwindDbContextFixture Fixture { get; }
-
         private InputFile ContextClassTemplate { get; }
         private InputFile ContextImportsTemplate { get; }
         private InputFile ContextCtorTemplate { get; }
@@ -114,19 +112,19 @@ namespace Scaffolding.Handlebars.Tests
             // Act
             var model = scaffolder.ScaffoldModel(
                 connectionString: Constants.Connections.SqlServerConnection,
-                tables: Enumerable.Empty<string>(),
-                schemas: Enumerable.Empty<string>(),
-                @namespace: Constants.Parameters.RootNamespace,
-                language: "C#",
-                contextName: Constants.Parameters.ContextName,
+                databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
-                contextDir: Constants.Parameters.ProjectPath,
-                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = useDataAnnotations });
-
-            // Act
-            var files = GetGeneratedFiles(model, options);
+                codeOptions: new ModelCodeGenerationOptions()
+                {
+                    ModelNamespace = Constants.Parameters.RootNamespace,
+                    ContextName = Constants.Parameters.ContextName,
+                    ContextDir = Constants.Parameters.ProjectPath,
+                    UseDataAnnotations = useDataAnnotations,
+                    Language = "C#",
+                });
 
             // Assert
+            var files = GetGeneratedFiles(model, options);
             object expectedContext = useDataAnnotations
                 ? ExpectedContextsWithAnnotations.ContextClass
                 : ExpectedContexts.ContextClass;
@@ -148,19 +146,19 @@ namespace Scaffolding.Handlebars.Tests
             // Act
             var model = scaffolder.ScaffoldModel(
                 connectionString: Constants.Connections.SqlServerConnection,
-                tables: Enumerable.Empty<string>(),
-                schemas: Enumerable.Empty<string>(),
-                @namespace: Constants.Parameters.RootNamespace,
-                language: "C#",
-                contextName: Constants.Parameters.ContextName,
+                databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
-                contextDir: Constants.Parameters.ProjectPath,
-                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = useDataAnnotations });
-
-            // Act
-            var files = GetGeneratedFiles(model, options);
+                codeOptions: new ModelCodeGenerationOptions()
+                {
+                    ModelNamespace = Constants.Parameters.RootNamespace,
+                    ContextName = Constants.Parameters.ContextName,
+                    ContextDir = Constants.Parameters.ProjectPath,
+                    UseDataAnnotations = useDataAnnotations,
+                    Language = "C#",
+                });
 
             // Assert
+            var files = GetGeneratedFiles(model, options);
             var category = files[Constants.Files.CSharpFiles.CategoryFile];
             var product = files[Constants.Files.CSharpFiles.ProductFile];
 
@@ -187,19 +185,19 @@ namespace Scaffolding.Handlebars.Tests
             // Act
             var model = scaffolder.ScaffoldModel(
                 connectionString: Constants.Connections.SqlServerConnection,
-                tables: Enumerable.Empty<string>(),
-                schemas: Enumerable.Empty<string>(),
-                @namespace: Constants.Parameters.RootNamespace,
-                language: "C#",
-                contextName: Constants.Parameters.ContextName,
+                databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
-                contextDir: Constants.Parameters.ProjectPath,
-                codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = useDataAnnotations });
-
-            // Act
-            Dictionary<string, string> files = GetGeneratedFiles(model, options);
+                codeOptions: new ModelCodeGenerationOptions()
+                {
+                    ModelNamespace = Constants.Parameters.RootNamespace,
+                    ContextName = Constants.Parameters.ContextName,
+                    ContextDir = Constants.Parameters.ProjectPath,
+                    UseDataAnnotations = useDataAnnotations,
+                    Language = "C#",
+                });
 
             // Assert
+            var files = GetGeneratedFiles(model, options);
             object expectedContext = useDataAnnotations
                 ? ExpectedContextsWithAnnotations.ContextClass
                 : ExpectedContexts.ContextClass;
@@ -228,14 +226,16 @@ namespace Scaffolding.Handlebars.Tests
                 var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextOnly);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
-                    tables: Enumerable.Empty<string>(),
-                    schemas: Enumerable.Empty<string>(),
-                    @namespace: Constants.Parameters.RootNamespace,
-                    language: "C#",
-                    contextName: Constants.Parameters.ContextName,
+                    databaseOptions: new DatabaseModelFactoryOptions(),
                     modelOptions: new ModelReverseEngineerOptions(),
-                    contextDir: Path.Combine(directory.Path, "Contexts"),
-                    codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = false });
+                    codeOptions: new ModelCodeGenerationOptions()
+                    {
+                        ModelNamespace = Constants.Parameters.RootNamespace,
+                        ContextName = Constants.Parameters.ContextName,
+                        ContextDir = Path.Combine(directory.Path, "Contexts"),
+                        UseDataAnnotations = false,
+                        Language = "C#",
+                    });
 
                 // Act
                 var result = scaffolder.Save(model,
@@ -261,14 +261,16 @@ namespace Scaffolding.Handlebars.Tests
                 var scaffolder = CreateScaffolder(ReverseEngineerOptions.EntitiesOnly);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
-                    tables: Enumerable.Empty<string>(),
-                    schemas: Enumerable.Empty<string>(),
-                    @namespace: Constants.Parameters.RootNamespace,
-                    language: "C#",
-                    contextName: Constants.Parameters.ContextName,
+                    databaseOptions: new DatabaseModelFactoryOptions(),
                     modelOptions: new ModelReverseEngineerOptions(),
-                    contextDir: Path.Combine(directory.Path, "Contexts"),
-                    codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = false });
+                    codeOptions: new ModelCodeGenerationOptions()
+                    {
+                        ModelNamespace = Constants.Parameters.RootNamespace,
+                        ContextName = Constants.Parameters.ContextName,
+                        ContextDir = Path.Combine(directory.Path, "Contexts"),
+                        UseDataAnnotations = false,
+                        Language = "C#",
+                    });
 
                 // Act
                 var result = scaffolder.Save(model,
@@ -294,14 +296,16 @@ namespace Scaffolding.Handlebars.Tests
                 var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
-                    tables: Enumerable.Empty<string>(),
-                    schemas: Enumerable.Empty<string>(),
-                    @namespace: Constants.Parameters.RootNamespace,
-                    language: "C#",
-                    contextName: Constants.Parameters.ContextName,
+                    databaseOptions: new DatabaseModelFactoryOptions(),
                     modelOptions: new ModelReverseEngineerOptions(),
-                    contextDir: Path.Combine(directory.Path, "Contexts"),
-                    codeOptions: new ModelCodeGenerationOptions { UseDataAnnotations = false });
+                    codeOptions: new ModelCodeGenerationOptions()
+                    {
+                        ModelNamespace = Constants.Parameters.RootNamespace,
+                        ContextName = Constants.Parameters.ContextName,
+                        ContextDir = Path.Combine(directory.Path, "Contexts"),
+                        UseDataAnnotations = false,
+                        Language = "C#",
+                    });
 
                 // Act
                 var result = scaffolder.Save(model,
@@ -335,10 +339,7 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton(provider =>
                 {
                     ICSharpDbContextGenerator contextGenerator = new HbsCSharpDbContextGenerator(
-#pragma warning disable 618
-                        provider.GetRequiredService<IEnumerable<IScaffoldingProviderCodeGenerator>>(),
-#pragma warning restore 618
-                        provider.GetRequiredService<IEnumerable<IProviderConfigurationCodeGenerator>>(),
+                        provider.GetRequiredService<IProviderConfigurationCodeGenerator>(),
                         provider.GetRequiredService<IAnnotationCodeGenerator>(),
                         provider.GetRequiredService<IDbContextTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
@@ -351,9 +352,9 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton(provider =>
                 {
                     ICSharpEntityTypeGenerator entityGenerator = new HbsCSharpEntityTypeGenerator(
+                        provider.GetRequiredService<ICSharpHelper>(),
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
-                        provider.GetRequiredService<IEntityTypeTransformationService>(),
-                        provider.GetRequiredService<ICSharpHelper>());
+                        provider.GetRequiredService<IEntityTypeTransformationService>());
                     return options == ReverseEngineerOptions.EntitiesOnly ||
                            options == ReverseEngineerOptions.DbContextAndEntities
                         ? entityGenerator

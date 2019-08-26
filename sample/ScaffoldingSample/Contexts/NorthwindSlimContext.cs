@@ -1,8 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata; // Comment
+using ScaffoldingSample.Models;
 
-namespace ScaffoldingSample.Models
+namespace ScaffoldingSample.Contexts
 { // Comment
     public partial class NorthwindSlimContext : DbContext
     {
@@ -31,8 +32,6 @@ namespace ScaffoldingSample.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("ProductVersion", "2.2.0-rtm-35687");
-
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.Property(e => e.CategoryName)
@@ -44,7 +43,7 @@ namespace ScaffoldingSample.Models
             {
                 entity.Property(e => e.CustomerId)
                     .HasMaxLength(5)
-                    .ValueGeneratedNever();
+                    .IsFixedLength();
 
                 entity.Property(e => e.City).HasMaxLength(15);
 
@@ -64,7 +63,7 @@ namespace ScaffoldingSample.Models
 
                 entity.Property(e => e.CustomerId)
                     .HasMaxLength(5)
-                    .ValueGeneratedNever();
+                    .IsFixedLength();
 
                 entity.Property(e => e.Setting)
                     .IsRequired()
@@ -116,7 +115,9 @@ namespace ScaffoldingSample.Models
 
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.Property(e => e.CustomerId).HasMaxLength(5);
+                entity.Property(e => e.CustomerId)
+                    .HasMaxLength(5)
+                    .IsFixedLength();
 
                 entity.Property(e => e.Freight)
                     .HasColumnType("money")
@@ -171,18 +172,16 @@ namespace ScaffoldingSample.Models
 
             modelBuilder.Entity<Territory>(entity =>
             {
-                entity.Property(e => e.TerritoryId)
-                    .HasMaxLength(20)
-                    .ValueGeneratedNever();
+                entity.Property(e => e.TerritoryId).HasMaxLength(20);
 
                 entity.Property(e => e.TerritoryDescription)
                     .IsRequired()
                     .HasMaxLength(50);
             });
 
-            OnModelCreatingExt(modelBuilder);
+            OnModelCreatingPartial(modelBuilder);
         }
 
-        partial void OnModelCreatingExt(ModelBuilder modelBuilder);
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

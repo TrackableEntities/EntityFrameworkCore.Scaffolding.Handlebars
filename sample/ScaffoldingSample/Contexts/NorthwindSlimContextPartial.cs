@@ -1,11 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using ScaffoldingSample.Models;
 
-namespace ScaffoldingSample.Models
+namespace ScaffoldingSample.Contexts
 {
     public partial class NorthwindSlimContext
     {
-        partial void OnModelCreatingExt(ModelBuilder modelBuilder)
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Employee>()
                 .Property(e => e.Country)

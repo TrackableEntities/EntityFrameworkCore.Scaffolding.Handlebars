@@ -4,8 +4,8 @@ Demonstrates how to reverse engineer an existing database using the EF Core tool
 
 ## Prerequisites
 
-- [Visual Studio 2017](https://www.visualstudio.com/downloads/) 15.9 or greater.
-- The .[NET Core 2.2 SDK](https://www.microsoft.com/net/download/core) (version 2.2.100 or greater).
+- [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.3 or greater.
+- The .[NET Core 3.0 SDK](https://www.microsoft.com/net/download/core).
 
 ## Database Setup
 
@@ -17,6 +17,11 @@ Demonstrates how to reverse engineer an existing database using the EF Core tool
     - Unzip **NorthwindSlim.sql** and run the script to create tables and populate them with data.
 
 ## Setup
+
+Add NuGet packages.  
+    - `Microsoft.EntityFrameworkCore.SqlServer`
+    - `Microsoft.EntityFrameworkCore.Design`
+    - `EntityFrameworkCore.Scaffolding.Handlebars`
 
 The `ScaffoldingDesignTimeServices` class is where the setup takes place.
 
@@ -114,12 +119,12 @@ public enum Country
 }
 ```
 
-A partial `NorthwindSlimContext` class has been added to a **NorthwindSlimContextExt.cs** file with an implementation of the partial `OnModelCreatingExt` method that adds a property value conversion.
+A partial `NorthwindSlimContext` class has been added to a **NorthwindSlimContextPartial.cs** file with an implementation of the partial `OnModelCreatingPartial` method that adds a property value conversion.
 
 ```csharp
 public partial class NorthwindSlimContext
 {
-    partial void OnModelCreatingExt(ModelBuilder modelBuilder)
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Employee>()
             .Property(e => e.Country)
@@ -138,8 +143,11 @@ public partial class NorthwindSlimContext
 
 ## Usage
 
+- Install the global `dotnet ef` tool.
+```
+dotnet tool install --global dotnet-ef --version 3.0.0-*
+```
 - Open a command prompt at the **ScaffoldingSample** project root and execute:
-
 ```
 dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -o Models -c NorthwindSlimContext -f --context-dir Contexts
 ```

@@ -101,7 +101,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 var imports = new List<Dictionary<string, object>>();
                 foreach (var navigation in sortedNavigations)
                 {
-                    imports.Add(new Dictionary<string, object> { { "import", navigation.GetTargetType().Name } });
+                    var navigationName = navigation.GetTargetType().Name;
+                    // Avoid duplicates in the list of imports
+                    var newImport = new Dictionary<string, object> { { "import", navigationName } };
+                    if (!imports.Any(d => d.ContainsValue(navigationName)))
+                    {
+                        imports.Add(newImport);
+                    }
                 }
                 TemplateData.Add("imports", imports);
             }

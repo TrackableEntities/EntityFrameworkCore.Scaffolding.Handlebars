@@ -6,8 +6,8 @@ Scaffold EF Core models using Handlebars templates.
  
 ## Prerequisites
 
-- [Visual Studio 2017](https://www.visualstudio.com/downloads/) 15.9 or greater.
-- The .[NET Core 2.2 SDK](https://www.microsoft.com/net/download/core) (version 2.2.100 or greater).
+- [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.3 or greater.
+- The .[NET Core 3.0 SDK](https://www.microsoft.com/net/download/core).
 
 ## Database Setup
 
@@ -21,17 +21,16 @@ Scaffold EF Core models using Handlebars templates.
 ## Usage
 
 1. Create a new **.NET Core** class library.
-    - If necessary, edit the csproj file to update the **TargetFramework** to 2.2.
+    - If necessary, edit the csproj file to update the **TargetFramework** to 3.0.
 
     > **Note**: Using the EF Core toolchain with a _.NET Standard_ class library is currently not supported. Instead, you can add a .NET Standard class library to the same solution as the .NET Core library, then add existing items and select **Add As Link** to include entity classes.
 
-2. Add EF Core SQL Server and Tools NuGet packages.  
-    - Open the Package Manager Console, select the default project and enter:
-        + `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
-        + `Install-Package Microsoft.EntityFrameworkCore.Design`
+2. Add EF Core SQL Server and Tools NuGet packages.
+    - `Microsoft.EntityFrameworkCore.SqlServer`
+    - `Microsoft.EntityFrameworkCore.Design`
 
 3. Add the **EntityFrameworkCore.Scaffolding.Handlebars** NuGet package:
-    - `Install-Package EntityFrameworkCore.Scaffolding.Handlebars`
+    - `EntityFrameworkCore.Scaffolding.Handlebars`
 
 4. Remove Class1.cs and add a **ScaffoldingDesignTimeServices** class.
     - Implement `IDesignTimeServices` by adding a `ConfigureDesignTimeServices` method
@@ -122,14 +121,14 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
 ## Extending the OnModelCreating Method
 
 There are times when you might like to modify generated code, for example, by adding a `HasConversion` method to an entity property in the `OnModelCreating` method of the generated class that extends `DbContext`. However, doing so may prove futile because added code would be overwritten the next time you run the `dotnet ef dbcontext scaffold` command.
-- Rather than modifying generated code, a better idea would be to extend it by using _partial classes and methods_. To enable this scenario, the generated `DbContext` class is already defined using the `partial` keyword, and it contains a partial `OnModelCreatingExt` method that is invoked at the end of the `OnModelCreating` method.
-- To implement the partial method, simply add a new class to your project with the same name as the generated `DbContext` class, and define it as `partial`. Then add a `OnModelCreatingExt` method with the same signature as the partial method defined in the generated `DbContext` class.
+- Rather than modifying generated code, a better idea would be to extend it by using _partial classes and methods_. To enable this scenario, the generated `DbContext` class is already defined using the `partial` keyword, and it contains a partial `OnModelCreatingPartial` method that is invoked at the end of the `OnModelCreating` method.
+- To implement the partial method, simply add a new class to your project with the same name as the generated `DbContext` class, and define it as `partial`. Then add a `OnModelCreatingPartial` method with the same signature as the partial method defined in the generated `DbContext` class.
 
 ```csharp
-// Place in separate class file (NorthwindSlimContextExt.cs)
+// Place in separate class file (NorthwindSlimContextPartial.cs)
 public partial class NorthwindSlimContext
 {
-    partial void OnModelCreatingExt(ModelBuilder modelBuilder)
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Employee>()
             .Property(e => e.Country)
@@ -169,8 +168,13 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
 
 - You can also omit `c` and `--context-dir` arguments from the EF Core scaffolding command.
 
+- Install the global `dotnet ef` tool.
 ```
-dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -o Models -f
+dotnet tool install --global dotnet-ef --version 3.0.0-*
+```
+- Open a command prompt at the project root and execute:
+```
+dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -o Models -c NorthwindSlimContext -f --context-dir Contexts
 ```
 
 

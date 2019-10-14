@@ -1,6 +1,8 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+// Modifications copyright(C) 2019 Tony Sneed.
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -69,6 +71,9 @@ namespace Scaffolding.Handlebars.Tests.Fakes
 
             public override CoreTypeMapping Clone(ValueConverter converter)
                 => new IntArrayTypeMapping(Parameters.WithComposedConverter(converter));
+
+            protected override RelationalTypeMapping Clone(RelationalTypeMappingParameters parameters)
+                => new IntArrayTypeMapping(parameters);
         }
 
         private static readonly RelationalTypeMapping _intArray

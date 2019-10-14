@@ -31,8 +31,6 @@ namespace FakeNamespace
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation(""ProductVersion"", ""2.2.6-servicing-10079"");
-
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.Property(e => e.CategoryName)
@@ -57,10 +55,10 @@ namespace FakeNamespace
                     .HasForeignKey(d => d.CategoryId);
             });
 
-            OnModelCreatingExt(modelBuilder);
+            OnModelCreatingPartial(modelBuilder);
         }
 
-        partial void OnModelCreatingExt(ModelBuilder modelBuilder);
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }
 ";

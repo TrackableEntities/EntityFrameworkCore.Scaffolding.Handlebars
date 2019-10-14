@@ -63,6 +63,7 @@ namespace FakeNamespace
             Product = new HashSet<Product>();
         }
 
+        [Key]
         public int CategoryId { get; set; }
         [Required]
         [StringLength(15)]
@@ -84,6 +85,7 @@ namespace FakeNamespace
 {
     public partial class Product
     {
+        [Key]
         public int ProductId { get; set; }
         [Required]
         [StringLength(40)]

@@ -1,67 +1,66 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>2.1.1</PackageVersion>
+    <PackageVersion>3.0.0</PackageVersion>
     <Authors>Tony Sneed</Authors>
     <Company>Tony Sneed</Company>
     <Title>Entity Framework Core Scaffolding with Handlebars</Title>
     <Description>Allows customization of classes reverse engineered from an existing database using the Entity Framework Core toolchain with Handlebars templates.</Description>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars</PackageProjectUrl>
-    <PackageIconUrl>https://user-images.githubusercontent.com/2836367/31976914-e533eec4-b8ff-11e7-95ce-394df5cbe72b.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageTags>scaffolding reverse-engineer entity-framework-core handlebars</PackageTags>
-    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v2.1.1</PackageReleaseNotes>
+    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v3.0.0</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
     <IncludeSource>true</IncludeSource>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
-    <Version>2.1.1</Version>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\EntityFrameworkCore.Scaffolding.Handlebars.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.1\EntityFrameworkCore.Scaffolding.Handlebars.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.0\EntityFrameworkCore.Scaffolding.Handlebars.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard2.1\EntityFrameworkCore.Scaffolding.Handlebars.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- pack  tempate files -->
-    <Content Include="CodeTemplates\CSharpDbContext\DbContext.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\" />
-    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbImports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\Partials\" />
-    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbConstructor.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\Partials\" />
-    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbSets.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpDbContext\Partials\" />
-    <Content Include="CodeTemplates\CSharpEntityType\Class.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\" />
-    <Content Include="CodeTemplates\CSharpEntityType\Partials\Constructor.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
-    <Content Include="CodeTemplates\CSharpEntityType\Partials\Imports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
-    <Content Include="CodeTemplates\CSharpEntityType\Partials\Properties.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\CSharpEntityType\Partials\" />
-    <Content Include="CodeTemplates\TypeScriptDbContext\DbContext.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptDbContext\" />
-    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbImports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptDbContext\Partials\" />
-    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbConstructor.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptDbContext\Partials\" />
-    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbSets.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptDbContext\Partials\" />
-    <Content Include="CodeTemplates\TypeScriptEntityType\Class.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\" />
-    <Content Include="CodeTemplates\TypeScriptEntityType\Partials\Constructor.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\Partials\" />
-    <Content Include="CodeTemplates\TypeScriptEntityType\Partials\Imports.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\Partials\" />
-    <Content Include="CodeTemplates\TypeScriptEntityType\Partials\Properties.hbs" PackagePath="lib\netstandard2.0\CodeTemplates\TypeScriptEntityType\Partials\" />
+    <Content Include="CodeTemplates\CSharpDbContext\DbContext.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\" />
+    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbImports.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\" />
+    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbConstructor.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\" />
+    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbSets.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\" />
+    <Content Include="CodeTemplates\CSharpEntityType\Class.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpEntityType\" />
+    <Content Include="CodeTemplates\CSharpEntityType\Partials\Constructor.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpEntityType\Partials\" />
+    <Content Include="CodeTemplates\CSharpEntityType\Partials\Imports.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpEntityType\Partials\" />
+    <Content Include="CodeTemplates\CSharpEntityType\Partials\Properties.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpEntityType\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptDbContext\DbContext.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptDbContext\" />
+    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbImports.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptDbContext\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbConstructor.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptDbContext\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbSets.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptDbContext\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptEntityType\Class.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptEntityType\" />
+    <Content Include="CodeTemplates\TypeScriptEntityType\Partials\Constructor.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptEntityType\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptEntityType\Partials\Imports.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptEntityType\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptEntityType\Partials\Properties.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptEntityType\Partials\" />
   </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Handlebars.Net" Version="1.10.1" />
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Properties\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="LICENSE" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>

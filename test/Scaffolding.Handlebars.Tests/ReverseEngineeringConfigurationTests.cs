@@ -11,13 +11,16 @@ using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Scaffolding.Handlebars.Tests.Fakes;
+using Scaffolding.Handlebars.Tests.Helpers;
 using Xunit;
+using Constants = EntityFrameworkCore.Scaffolding.Handlebars.Helpers.Constants;
 
 namespace Scaffolding.Handlebars.Tests
 {
@@ -31,11 +34,12 @@ namespace Scaffolding.Handlebars.Tests
         {
             var reverseEngineer = new ServiceCollection()
                 .AddEntityFrameworkDesignTimeServices()
+                .AddSingleton<LoggingDefinitions, TestRelationalLoggingDefinitions>()
                 .AddSingleton<IRelationalTypeMappingSource, TestRelationalTypeMappingSource>()
                 .AddSingleton<IAnnotationCodeGenerator, AnnotationCodeGenerator>()
                 .AddSingleton<IDatabaseModelFactory, FakeDatabaseModelFactory>()
-                .AddSingleton<IScaffoldingModelFactory, FakeScaffoldingModelFactory>()
                 .AddSingleton<IProviderConfigurationCodeGenerator, TestProviderCodeGenerator>()
+                .AddSingleton<IScaffoldingModelFactory, FakeScaffoldingModelFactory>()
                 .AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>()
                 .AddSingleton<ICSharpDbContextGenerator, HbsCSharpDbContextGenerator>()
                 .AddSingleton<ICSharpEntityTypeGenerator, HbsCSharpEntityTypeGenerator>()
@@ -52,22 +56,20 @@ namespace Scaffolding.Handlebars.Tests
                     }))
                 .AddSingleton<IHbsBlockHelperService>(provider =>
                     new HbsBlockHelperService(new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>()))
-               .BuildServiceProvider()
-               .GetRequiredService<IReverseEngineerScaffolder>();
+                .BuildServiceProvider()
+                .GetRequiredService<IReverseEngineerScaffolder>();
 
-            Assert.Equal(
-                DesignStrings.ContextClassNotValidCSharpIdentifier(contextName),
+            Assert.Equal(DesignStrings.ContextClassNotValidCSharpIdentifier(contextName),
                 Assert.Throws<ArgumentException>(
                         () => reverseEngineer.ScaffoldModel(
                             connectionString: "connectionstring",
-                            tables: Enumerable.Empty<string>(),
-                            schemas: Enumerable.Empty<string>(),
-                            @namespace: "FakeNamespace",
-                            language: "",
-                            contextDir: null,
-                            contextName: contextName,
+                            databaseOptions: new DatabaseModelFactoryOptions(),
                             modelOptions: new ModelReverseEngineerOptions(),
-                            codeOptions: new ModelCodeGenerationOptions()))
+                            codeOptions: new ModelCodeGenerationOptions()
+                            {
+                                ModelNamespace = "FakeNamespace",
+                                ContextName = contextName,
+                            }))
                     .Message);
         }
     }

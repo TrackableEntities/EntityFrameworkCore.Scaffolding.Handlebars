@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.SqlServer.Design.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Scaffolding.Handlebars.Tests.Helpers;
 using Xunit;
 using Constants = Scaffolding.Handlebars.Tests.Helpers.Constants;
@@ -106,7 +107,7 @@ namespace Scaffolding.Handlebars.Tests
         public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations)
         {
             // Arrange
-            var options = ReverseEngineerOptions.DbContextOnly;
+            var options = ScaffoldingGeneration.DbContextOnly;
             var scaffolder = CreateScaffolder(options);
 
             // Act
@@ -140,7 +141,7 @@ namespace Scaffolding.Handlebars.Tests
         public void WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations)
         {
             // Arrange
-            var options = ReverseEngineerOptions.EntitiesOnly;
+            var options = ScaffoldingGeneration.EntitiesOnly;
             var scaffolder = CreateScaffolder(options);
 
             // Act
@@ -179,7 +180,7 @@ namespace Scaffolding.Handlebars.Tests
         public void WriteCode_Should_Generate_Context_and_Entity_Files(bool useDataAnnotations)
         {
             // Arrange
-            var options = ReverseEngineerOptions.DbContextAndEntities;
+            var options = ScaffoldingGeneration.DbContextAndEntities;
             var scaffolder = CreateScaffolder(options);
 
             // Act
@@ -223,7 +224,7 @@ namespace Scaffolding.Handlebars.Tests
             using (var directory = new TempDirectory())
             {
                 // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextOnly);
+                var scaffolder = CreateScaffolder(ScaffoldingGeneration.DbContextOnly);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
@@ -258,7 +259,7 @@ namespace Scaffolding.Handlebars.Tests
             using (var directory = new TempDirectory())
             {
                 // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.EntitiesOnly);
+                var scaffolder = CreateScaffolder(ScaffoldingGeneration.EntitiesOnly);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
@@ -293,7 +294,7 @@ namespace Scaffolding.Handlebars.Tests
             using (var directory = new TempDirectory())
             {
                 // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities);
+                var scaffolder = CreateScaffolder(ScaffoldingGeneration.DbContextAndEntities);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
@@ -322,7 +323,7 @@ namespace Scaffolding.Handlebars.Tests
             }
         }
 
-        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options)
+        private IReverseEngineerScaffolder CreateScaffolder(ScaffoldingGeneration scaffoldingGeneration)
         {
             var fileService = new InMemoryTemplateFileService();
             fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate, ContextCtorTemplate, ContextDbSetsTemplate,
@@ -343,9 +344,10 @@ namespace Scaffolding.Handlebars.Tests
                         provider.GetRequiredService<IAnnotationCodeGenerator>(),
                         provider.GetRequiredService<IDbContextTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
-                        provider.GetRequiredService<ICSharpHelper>());
-                    return options == ReverseEngineerOptions.DbContextOnly ||
-                           options == ReverseEngineerOptions.DbContextAndEntities
+                        provider.GetRequiredService<ICSharpHelper>(),
+                        provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());
+                    return scaffoldingGeneration == ScaffoldingGeneration.DbContextOnly ||
+                           scaffoldingGeneration == ScaffoldingGeneration.DbContextAndEntities
                         ? contextGenerator
                         : new NullCSharpDbContextGenerator();
                 })
@@ -354,9 +356,10 @@ namespace Scaffolding.Handlebars.Tests
                     ICSharpEntityTypeGenerator entityGenerator = new HbsCSharpEntityTypeGenerator(
                         provider.GetRequiredService<ICSharpHelper>(),
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
-                        provider.GetRequiredService<IEntityTypeTransformationService>());
-                    return options == ReverseEngineerOptions.EntitiesOnly ||
-                           options == ReverseEngineerOptions.DbContextAndEntities
+                        provider.GetRequiredService<IEntityTypeTransformationService>(),
+                        provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());
+                    return scaffoldingGeneration == ScaffoldingGeneration.EntitiesOnly ||
+                           scaffoldingGeneration == ScaffoldingGeneration.DbContextAndEntities
                         ? entityGenerator
                         : new NullCSharpEntityTypeGenerator();
                 })
@@ -376,18 +379,18 @@ namespace Scaffolding.Handlebars.Tests
             return scaffolder;
         }
 
-        private Dictionary<string, string> GetGeneratedFiles(ScaffoldedModel model, ReverseEngineerOptions options)
+        private Dictionary<string, string> GetGeneratedFiles(ScaffoldedModel model, ScaffoldingGeneration options)
         {
             var generatedFiles = new Dictionary<string, string>();
 
-            if (options == ReverseEngineerOptions.DbContextOnly
-                || options == ReverseEngineerOptions.DbContextAndEntities)
+            if (options == ScaffoldingGeneration.DbContextOnly
+                || options == ScaffoldingGeneration.DbContextAndEntities)
             {
                 generatedFiles.Add(Constants.Files.CSharpFiles.DbContextFile, model.ContextFile.Code);
             }
 
-            if (options == ReverseEngineerOptions.EntitiesOnly
-                || options == ReverseEngineerOptions.DbContextAndEntities)
+            if (options == ScaffoldingGeneration.EntitiesOnly
+                || options == ScaffoldingGeneration.DbContextAndEntities)
             {
                 generatedFiles.Add(Constants.Files.CSharpFiles.CategoryFile, model.AdditionalFiles[0].Code);
                 generatedFiles.Add(Constants.Files.CSharpFiles.ProductFile, model.AdditionalFiles[1].Code);

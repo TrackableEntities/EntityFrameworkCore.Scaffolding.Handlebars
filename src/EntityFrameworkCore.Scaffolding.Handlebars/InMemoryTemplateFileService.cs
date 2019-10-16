@@ -36,7 +36,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         }
 
         /// <summary>
-        /// Retreive template file contents from the file system. 
+        /// Retrieve template file contents from the file system. 
         /// If template is not present, copy it locally.
         /// </summary>
         /// <param name="relativeDirectory">Relative directory name.</param>

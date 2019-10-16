@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -18,6 +19,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// </summary>
     public class HbsCSharpModelGenerator : CSharpModelGenerator
     {
+        private const string FileExtension = ".cs";
+        private readonly IOptions<HandlebarsScaffoldingOptions> _options;
+
         /// <summary>
         /// Handlebars helper service.
         /// </summary>
@@ -43,8 +47,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         protected virtual IEntityTypeTransformationService EntityTypeTransformationService { get; }
 
-        private const string FileExtension = ".cs";
-
         /// <summary>
         /// Constructor for the HbsCSharpModelGenerator.
         /// </summary>
@@ -56,6 +58,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
+        /// <param name="options">Handlebar scaffolding options</param>
         public HbsCSharpModelGenerator(
             [NotNull] ModelCodeGeneratorDependencies dependencies, 
             [NotNull] ICSharpDbContextGenerator cSharpDbContextGenerator, 
@@ -64,7 +67,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             [NotNull] IHbsBlockHelperService handlebarsBlockHelperService,
             [NotNull] IDbContextTemplateService dbContextTemplateService,
             [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
-            [NotNull] IEntityTypeTransformationService entityTypeTransformationService)
+            [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
+            [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
             : base(dependencies, cSharpDbContextGenerator, cSharpEntityTypeGenerator)
         {
             HandlebarsHelperService = handlebarsHelperService;
@@ -72,6 +76,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             DbContextTemplateService = dbContextTemplateService;
             EntityTypeTemplateService = entityTypeTemplateService;
             EntityTypeTransformationService = entityTypeTransformationService;
+            _options = options;
         }
 
         /// <summary>
@@ -117,7 +122,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             if (!(CSharpEntityTypeGenerator is NullCSharpEntityTypeGenerator))
             {
-                foreach (var entityType in model.GetEntityTypes())
+                foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
                 {
                     generatedCode = CSharpEntityTypeGenerator.WriteCode(
                         entityType,

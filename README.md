@@ -43,8 +43,8 @@ Scaffold EF Core models using Handlebars templates.
     {
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
-            var options = ReverseEngineerOptions.DbContextAndEntities;
-            services.AddHandlebarsScaffolding(options);
+            services.AddHandlebarsScaffolding(options =>
+                options.ScaffoldingGeneration = ScaffoldingGeneration.DbContextAndEntities);
         }
     }
     ```

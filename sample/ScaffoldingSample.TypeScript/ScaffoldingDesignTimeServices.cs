@@ -14,14 +14,10 @@ namespace ScaffoldingSample
     {
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
-            // Generate both context and entities
-            var options = ReverseEngineerOptions.EntitiesOnly;
-
-            // Generate TypeScript files
-            var language = LanguageOptions.TypeScript;
-
             // Add Handlebars scaffolding templates
-            services.AddHandlebarsScaffolding(options, language);
+            services.AddHandlebarsScaffolding(
+                options => options.ScaffoldingGeneration = ScaffoldingGeneration.EntitiesOnly,
+                LanguageOptions.TypeScript);
         }
     }
 }

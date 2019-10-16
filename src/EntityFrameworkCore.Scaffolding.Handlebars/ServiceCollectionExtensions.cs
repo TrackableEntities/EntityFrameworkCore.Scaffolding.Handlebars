@@ -24,23 +24,29 @@ namespace Microsoft.EntityFrameworkCore.Design
         ///         templates in the CodeTemplates folder.
         ///     </para>
         ///     <para>
-        ///         Has <paramref name="options" /> that allow you to choose whether to generate only the DbContext class, 
-        ///         only entity type classes, or both DbContext and entity type classes (the default).
+        ///         Has <paramref name="configureOptions" /> that allow you to choose whether to generate only the DbContext class, 
+        ///         only entity type classes, or both DbContext and entity type classes (the default).  It also allows you to exclude tables from the generation.
         ///         This can be useful when placing model classes in a separate class library.
         ///     </para>
         /// </summary>
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
-        /// <param name="options">Options for reverse engineering classes from an existing database.</param>
+        /// <param name="configureOptions">Method for configuring options for reverse engineering classes from an existing database.</param>
         /// <param name="language">Language option.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsScaffolding(this IServiceCollection services,
-            ReverseEngineerOptions options = ReverseEngineerOptions.DbContextAndEntities,
+            Action<HandlebarsScaffoldingOptions> configureOptions = null,
             LanguageOptions language = LanguageOptions.CSharp)
         {
+            var options = new HandlebarsScaffoldingOptions();
+            if (configureOptions == null)
+                configureOptions = options => options.ScaffoldingGeneration = ScaffoldingGeneration.DbContextAndEntities;
+            configureOptions(options);
+            services.Configure(configureOptions);
+
             Type dbContextGeneratorImpl;
             var dbContextGeneratorType = typeof(ICSharpDbContextGenerator);
-            if (options == ReverseEngineerOptions.DbContextOnly
-                || options == ReverseEngineerOptions.DbContextAndEntities)
+            if (options.ScaffoldingGeneration == ScaffoldingGeneration.DbContextOnly
+                || options.ScaffoldingGeneration == ScaffoldingGeneration.DbContextAndEntities)
                 dbContextGeneratorImpl = typeof(HbsCSharpDbContextGenerator);
             else
                 dbContextGeneratorImpl = typeof(NullCSharpDbContextGenerator);
@@ -48,8 +54,8 @@ namespace Microsoft.EntityFrameworkCore.Design
 
             Type entityGeneratorImpl;
             var entityGeneratorType = typeof(ICSharpEntityTypeGenerator);
-            if (options == ReverseEngineerOptions.EntitiesOnly
-                || options == ReverseEngineerOptions.DbContextAndEntities)
+            if (options.ScaffoldingGeneration == ScaffoldingGeneration.EntitiesOnly
+                || options.ScaffoldingGeneration == ScaffoldingGeneration.DbContextAndEntities)
             {
                 if (language == LanguageOptions.TypeScript)
                     entityGeneratorImpl = typeof(HbsTypeScriptEntityTypeGenerator);
@@ -57,7 +63,10 @@ namespace Microsoft.EntityFrameworkCore.Design
                     entityGeneratorImpl = typeof(HbsCSharpEntityTypeGenerator);
             }
             else
+            {
                 entityGeneratorImpl = typeof(NullCSharpEntityTypeGenerator);
+            }
+
             services.AddSingleton(entityGeneratorType, entityGeneratorImpl);
 
             if (language == LanguageOptions.TypeScript)
@@ -72,7 +81,16 @@ namespace Microsoft.EntityFrameworkCore.Design
                 services.AddSingleton<ITemplateLanguageService, CSharpTemplateLanguageService>();
             }
 
-            services.AddSingleton<ITemplateFileService, FileSystemTemplateFileService>();
+            if (options.EmbeddedTemplatesAssembly != null)
+            {
+                services.AddSingleton<ITemplateFileService>(new EmbeddedResourceTemplateFileService(
+                    options.EmbeddedTemplatesAssembly, options.EmbeddedTemplatesNamespace));
+            }
+            else
+            {
+                services.AddSingleton<ITemplateFileService, FileSystemTemplateFileService>();
+            }
+
             services.AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>();
             services.AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>();
             services.AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();

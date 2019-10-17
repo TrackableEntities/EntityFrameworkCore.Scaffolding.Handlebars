@@ -169,7 +169,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             Check.NotNull(entityType, nameof(entityType));
 
-            var collectionNavigations = entityType.GetNavigations().Where(n => n.IsCollection()).ToList();
+            var collectionNavigations = entityType.GetScaffoldNavigations(_options.Value)
+                .Where(n => n.IsCollection()).ToList();
 
             if (collectionNavigations.Count > 0)
             {
@@ -230,7 +231,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             Check.NotNull(entityType, nameof(entityType));
 
-            var sortedNavigations = entityType.GetNavigations()
+            var sortedNavigations = entityType.GetScaffoldNavigations(_options.Value)
                 .OrderBy(n => n.IsDependentToPrincipal() ? 0 : 1)
                 .ThenBy(n => n.IsCollection() ? 1 : 0);
 

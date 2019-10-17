@@ -16,15 +16,11 @@ namespace ScaffoldingSample.Contexts
         // My Handlebars Helper
         public virtual DbSet<Employee> Employee { get; set; }
         // My Handlebars Helper
-        public virtual DbSet<EmployeeTerritories> EmployeeTerritories { get; set; }
-        // My Handlebars Helper
         public virtual DbSet<Order> Order { get; set; }
         // My Handlebars Helper
         public virtual DbSet<OrderDetail> OrderDetail { get; set; }
         // My Handlebars Helper
         public virtual DbSet<Product> Product { get; set; }
-        // My Handlebars Helper
-        public virtual DbSet<Territory> Territory { get; set; }
 
         public NorthwindSlimContext(DbContextOptions<NorthwindSlimContext> options) : base(options)
         {
@@ -95,24 +91,6 @@ namespace ScaffoldingSample.Contexts
                     .HasMaxLength(20);
             });
 
-            modelBuilder.Entity<EmployeeTerritories>(entity =>
-            {
-                entity.HasKey(e => new { e.EmployeeId, e.TerritoryId })
-                    .HasName("PK_dbo.EmployeeTerritories");
-
-                entity.Property(e => e.TerritoryId).HasMaxLength(20);
-
-                entity.HasOne(d => d.Employee)
-                    .WithMany(p => p.EmployeeTerritories)
-                    .HasForeignKey(d => d.EmployeeId)
-                    .HasConstraintName("FK_dbo.EmployeeTerritories_dbo.Employee_EmployeeId");
-
-                entity.HasOne(d => d.Territory)
-                    .WithMany(p => p.EmployeeTerritories)
-                    .HasForeignKey(d => d.TerritoryId)
-                    .HasConstraintName("FK_dbo.EmployeeTerritories_dbo.Territory_TerritoryId");
-            });
-
             modelBuilder.Entity<Order>(entity =>
             {
                 entity.Property(e => e.CustomerId)
@@ -168,15 +146,6 @@ namespace ScaffoldingSample.Contexts
                     .WithMany(p => p.Product)
                     .HasForeignKey(d => d.CategoryId)
                     .HasConstraintName("FK_Products_Categories");
-            });
-
-            modelBuilder.Entity<Territory>(entity =>
-            {
-                entity.Property(e => e.TerritoryId).HasMaxLength(20);
-
-                entity.Property(e => e.TerritoryDescription)
-                    .IsRequired()
-                    .HasMaxLength(50);
             });
 
             OnModelCreatingPartial(modelBuilder);

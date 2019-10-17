@@ -321,7 +321,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             var dbSets = new List<Dictionary<string, object>>();
 
-            foreach (var entityType in model.GetEntityTypes())
+            foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
             {
                 var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
                 dbSets.Add(new Dictionary<string, object>
@@ -421,7 +421,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 GenerateProperty(property, useDataAnnotations, sb);
             }
 
-            foreach (var foreignKey in entityType.GetForeignKeys())
+            foreach (var foreignKey in entityType.GetScaffoldForeignKeys(_options.Value))
             {
                 GenerateRelationship(foreignKey, useDataAnnotations, sb);
             }

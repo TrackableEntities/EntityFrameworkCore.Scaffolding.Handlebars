@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using HandlebarsDotNet;
@@ -30,6 +29,7 @@ namespace ScaffoldingSample
             services.AddHandlebarsScaffolding(options =>
             {
                 options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities;
+                options.ExcludedTables = new List<string> {"Territory", "EmployeeTerritories"};
             });
 
             // Add optional Handlebars helpers

@@ -27,7 +27,10 @@ namespace ScaffoldingSample
             var ifCondHelper = (helperName: "ifCond", helperFunction: (Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>)MyHbsBlockHelper);
 
             // Add Handlebars scaffolding templates
-            services.AddHandlebarsScaffolding(options => options.ScaffoldingGeneration = ScaffoldingGeneration.DbContextAndEntities);
+            services.AddHandlebarsScaffolding(options =>
+            {
+                options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities;
+            });
 
             // Add optional Handlebars helpers
             services.AddHandlebarsHelpers(myHelper);

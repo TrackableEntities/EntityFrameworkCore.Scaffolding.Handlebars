@@ -1,7 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-// Modifications copyright(C) 2018 Tony Sneed.
+// Modifications copyright(C) 2019 Tony Sneed.
 
 using System.Collections.Generic;
 using System.Reflection;
@@ -17,9 +17,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Gets or sets which type of scaffolding should be generated.
         /// </summary>
-        public ScaffoldingGeneration ScaffoldingGeneration { get; set; }
+        public ReverseEngineerOptions ReverseEngineerOptions { get; set; }
 
         /// <summary>
+        /// Gets or sets language options for generated scaffolding.
+        /// </summary>
+        public LanguageOptions LanguageOptions { get; set; }
+
+            /// <summary>
         /// Gets or sets tables that should be excluded from; can include schema. 
         /// </summary>
         public List<string> ExcludedTables { get; set; }

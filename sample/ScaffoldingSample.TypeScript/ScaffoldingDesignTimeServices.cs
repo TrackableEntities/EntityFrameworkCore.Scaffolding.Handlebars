@@ -16,7 +16,7 @@ namespace ScaffoldingSample
         {
             // Add Handlebars scaffolding templates
             services.AddHandlebarsScaffolding(
-                options => options.ScaffoldingGeneration = ScaffoldingGeneration.EntitiesOnly,
+                ReverseEngineerOptions.EntitiesOnly,
                 LanguageOptions.TypeScript);
         }
     }

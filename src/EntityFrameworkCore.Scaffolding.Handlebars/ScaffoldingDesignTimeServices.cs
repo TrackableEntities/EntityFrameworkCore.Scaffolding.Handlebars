@@ -14,8 +14,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="services">Specifies the contract for a collection of service descriptors.</param>
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
-            services.AddHandlebarsScaffolding(options =>
-                options.ScaffoldingGeneration = ScaffoldingGeneration.DbContextAndEntities);
+            services.AddHandlebarsScaffolding(configureOptions: options =>
+                 options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities);
         }
     }
 }

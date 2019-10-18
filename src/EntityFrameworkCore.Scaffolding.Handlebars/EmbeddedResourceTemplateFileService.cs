@@ -18,8 +18,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="namespace">Namespace of the resource files; this is generally the default namespace of the assembly.</param>
         public EmbeddedResourceTemplateFileService(Assembly assembly, string @namespace)
         {
-            _namespace = @namespace;
             _assembly = assembly;
+            _namespace = @namespace;
+            if (string.IsNullOrWhiteSpace(_namespace)) _namespace = _assembly.GetName().Name;
         }
 
         /// <inheritdoc />

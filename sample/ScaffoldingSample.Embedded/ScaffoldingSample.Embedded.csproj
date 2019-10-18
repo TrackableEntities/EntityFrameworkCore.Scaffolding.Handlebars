@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\EntityFrameworkCore.Scaffolding.Handlebars\EntityFrameworkCore.Scaffolding.Handlebars.csproj" />
+    <ProjectReference Include="..\TemplatesAssembly\TemplatesAssembly.csproj" />
   </ItemGroup>
 
 </Project>

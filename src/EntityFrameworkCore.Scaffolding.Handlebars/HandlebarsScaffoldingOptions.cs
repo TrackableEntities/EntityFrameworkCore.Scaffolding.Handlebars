@@ -17,14 +17,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Gets or sets which type of scaffolding should be generated.
         /// </summary>
-        public ReverseEngineerOptions ReverseEngineerOptions { get; set; }
+        public ReverseEngineerOptions ReverseEngineerOptions { get; set; } = ReverseEngineerOptions.DbContextAndEntities;
 
         /// <summary>
         /// Gets or sets language options for generated scaffolding.
         /// </summary>
         public LanguageOptions LanguageOptions { get; set; }
 
-            /// <summary>
+        /// <summary>
         /// Gets or sets tables that should be excluded from; can include schema. 
         /// </summary>
         public List<string> ExcludedTables { get; set; }
@@ -36,7 +36,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         /// <summary>
         /// Gets or sets an assembly to read embedded templates from (optional).
-        /// </summary>
+        /// </summary>  
         public Assembly EmbeddedTemplatesAssembly { get; set; }
 
         /// <summary>

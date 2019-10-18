@@ -66,7 +66,7 @@ Scaffold EF Core models using Handlebars templates.
     specific interfaces.
     - When you run the _dotnet-ef-dbcontext-scaffold_ command again, you will see your updated reflected in the generated classes.
 
-## Exclude Tables
+## Excluded Tables
 
 You can optionally exclude certain tables from code generation. These may also be qualified by schema name.
 
@@ -111,6 +111,31 @@ services.AddHandlebarsScaffolding(options =>
         { "base-class", "EntityBase" }
     };
 });
+```
+## Embedded Templates
+
+Handlebars templates may be embdedded in a separate .NET Standard project that can be shared among multiple .NET Core scaffolding projects. Simply copy the **CodeTemplates** folder to the .NET Standard project and edit the .csproj file to embed them as a resource in the assembly.
+
+```xml
+<ItemGroup>
+  <EmbeddedResource Include="CodeTemplates\**\*.hbs" />
+</ItemGroup>
+```
+
+Then reference the .NET Standard project from the .NET Core projects and specify the templates assembly when adding Handlebars scaffolding in the `ScaffoldingDesignTimeServices` class.
+
+```csharp
+public class ScaffoldingDesignTimeServices : IDesignTimeServices
+{
+    public void ConfigureDesignTimeServices(IServiceCollection services)
+    {
+        // Get templates assembly
+        var templatesAssembly = Assembly.Load("TemplatesAssembly, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+
+        // Add Handlebars scaffolding using embedded templates templates
+        services.AddHandlebarsScaffolding(options => options.EmbeddedTemplatesAssembly = templatesAssembly);
+    }
+}
 ```
 
 ## Handlebars Helpers and Transformers

@@ -108,7 +108,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             TemplateData = new Dictionary<string, object>();
 
-            // Add any user specified template data now so it can be overriden.
             if (_options.Value.TemplateData != null)
             {
                 foreach (KeyValuePair<string, object> entry in _options.Value.TemplateData)

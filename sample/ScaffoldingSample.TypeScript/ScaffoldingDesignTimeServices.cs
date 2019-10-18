@@ -15,9 +15,7 @@ namespace ScaffoldingSample
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
             // Add Handlebars scaffolding templates
-            services.AddHandlebarsScaffolding(
-                ReverseEngineerOptions.EntitiesOnly,
-                LanguageOptions.TypeScript);
+            services.AddHandlebarsScaffolding(ReverseEngineerOptions.EntitiesOnly, LanguageOptions.TypeScript);
         }
     }
 }

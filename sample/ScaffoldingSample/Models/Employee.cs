@@ -3,7 +3,7 @@ using System.Collections.Generic; // Comment
 
 namespace ScaffoldingSample.Models
 { // Comment
-    public partial class Employee // My Handlebars Helper
+    public partial class Employee : EntityBase // My Handlebars Helper
     {
         public int EmployeeId { get; set; }
         public string LastName { get; set; }

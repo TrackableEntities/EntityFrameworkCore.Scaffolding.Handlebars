@@ -30,17 +30,28 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
 {
     public void ConfigureDesignTimeServices(IServiceCollection services)
     {
-        // Generate both context and entities
-        var options = ReverseEngineerOptions.DbContextAndEntities;
+        // Add Handlebars scaffolding templates
+        services.AddHandlebarsScaffolding(options =>
+        {
+            // Generate both context and entities
+            options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities;
+
+            // Exclude some tables
+            options.ExcludedTables = new List<string> { "Territory", "EmployeeTerritories" };
+
+            // Add custom template data
+            options.TemplateData = new Dictionary<string, object>
+            {
+                { "models-namespace", "ScaffoldingSample.Models" },
+                { "base-class", "EntityBase" }
+            };
+        });
 
         // Register Handlebars helper
         var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, Dictionary<string, object>, object[]>) MyHbsHelper);
 
         // Register Handlebars block helper
         var ifCondHelper = (helperName: "ifCond", helperFunction: (Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>)MyHbsBlockHelper);
-
-        // Add Handlebars scaffolding templates
-        services.AddHandlebarsScaffolding(options);
 
         // Add optional Handlebars helpers
         services.AddHandlebarsHelpers(myHelper);

@@ -60,7 +60,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="configureOptions">Method for configuring options for reverse engineering classes from an existing database.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsScaffolding(this IServiceCollection services,
-            Action<HandlebarsScaffoldingOptions> configureOptions = null)
+            Action<HandlebarsScaffoldingOptions> configureOptions)
         {
             var scaffoldingOptions = new HandlebarsScaffoldingOptions();
             if (configureOptions == null)

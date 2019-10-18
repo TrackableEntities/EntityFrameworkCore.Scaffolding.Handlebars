@@ -44,7 +44,7 @@ Scaffold EF Core models using Handlebars templates.
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
             services.AddHandlebarsScaffolding(options =>
-                options.ScaffoldingGeneration = ScaffoldingGeneration.DbContextAndEntities);
+                options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities);
         }
     }
     ```
@@ -66,6 +66,53 @@ Scaffold EF Core models using Handlebars templates.
     specific interfaces.
     - When you run the _dotnet-ef-dbcontext-scaffold_ command again, you will see your updated reflected in the generated classes.
 
+## Exclude Tables
+
+You can optionally exclude certain tables from code generation. These may also be qualified by schema name.
+
+```csharp
+services.AddHandlebarsScaffolding(options =>
+{
+    // Exclude some tables
+    options.ExcludedTables = new List<string> { "Territory", "dbo.EmployeeTerritories" };
+});
+```
+
+## Custom Template Data
+
+You may find it useful to add your own custom template data for use in your Handlebars templates. For example, the model namespace is not included by default in the `DbContext` class import statements. To compensate you may wish to add a `models-namespace` template to the **DbImports.hbs** template file.
+
+```hbs
+using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata; // Comment
+using {{models-namespace}};
+```
+
+Likewise you may wish to specify the name of a model base class in the same way.
+
+```hbs
+public partial class {{class}} : {{base-class}}
+{
+    {{{> constructor}}}
+    {{> properties}}
+}
+```
+
+You can then set the value of these templates in the `TemplateData` property of `HandlebarsScaffoldingOptions`.
+
+```csharp
+services.AddHandlebarsScaffolding(options =>
+{
+    // Add custom template data
+    options.TemplateData = new Dictionary<string, object>
+    {
+        { "models-namespace", "ScaffoldingSample.Models" },
+        { "base-class", "EntityBase" }
+    };
+});
+```
+
 ## Handlebars Helpers and Transformers
 
 You can register Handlebars helpers in the `ScaffoldingDesignTimeServices` where setup takes place.
@@ -82,14 +129,25 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
 {
     public void ConfigureDesignTimeServices(IServiceCollection services)
     {
-        // Generate both context and entities
-        var options = ReverseEngineerOptions.DbContextAndEntities;
+        // Add Handlebars scaffolding templates
+        services.AddHandlebarsScaffolding(options =>
+        {
+            // Generate both context and entities
+            options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities;
+
+            // Exclude some tables
+            options.ExcludedTables = new List<string> { "Territory", "EmployeeTerritories" };
+
+            // Add custom template data
+            options.TemplateData = new Dictionary<string, object>
+            {
+                { "models-namespace", "ScaffoldingSample.Models" },
+                { "base-class", "EntityBase" }
+            };
+        });
 
         // Register Handlebars helper
         var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, Dictionary<string, object>, object[]>) MyHbsHelper);
-
-        // Add Handlebars scaffolding templates
-        services.AddHandlebarsScaffolding(options);
 
         // Add optional Handlebars helpers
         services.AddHandlebarsHelpers(myHelper);
@@ -154,7 +212,7 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
 {
     public void ConfigureDesignTimeServices(IServiceCollection services)
     {
-        // Generate both context and entities
+        // Generate entities only
         var options = ReverseEngineerOptions.EntitiesOnly;
 
         // Generate TypeScript files

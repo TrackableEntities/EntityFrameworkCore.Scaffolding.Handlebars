@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic; // Comment
+using System.Collections.Generic;
 
-namespace ScaffoldingSample.Models
-{ // Comment
-    public partial class Territory // My Handlebars Helper
+namespace ScaffoldingSample.Embedded.Models
+{
+    public partial class Territory
     {
         public Territory()
         {
@@ -14,8 +14,5 @@ namespace ScaffoldingSample.Models
         public string TerritoryDescription { get; set; }
 
         public virtual ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
-
-        // My Handlebars Block Helper: True
-        // My Handlebars Block Helper: False
     }
 }

@@ -26,7 +26,6 @@ namespace Microsoft.EntityFrameworkCore.Design
         ///     <para>
         ///         Has <paramref name="options" /> that allow you to choose whether to generate only the DbContext class, 
         ///         only entity type classes, or both DbContext and entity type classes (the default).
-        ///         This can be useful when placing model classes in a separate class library.
         ///     </para>
         /// </summary>
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
@@ -37,10 +36,42 @@ namespace Microsoft.EntityFrameworkCore.Design
             ReverseEngineerOptions options = ReverseEngineerOptions.DbContextAndEntities,
             LanguageOptions language = LanguageOptions.CSharp)
         {
+            return services.AddHandlebarsScaffolding(scaffoldingOptions =>
+            {
+                scaffoldingOptions.ReverseEngineerOptions = options;
+                scaffoldingOptions.LanguageOptions = language;
+            });
+        }
+
+        /// <summary>
+        ///     <para>
+        ///         Registers the Handlebars scaffolding generator as a service in the <see cref="IServiceCollection" />.
+        ///         This allows you to customize generated DbContext and entity type classes by modifying the Handlebars 
+        ///         templates in the CodeTemplates folder.
+        ///     </para>
+        ///     <para>
+        ///         Has <paramref name="configureOptions" /> that allow you to choose whether to generate only the DbContext class, 
+        ///         only entity type classes, or both DbContext and entity type classes (the default).
+        ///         It also allows you to exclude tables from the generation.
+        ///         This can be useful when placing model classes in a separate class library.
+        ///     </para>
+        /// </summary>
+        /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
+        /// <param name="configureOptions">Method for configuring options for reverse engineering classes from an existing database.</param>
+        /// <returns>The same service collection so that multiple calls can be chained.</returns>
+        public static IServiceCollection AddHandlebarsScaffolding(this IServiceCollection services,
+            Action<HandlebarsScaffoldingOptions> configureOptions)
+        {
+            var scaffoldingOptions = new HandlebarsScaffoldingOptions();
+            if (configureOptions == null)
+                configureOptions = options => options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities;
+            configureOptions(scaffoldingOptions);
+            services.Configure(configureOptions);
+
             Type dbContextGeneratorImpl;
             var dbContextGeneratorType = typeof(ICSharpDbContextGenerator);
-            if (options == ReverseEngineerOptions.DbContextOnly
-                || options == ReverseEngineerOptions.DbContextAndEntities)
+            if (scaffoldingOptions.ReverseEngineerOptions == ReverseEngineerOptions.DbContextOnly
+                || scaffoldingOptions.ReverseEngineerOptions == ReverseEngineerOptions.DbContextAndEntities)
                 dbContextGeneratorImpl = typeof(HbsCSharpDbContextGenerator);
             else
                 dbContextGeneratorImpl = typeof(NullCSharpDbContextGenerator);
@@ -48,19 +79,22 @@ namespace Microsoft.EntityFrameworkCore.Design
 
             Type entityGeneratorImpl;
             var entityGeneratorType = typeof(ICSharpEntityTypeGenerator);
-            if (options == ReverseEngineerOptions.EntitiesOnly
-                || options == ReverseEngineerOptions.DbContextAndEntities)
+            if (scaffoldingOptions.ReverseEngineerOptions == ReverseEngineerOptions.EntitiesOnly
+                || scaffoldingOptions.ReverseEngineerOptions == ReverseEngineerOptions.DbContextAndEntities)
             {
-                if (language == LanguageOptions.TypeScript)
+                if (scaffoldingOptions.LanguageOptions == LanguageOptions.TypeScript)
                     entityGeneratorImpl = typeof(HbsTypeScriptEntityTypeGenerator);
                 else
                     entityGeneratorImpl = typeof(HbsCSharpEntityTypeGenerator);
             }
             else
+            {
                 entityGeneratorImpl = typeof(NullCSharpEntityTypeGenerator);
+            }
+
             services.AddSingleton(entityGeneratorType, entityGeneratorImpl);
 
-            if (language == LanguageOptions.TypeScript)
+            if (scaffoldingOptions.LanguageOptions == LanguageOptions.TypeScript)
             {
                 services.AddSingleton<ITypeScriptHelper, TypeScriptHelper>();
                 services.AddSingleton<IModelCodeGenerator, HbsTypeScriptModelGenerator>();
@@ -72,7 +106,16 @@ namespace Microsoft.EntityFrameworkCore.Design
                 services.AddSingleton<ITemplateLanguageService, CSharpTemplateLanguageService>();
             }
 
-            services.AddSingleton<ITemplateFileService, FileSystemTemplateFileService>();
+            if (scaffoldingOptions.EmbeddedTemplatesAssembly != null)
+            {
+                services.AddSingleton<ITemplateFileService>(new EmbeddedResourceTemplateFileService(
+                    scaffoldingOptions.EmbeddedTemplatesAssembly, scaffoldingOptions.EmbeddedTemplatesNamespace));
+            }
+            else
+            {
+                services.AddSingleton<ITemplateFileService, FileSystemTemplateFileService>();
+            }
+
             services.AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>();
             services.AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>();
             services.AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();

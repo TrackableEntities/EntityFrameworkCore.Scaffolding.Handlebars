@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.SqlServer.Design.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Scaffolding.Handlebars.Tests.Helpers;
 using Xunit;
 using Constants = Scaffolding.Handlebars.Tests.Helpers.Constants;
@@ -343,7 +344,8 @@ namespace Scaffolding.Handlebars.Tests
                         provider.GetRequiredService<IAnnotationCodeGenerator>(),
                         provider.GetRequiredService<IDbContextTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
-                        provider.GetRequiredService<ICSharpHelper>());
+                        provider.GetRequiredService<ICSharpHelper>(),
+                        provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());
                     return options == ReverseEngineerOptions.DbContextOnly ||
                            options == ReverseEngineerOptions.DbContextAndEntities
                         ? contextGenerator
@@ -354,7 +356,8 @@ namespace Scaffolding.Handlebars.Tests
                     ICSharpEntityTypeGenerator entityGenerator = new HbsCSharpEntityTypeGenerator(
                         provider.GetRequiredService<ICSharpHelper>(),
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
-                        provider.GetRequiredService<IEntityTypeTransformationService>());
+                        provider.GetRequiredService<IEntityTypeTransformationService>(),
+                        provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());
                     return options == ReverseEngineerOptions.EntitiesOnly ||
                            options == ReverseEngineerOptions.DbContextAndEntities
                         ? entityGenerator

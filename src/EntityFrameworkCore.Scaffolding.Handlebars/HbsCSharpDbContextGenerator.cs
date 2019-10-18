@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -28,6 +29,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     public class HbsCSharpDbContextGenerator : CSharpDbContextGenerator
     {
         private const string EntityLambdaIdentifier = "entity";
+        private const string Language = "CSharp";
+        private readonly IOptions<HandlebarsScaffoldingOptions> _options;
 
         /// <summary>
         /// CSharp helper.
@@ -69,12 +72,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="cSharpHelper">CSharp helper.</param>
         /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
+        /// <param name="options">Handlebars scaffolding options.</param>
         public HbsCSharpDbContextGenerator(
             [NotNull] IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator, 
             [NotNull] IAnnotationCodeGenerator annotationCodeGenerator,
             [NotNull] IDbContextTemplateService dbContextTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
-            [NotNull] ICSharpHelper cSharpHelper)
+            [NotNull] ICSharpHelper cSharpHelper,
+            [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
             : base(providerConfigurationCodeGenerator, annotationCodeGenerator, cSharpHelper)
         {
             ProviderConfigurationCodeGenerator = providerConfigurationCodeGenerator;
@@ -82,6 +87,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             CSharpHelper = cSharpHelper;
             DbContextTemplateService = dbContextTemplateService;
             EntityTypeTransformationService = entityTypeTransformationService;
+            _options = options;
         }
 
         /// <summary>
@@ -101,6 +107,15 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             Check.NotNull(model, nameof(model));
 
             TemplateData = new Dictionary<string, object>();
+
+            if (_options.Value.TemplateData != null)
+            {
+                foreach (KeyValuePair<string, object> entry in _options.Value.TemplateData)
+                {
+                    TemplateData.Add(entry.Key, entry.Value);
+                }
+            }
+
             TemplateData.Add("namespace", @namespace);
 
             GenerateClass(model, contextName, connectionString, useDataAnnotations, suppressConnectionStringWarning);
@@ -268,7 +283,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                 using (sb.Indent())
                 {
-                    foreach (var entityType in model.GetEntityTypes())
+
+                    foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
                     {
                         _entityTypeBuilderInitialized = false;
 
@@ -304,7 +320,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             var dbSets = new List<Dictionary<string, object>>();
 
-            foreach (var entityType in model.GetEntityTypes())
+            foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
             {
                 var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
                 dbSets.Add(new Dictionary<string, object>
@@ -404,7 +420,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 GenerateProperty(property, useDataAnnotations, sb);
             }
 
-            foreach (var foreignKey in entityType.GetForeignKeys())
+            foreach (var foreignKey in entityType.GetScaffoldForeignKeys(_options.Value))
             {
                 GenerateRelationship(foreignKey, useDataAnnotations, sb);
             }

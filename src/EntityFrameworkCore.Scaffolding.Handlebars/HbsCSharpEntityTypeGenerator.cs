@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -24,6 +25,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// </summary>
     public class HbsCSharpEntityTypeGenerator : CSharpEntityTypeGenerator
     {
+        private readonly IOptions<HandlebarsScaffoldingOptions> _options;
+
         /// <summary>
         /// CSharp helper.
         /// </summary>
@@ -65,15 +68,18 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="cSharpHelper">CSharp helper.</param>
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
+        /// <param name="options">Handlebar scaffolding options.</param>
         public HbsCSharpEntityTypeGenerator(
             [NotNull] ICSharpHelper cSharpHelper,
             [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
-            [NotNull] IEntityTypeTransformationService entityTypeTransformationService)
+            [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
+            [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
             : base(cSharpHelper)
         {
             CSharpHelper = cSharpHelper;
             EntityTypeTemplateService = entityTypeTemplateService;
             EntityTypeTransformationService = entityTypeTransformationService;
+            _options = options;
         }
 
         /// <summary>
@@ -90,6 +96,15 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             UseDataAnnotations = useDataAnnotations;
             TemplateData = new Dictionary<string, object>();
+
+            if (_options.Value.TemplateData != null)
+            {
+                foreach (KeyValuePair<string, object> entry in _options.Value.TemplateData)
+                {
+                    TemplateData.Add(entry.Key, entry.Value);
+                }
+            }
+
             TemplateData.Add("use-data-annotations", UseDataAnnotations);
 
             GenerateImports(entityType);
@@ -153,7 +168,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             Check.NotNull(entityType, nameof(entityType));
 
-            var collectionNavigations = entityType.GetNavigations().Where(n => n.IsCollection()).ToList();
+            var collectionNavigations = entityType.GetScaffoldNavigations(_options.Value)
+                .Where(n => n.IsCollection()).ToList();
 
             if (collectionNavigations.Count > 0)
             {
@@ -214,7 +230,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             Check.NotNull(entityType, nameof(entityType));
 
-            var sortedNavigations = entityType.GetNavigations()
+            var sortedNavigations = entityType.GetScaffoldNavigations(_options.Value)
                 .OrderBy(n => n.IsDependentToPrincipal() ? 0 : 1)
                 .ThenBy(n => n.IsCollection() ? 1 : 0);
 

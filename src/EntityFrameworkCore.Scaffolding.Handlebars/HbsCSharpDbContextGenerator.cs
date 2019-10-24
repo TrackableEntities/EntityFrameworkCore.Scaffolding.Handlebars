@@ -352,8 +352,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             if (!_entityTypeBuilderInitialized)
             {
+                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
+                
                 sb.AppendLine();
-                sb.AppendLine($"modelBuilder.Entity<{entityType.Name}>({EntityLambdaIdentifier} =>");
+                sb.AppendLine($"modelBuilder.Entity<{transformedEntityName}>({EntityLambdaIdentifier} =>");
                 sb.Append("{");
             }
 

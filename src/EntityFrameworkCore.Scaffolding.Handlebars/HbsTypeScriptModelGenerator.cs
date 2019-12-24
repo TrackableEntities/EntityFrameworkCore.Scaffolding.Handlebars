@@ -1,4 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 // Modifications copyright(C) 2019 Tony Sneed.
@@ -99,9 +99,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 generatedCode = CSharpDbContextGenerator.WriteCode(
                     model,
-                    options.ContextNamespace ?? options.ModelNamespace,
                     options.ContextName,
                     options.ConnectionString,
+                    options.ContextNamespace,
+                    options.ModelNamespace,
                     options.UseDataAnnotations,
                     options.SuppressConnectionStringWarning);
 

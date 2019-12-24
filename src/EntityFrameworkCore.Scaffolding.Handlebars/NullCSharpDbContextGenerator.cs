@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -18,7 +18,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="useDataAnnotations">If false use fluent modeling API.</param>
         /// <param name="suppressConnectionStringWarning">True to suppress connection string warning.</param>
         /// <returns>Generated DbContext class.</returns>
-        public string WriteCode(IModel model, string @namespace, string contextName, string connectionString, bool useDataAnnotations, bool suppressConnectionStringWarning)
+        public string WriteCode(IModel model, string contextName, string connectionString, string contextNamespace, string modelNamespace, bool useDataAnnotations, bool suppressConnectionStringWarning)
         {
             return string.Empty;
         }

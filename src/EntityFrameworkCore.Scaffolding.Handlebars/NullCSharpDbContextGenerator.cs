@@ -12,13 +12,15 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Generate the DbContext class.
         /// </summary>
         /// <param name="model">Metadata about the shape of entities, the relationships between them, and how they map to the database.</param>
-        /// <param name="namespace">DbContext namespace.</param>
         /// <param name="contextName">Name of DbContext class.</param>
         /// <param name="connectionString">Database connection string.</param>
+        /// <param name="contextNamespace">Context namespace.</param>
+        /// <param name="modelNamespace">Model namespace.</param>
         /// <param name="useDataAnnotations">If false use fluent modeling API.</param>
-        /// <param name="suppressConnectionStringWarning">True to suppress connection string warning.</param>
-        /// <returns>Generated DbContext class.</returns>
-        public string WriteCode(IModel model, string @namespace, string contextName, string connectionString, bool useDataAnnotations, bool suppressConnectionStringWarning)
+        /// <param name="suppressConnectionStringWarning">Suppress connection string warning.</param>
+        /// <returns>DbContext class.</returns>
+        public string WriteCode(IModel model, string contextName, string connectionString, string contextNamespace,
+            string modelNamespace, bool useDataAnnotations, bool suppressConnectionStringWarning)
         {
             return string.Empty;
         }

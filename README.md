@@ -15,7 +15,7 @@ Scaffold EF Core models using Handlebars templates.
     - The easiest is to use **LocalDb**, which is installed with Visual Studio.  
     Connect to: `(localdb)\MsSqlLocalDb`.
     - Create a new database named **NorthwindSlim**.
-    - Download the data file from <http://bit.ly/northwindslim>.
+    - Download the data file from <http://bit.ly/northwind-slim>.
     - Unzip **NorthwindSlim.sql** and run the script to create tables and populate them with data.
 
 ## Usage

@@ -4,8 +4,8 @@ Demonstrates how to reverse engineer an existing database using the EF Core tool
 
 ## Prerequisites
 
-- [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.3 or greater.
-- The .[NET Core 3.0 SDK](https://www.microsoft.com/net/download/core).
+- [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.4 or greater.
+- The .[NET Core 3.1 SDK](https://www.microsoft.com/net/download/core).
 
 ## Database Setup
 
@@ -156,7 +156,7 @@ public partial class NorthwindSlimContext
 
 - Install the global `dotnet ef` tool.
 ```
-dotnet tool install --global dotnet-ef --version 3.0.0-*
+dotnet tool install --global dotnet-ef --version 3.1.0-*
 ```
 - Open a command prompt at the **ScaffoldingSample** project root and execute:
 ```

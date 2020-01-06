@@ -104,9 +104,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 generatedCode = CSharpDbContextGenerator.WriteCode(
                     model,
-                    options.ContextNamespace ?? options.ModelNamespace,
                     options.ContextName,
-                    options.ConnectionString, 
+                    options.ConnectionString,
+                    options.ContextNamespace,
+                    options.ModelNamespace,
                     options.UseDataAnnotations, 
                     options.SuppressConnectionStringWarning);
 

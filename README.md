@@ -6,8 +6,8 @@ Scaffold EF Core models using Handlebars templates.
  
 ## Prerequisites
 
-- [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.3 or greater.
-- The .[NET Core 3.0 SDK](https://www.microsoft.com/net/download/core).
+- [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.4 or greater.
+- The .[NET Core 3.1 SDK](https://www.microsoft.com/net/download/core).
 
 ## Database Setup
 
@@ -21,7 +21,7 @@ Scaffold EF Core models using Handlebars templates.
 ## Usage
 
 1. Create a new **.NET Core** class library.
-    - If necessary, edit the csproj file to update the **TargetFramework** to 3.0.
+    - If necessary, edit the csproj file to update the **TargetFramework** to 3.1.
 
     > **Note**: Using the EF Core toolchain with a _.NET Standard_ class library is currently not supported. Instead, you can add a .NET Standard class library to the same solution as the .NET Core library, then add existing items and select **Add As Link** to include entity classes.
 
@@ -253,7 +253,7 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
 
 - Install the global `dotnet ef` tool.
 ```
-dotnet tool install --global dotnet-ef --version 3.0.0-*
+dotnet tool install --global dotnet-ef --version 3.1.0-*
 ```
 - Open a command prompt at the project root and execute:
 ```

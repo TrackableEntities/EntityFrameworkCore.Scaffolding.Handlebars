@@ -5,6 +5,7 @@ using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using HandlebarsDotNet;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -194,8 +195,8 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="navPropertyTransformer">Navigation property name transformer.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsTransformers(this IServiceCollection services,
-            Func<string, string> entityNameTransformer = null,
-            Func<string, string> entityFileNameTransformer = null,
+            Func<IEntityType, string> entityNameTransformer = null,
+            Func<IEntityType, string> entityFileNameTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null)

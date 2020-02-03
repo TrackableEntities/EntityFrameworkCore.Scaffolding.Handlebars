@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System;
 using System.Collections.Generic;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -11,12 +13,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Entity name transformer.
         /// </summary>
-        public Func<string, string> EntityNameTransformer { get; }
+        public Func<IEntityType, string> EntityNameTransformer { get; }
 
         /// <summary>
         /// Entity file name transformer.
         /// </summary>
-        public Func<string, string> EntityFileNameTransformer { get; }
+        public Func<IEntityType, string> EntityFileNameTransformer { get; }
 
         /// <summary>
         /// Constructor transformer.
@@ -42,8 +44,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="propertyTransformer">Property name transformer.</param>
         /// <param name="navPropertyTransformer">Navigation property name transformer.</param>
         public HbsEntityTypeTransformationService(
-            Func<string, string> entityNameTransformer = null,
-            Func<string, string> entityFileNameTransformer = null,
+            Func<IEntityType, string> entityNameTransformer = null,
+            Func<IEntityType, string> entityFileNameTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null)
@@ -57,19 +59,21 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         /// <summary>
         /// Transform entity type name.
+        /// (default is .Name)
         /// </summary>
-        /// <param name="entityName">Entity type name.</param>
+        /// <param name="entity">Entity type.</param>
         /// <returns>Transformed entity type name.</returns>
-        public string TransformEntityName(string entityName) =>
-            EntityNameTransformer?.Invoke(entityName) ?? entityName;
+        public string TransformEntityName(IEntityType entity) =>
+            EntityNameTransformer?.Invoke(entity) ?? entity.Name;
 
         /// <summary>
         /// Transform entity file name.
+        /// (default is .DisplayName() from Microsoft.EntityFrameworkCore Extension)
         /// </summary>
-        /// <param name="entityFileName">Entity file name.</param>
+        /// <param name="entity">Entity Type.</param>
         /// <returns>Transformed entity file name.</returns>
-        public string TransformEntityFileName(string entityFileName) =>
-            EntityFileNameTransformer?.Invoke(entityFileName) ?? entityFileName;
+        public string TransformEntityFileName(IEntityType entity) =>
+            EntityFileNameTransformer?.Invoke(entity) ?? entity.DisplayName();
 
         /// <summary>
         /// Transform single property name.
@@ -94,13 +98,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             foreach (var line in lines)
             {
                 var propTypeInfo = new EntityPropertyInfo(line["property-type"] as string,
-                    line["property-name"] as string);
+                    line["property-name"] as string,
+                    line["property-isnullable"] as bool?
+                    );
                 var transformedProp = ConstructorTransformer?.Invoke(propTypeInfo) ?? propTypeInfo;
 
                 transformedLines.Add(new Dictionary<string, object>
                 {
                     { "property-name", transformedProp.PropertyName },
                     { "property-type", transformedProp.PropertyType },
+                    { "property-isnullable", transformedProp.PropertyIsNullable }
                 });
             }
 
@@ -119,14 +126,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             foreach (var property in properties)
             {
                 var propTypeInfo = new EntityPropertyInfo(property["property-type"] as string, 
-                    property["property-name"] as string);
+                    property["property-name"] as string,
+                    property["property-isnullable"] as bool?);
                 var transformedProp = PropertyTransformer?.Invoke(propTypeInfo) ?? propTypeInfo;
 
                 transformedProperties.Add(new Dictionary<string, object>
                 {
                     { "property-type", transformedProp.PropertyType },
                     { "property-name", transformedProp.PropertyName },
-                    { "property-annotations", property["property-annotations"] }
+                    { "property-annotations", property["property-annotations"] },
+                    { "property-isnullable", transformedProp.PropertyIsNullable },
                 });
             }
 

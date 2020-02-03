@@ -15,10 +15,11 @@
         /// </summary>
         /// <param name="propertyType">Property type.</param>
         /// <param name="propertyName">Property name.</param>
-        public EntityPropertyInfo(string propertyType, string propertyName)
+        public EntityPropertyInfo(string propertyType, string propertyName, bool? propertyIsNullable = null)
         {
             PropertyType = propertyType;
             PropertyName = propertyName;
+            PropertyIsNullable = propertyIsNullable;
         }
 
         /// <summary>
@@ -30,5 +31,10 @@
         /// Property name.
         /// </summary>
         public string PropertyName { get; set; }
+
+        /// <summary>
+        /// Gets if the property Is Nullable
+        /// </summary>
+        public bool? PropertyIsNullable { get; protected set; }
     }
 }

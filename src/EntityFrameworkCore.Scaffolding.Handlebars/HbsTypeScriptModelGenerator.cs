@@ -125,7 +125,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         options.ModelNamespace,
                         options.UseDataAnnotations);
 
-                    var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.DisplayName());
+                    var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType);
                     var entityTypeFileName = transformedFileName + FileExtension;
                     resultingFiles.AdditionalFiles.Add(
                         new ScaffoldedFile

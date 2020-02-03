@@ -151,7 +151,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 GenerateEntityTypeDataAnnotations(entityType);
             }
 
-            var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
+            var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType);
 
             TemplateData.Add("class", transformedEntityName);
 
@@ -181,6 +181,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     {
                         { "property-name", navigation.Name },
                         { "property-type", navigation.GetTargetType().Name },
+                        { "property-isnullable", null }
                     });
                 }
 
@@ -213,7 +214,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     { "property-type", CSharpHelper.Reference(property.ClrType) },
                     { "property-name", property.Name },
-                    { "property-annotations",  PropertyAnnotationsData }
+                    { "property-annotations",  PropertyAnnotationsData },
+                    { "property-isnullable",  property.IsNullable }
                 });
             }
 

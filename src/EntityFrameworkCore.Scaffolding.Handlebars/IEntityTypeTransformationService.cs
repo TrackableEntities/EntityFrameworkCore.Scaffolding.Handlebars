@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using System.Collections.Generic;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -10,16 +11,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Transform entity type name.
         /// </summary>
-        /// <param name="entityName">Entity type name.</param>
+        /// <param name="entity">Entity type</param>
         /// <returns>Transformed entity type name.</returns>
-        string TransformEntityName(string entityName);
+        string TransformEntityName(IEntityType entity);
 
         /// <summary>
         /// Transform entity file name.
         /// </summary>
-        /// <param name="entityFileName">Entity file name.</param>
+        /// <param name="entity">Entity type.</param>
         /// <returns>Transformed entity file name.</returns>
-        string TransformEntityFileName(string entityFileName);
+        string TransformEntityFileName(IEntityType entity);
 
         /// <summary>
         /// Transform single property name.

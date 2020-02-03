@@ -117,7 +117,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             Check.NotNull(entityType, nameof(entityType));
 
-            var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
+            var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType);
 
             TemplateData.Add("class", transformedEntityName);
 
@@ -172,6 +172,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-type", TypeScriptHelper.TypeName(property.ClrType) },
                     { "property-name",  TypeScriptHelper.ToCamelCase(property.Name) },
                     { "property-annotations",  new List<Dictionary<string, object>>() },
+                    { "property-isnullable", property.IsNullable}
                 });
             }
 

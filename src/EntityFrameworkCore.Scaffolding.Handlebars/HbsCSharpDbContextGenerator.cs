@@ -31,6 +31,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         private const string EntityLambdaIdentifier = "entity";
         private const string Language = "CSharp";
         private readonly IOptions<HandlebarsScaffoldingOptions> _options;
+        private string _modelNamespace;
 
         /// <summary>
         /// CSharp helper.
@@ -94,17 +95,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Generate the DbContext class.
         /// </summary>
         /// <param name="model">Metadata about the shape of entities, the relationships between them, and how they map to the database.</param>
-        /// <param name="namespace">DbContext namespace.</param>
         /// <param name="contextName">Name of DbContext class.</param>
         /// <param name="connectionString">Database connection string.</param>
+        /// <param name="contextNamespace">Context namespace.</param>
+        /// <param name="modelNamespace">Model namespace.</param>
         /// <param name="useDataAnnotations">If false use fluent modeling API.</param>
         /// <param name="suppressConnectionStringWarning">Suppress connection string warning.</param>
         /// <returns>DbContext class.</returns>
-        public override string WriteCode(
-            IModel model, string @namespace, string contextName, string connectionString,
-            bool useDataAnnotations, bool suppressConnectionStringWarning)
+        public override string WriteCode(IModel model, string contextName, string connectionString,
+            string contextNamespace, string modelNamespace, bool useDataAnnotations, bool suppressConnectionStringWarning)
         {
             Check.NotNull(model, nameof(model));
+
+            if (!string.IsNullOrEmpty(modelNamespace) && string.CompareOrdinal(contextNamespace, modelNamespace) != 0)
+                _modelNamespace = modelNamespace;
 
             TemplateData = new Dictionary<string, object>();
 
@@ -116,7 +120,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 }
             }
 
-            TemplateData.Add("namespace", @namespace);
+            TemplateData.Add("namespace", contextNamespace);
 
             GenerateClass(model, contextName, connectionString, useDataAnnotations, suppressConnectionStringWarning);
 
@@ -140,6 +144,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             Check.NotNull(contextName, nameof(contextName));
             Check.NotNull(connectionString, nameof(connectionString));
 
+            TemplateData.Add("model-namespace", _modelNamespace);
             TemplateData.Add("class", contextName);
 
             GenerateDbSets(model);
@@ -353,7 +358,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (!_entityTypeBuilderInitialized)
             {
                 var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
-
+                
                 sb.AppendLine();
                 sb.AppendLine($"modelBuilder.Entity<{transformedEntityName}>({EntityLambdaIdentifier} =>");
                 sb.Append("{");

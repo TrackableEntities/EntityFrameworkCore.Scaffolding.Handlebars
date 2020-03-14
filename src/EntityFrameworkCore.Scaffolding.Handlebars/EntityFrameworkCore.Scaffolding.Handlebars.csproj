@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>3.5.0</PackageVersion>
+    <PackageVersion>3.6.0</PackageVersion>
     <Authors>Tony Sneed</Authors>
     <Company>Tony Sneed</Company>
     <Title>Entity Framework Core Scaffolding with Handlebars</Title>
@@ -12,7 +12,7 @@
     <PackageProjectUrl>https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageTags>scaffolding reverse-engineer entity-framework-core handlebars</PackageTags>
-    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v3.5.0</PackageReleaseNotes>
+    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v3.6.0</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
     <IncludeSource>true</IncludeSource>
     <SignAssembly>true</SignAssembly>
@@ -56,7 +56,7 @@
   <ItemGroup>
     <PackageReference Include="Handlebars.Net" Version="1.10.1" />
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.0"/>
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -124,9 +124,5 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;C:\Dev\ThirdParty\EntityFrameworkCore.Scaffolding.Handlebars\src\EntityFrameworkCore.Scaffolding.Handlebars\bin\Debug\netstandard2.1\EntityFrameworkCore.Scaffolding.Handlebars.dll&quot; &quot;C:\Users\Del\.nuget\packages\entityframeworkcore.scaffolding.handlebars\3.5.0\lib\netstandard2.1\EntityFrameworkCore.Scaffolding.Handlebars.dll&quot;" />
-  </Target>
 
 </Project>

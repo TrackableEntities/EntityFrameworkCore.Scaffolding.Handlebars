@@ -115,8 +115,9 @@ namespace Scaffolding.Handlebars.Tests
                 connectionString: Constants.Connections.SqlServerConnection,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
-                codeOptions: new ModelCodeGenerationOptions()
+                codeOptions: new ModelCodeGenerationOptions
                 {
+                    ContextNamespace = Constants.Parameters.RootNamespace,
                     ModelNamespace = Constants.Parameters.RootNamespace,
                     ContextName = Constants.Parameters.ContextName,
                     ContextDir = Constants.Parameters.ProjectPath,
@@ -149,8 +150,9 @@ namespace Scaffolding.Handlebars.Tests
                 connectionString: Constants.Connections.SqlServerConnection,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
-                codeOptions: new ModelCodeGenerationOptions()
+                codeOptions: new ModelCodeGenerationOptions
                 {
+                    ContextNamespace = Constants.Parameters.RootNamespace,
                     ModelNamespace = Constants.Parameters.RootNamespace,
                     ContextName = Constants.Parameters.ContextName,
                     ContextDir = Constants.Parameters.ProjectPath,
@@ -188,8 +190,9 @@ namespace Scaffolding.Handlebars.Tests
                 connectionString: Constants.Connections.SqlServerConnection,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
-                codeOptions: new ModelCodeGenerationOptions()
+                codeOptions: new ModelCodeGenerationOptions
                 {
+                    ContextNamespace = Constants.Parameters.RootNamespace,
                     ModelNamespace = Constants.Parameters.RootNamespace,
                     ContextName = Constants.Parameters.ContextName,
                     ContextDir = Constants.Parameters.ProjectPath,
@@ -229,8 +232,9 @@ namespace Scaffolding.Handlebars.Tests
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
                     modelOptions: new ModelReverseEngineerOptions(),
-                    codeOptions: new ModelCodeGenerationOptions()
+                    codeOptions: new ModelCodeGenerationOptions
                     {
+                        ContextNamespace = Constants.Parameters.RootNamespace,
                         ModelNamespace = Constants.Parameters.RootNamespace,
                         ContextName = Constants.Parameters.ContextName,
                         ContextDir = Path.Combine(directory.Path, "Contexts"),
@@ -264,8 +268,9 @@ namespace Scaffolding.Handlebars.Tests
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
                     modelOptions: new ModelReverseEngineerOptions(),
-                    codeOptions: new ModelCodeGenerationOptions()
+                    codeOptions: new ModelCodeGenerationOptions
                     {
+                        ContextNamespace = Constants.Parameters.RootNamespace,
                         ModelNamespace = Constants.Parameters.RootNamespace,
                         ContextName = Constants.Parameters.ContextName,
                         ContextDir = Path.Combine(directory.Path, "Contexts"),
@@ -299,8 +304,9 @@ namespace Scaffolding.Handlebars.Tests
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
                     modelOptions: new ModelReverseEngineerOptions(),
-                    codeOptions: new ModelCodeGenerationOptions()
+                    codeOptions: new ModelCodeGenerationOptions
                     {
+                        ContextNamespace = Constants.Parameters.RootNamespace,
                         ModelNamespace = Constants.Parameters.RootNamespace,
                         ContextName = Constants.Parameters.ContextName,
                         ContextDir = Path.Combine(directory.Path, "Contexts"),

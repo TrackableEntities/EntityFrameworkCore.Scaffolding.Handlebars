@@ -74,7 +74,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="options">Handlebars scaffolding options.</param>
         public HbsCSharpDbContextGenerator(
-            [NotNull] IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator, 
+            [NotNull] IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator,
             [NotNull] IAnnotationCodeGenerator annotationCodeGenerator,
             [NotNull] IDbContextTemplateService dbContextTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
@@ -101,7 +101,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="suppressConnectionStringWarning">Suppress connection string warning.</param>
         /// <returns>DbContext class.</returns>
         public override string WriteCode(
-            IModel model, string @namespace, string contextName, string connectionString, 
+            IModel model, string @namespace, string contextName, string connectionString,
             bool useDataAnnotations, bool suppressConnectionStringWarning)
         {
             Check.NotNull(model, nameof(model));
@@ -133,7 +133,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="useDataAnnotations">Use fluent modeling API if false.</param>
         /// <param name="suppressConnectionStringWarning">Suppress connection string warning.</param>
         protected override void GenerateClass(
-            IModel model, string contextName, string connectionString, bool useDataAnnotations, 
+            IModel model, string contextName, string connectionString, bool useDataAnnotations,
             bool suppressConnectionStringWarning)
         {
             Check.NotNull(model, nameof(model));
@@ -201,7 +201,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     sb.AppendLine("}");
                 }
 
-                sb.AppendLine("}"); 
+                sb.AppendLine("}");
             }
 
             var onConfiguring = sb.ToString();
@@ -352,8 +352,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             if (!_entityTypeBuilderInitialized)
             {
+                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
+
                 sb.AppendLine();
-                sb.AppendLine($"modelBuilder.Entity<{entityType.Name}>({EntityLambdaIdentifier} =>");
+                sb.AppendLine($"modelBuilder.Entity<{transformedEntityName}>({EntityLambdaIdentifier} =>");
                 sb.Append("{");
             }
 
@@ -494,7 +496,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.HasKey)}(e => {GenerateLambdaToKey(key.Properties, "e")})"
+                $".{nameof(EntityTypeBuilder.HasKey)}(e => {GenerateLambdaToKey(key.Properties, "e", EntityTypeTransformationService.TransformPropertyName)})"
             };
 
             if (explicitName)
@@ -560,7 +562,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.HasIndex)}(e => {GenerateLambdaToKey(index.Properties, "e")})"
+                $".{nameof(EntityTypeBuilder.HasIndex)}(e => {GenerateLambdaToKey(index.Properties, "e", EntityTypeTransformationService.TransformPropertyName)})"
             };
 
             var annotations = index.GetAnnotations().ToList();
@@ -615,7 +617,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.Property)}(e => e.{property.Name})"
+                $".{nameof(EntityTypeBuilder.Property)}(e => e.{EntityTypeTransformationService.TransformPropertyName(property.Name)})"
             };
 
             var annotations = property.GetAnnotations().ToList();
@@ -792,9 +794,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.HasOne)}(" + (foreignKey.DependentToPrincipal != null ? $"d => d.{foreignKey.DependentToPrincipal.Name}" : null) + ")",
+                $".{nameof(EntityTypeBuilder.HasOne)}(" + (foreignKey.DependentToPrincipal != null ? $"d => d.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.DependentToPrincipal.Name)}" : null) + ")",
                 $".{(foreignKey.IsUnique ? nameof(ReferenceNavigationBuilder.WithOne) : nameof(ReferenceNavigationBuilder.WithMany))}"
-                + $"(" + (foreignKey.PrincipalToDependent != null ? $"p => p.{foreignKey.PrincipalToDependent.Name}" : null) + ")"
+                + $"(" + (foreignKey.PrincipalToDependent != null ? $"p => p.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.PrincipalToDependent.Name)}" : null) + ")"
             };
 
             if (!foreignKey.PrincipalKey.IsPrimaryKey())
@@ -803,13 +805,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 lines.Add(
                     $".{nameof(ReferenceReferenceBuilder.HasPrincipalKey)}"
                     + (foreignKey.IsUnique ? $"<{((ITypeBase)foreignKey.PrincipalEntityType).DisplayName()}>" : "")
-                    + $"(p => {GenerateLambdaToKey(foreignKey.PrincipalKey.Properties, "p")})");
+                    + $"(p => {GenerateLambdaToKey(foreignKey.PrincipalKey.Properties, "p", EntityTypeTransformationService.TransformNavPropertyName)})");
             }
 
             lines.Add(
                 $".{nameof(ReferenceReferenceBuilder.HasForeignKey)}"
                 + (foreignKey.IsUnique ? $"<{((ITypeBase)foreignKey.DeclaringEntityType).DisplayName()}>" : "")
-                + $"(d => {GenerateLambdaToKey(foreignKey.Properties, "d")})");
+                + $"(d => {GenerateLambdaToKey(foreignKey.Properties, "d", EntityTypeTransformationService.TransformPropertyName)})");
 
             var defaultOnDeleteAction = foreignKey.IsRequired
                 ? DeleteBehavior.Cascade
@@ -932,15 +934,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             sb.AppendLine(";");
         }
 
-        private static string GenerateLambdaToKey(
+        private string GenerateLambdaToKey(
             IReadOnlyList<IProperty> properties,
-            string lambdaIdentifier)
+            string lambdaIdentifier,
+            Func<string, string> nameTransform )
         {
             return properties.Count <= 0
                 ? ""
                 : properties.Count == 1
-                ? $"{lambdaIdentifier}.{properties[0].Name}"
-                : $"new {{ {string.Join(", ", properties.Select(p => lambdaIdentifier + "." + p.Name))} }}";
+                ? $"{lambdaIdentifier}.{nameTransform(properties[0].Name)}"
+                : $"new {{ {string.Join(", ", properties.Select(p => lambdaIdentifier + "." + nameTransform(p.Name)))} }}";
         }
 
         private static void RemoveAnnotation(ref List<IAnnotation> annotations, string annotationName)

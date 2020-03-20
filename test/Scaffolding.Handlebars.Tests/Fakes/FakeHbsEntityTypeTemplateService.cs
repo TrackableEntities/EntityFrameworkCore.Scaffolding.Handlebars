@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using Microsoft.EntityFrameworkCore.Design;
 using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
-namespace EntityFrameworkCore.Scaffolding.Handlebars
+namespace Scaffolding.Handlebars.Tests.Fakes
 {
     /// <summary>
     /// Provide services required to generate entity type classes using Handlebars templates.
     /// </summary>
-    public class HbsEntityTypeTemplateService : HbsTemplateService, IEntityTypeTemplateService
+    public class FakeHbsEntityTypeTemplateService : HbsTemplateService, IEntityTypeTemplateService
     {
         private Dictionary<string, TemplateFileInfo> EntitiesTemplateFiles { get; }
 
@@ -23,7 +25,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         /// <param name="fileService">Template file service.</param>
         /// <param name="languageService">Template language service.</param>
-        public HbsEntityTypeTemplateService(ITemplateFileService fileService,
+        public FakeHbsEntityTypeTemplateService(ITemplateFileService fileService,
             ITemplateLanguageService languageService) : base(fileService, languageService)
         {
             EntitiesTemplateFiles = LanguageService.GetEntitiesTemplateFileInfo(fileService);
@@ -67,16 +69,33 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         protected override IDictionary<string, string> GetPartialTemplates(
             LanguageOptions language = LanguageOptions.CSharp)
         {
-           
-            var templates = new Dictionary<string, string>();
-            foreach (var item in EntitiesTemplateFiles)
-            {
-                if (item.Value.RelativeDirectory == Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory)
-                {
-                    templates.Add(item.Key, FileService.RetrieveTemplateFileContents(item.Value.RelativeDirectory, item.Value.FileName));
-                }
-            }
+            EntitiesTemplateFiles.TryGetValue(Constants.EntityTypeCtorTemplate, out TemplateFileInfo ctorFile);
+            var ctorTemplateFile = FileService.RetrieveTemplateFileContents(
+                ctorFile.RelativeDirectory, ctorFile.FileName);
 
+            EntitiesTemplateFiles.TryGetValue(Constants.EntityTypeImportTemplate, out TemplateFileInfo importFile);
+            var importTemplateFile = FileService.RetrieveTemplateFileContents(
+                importFile.RelativeDirectory, importFile.FileName);
+
+            EntitiesTemplateFiles.TryGetValue(Constants.EntityTypePropertyTemplate, out TemplateFileInfo propertyFile);
+            var propertyTemplateFile = FileService.RetrieveTemplateFileContents(
+                propertyFile.RelativeDirectory, propertyFile.FileName);
+
+            var templates = new Dictionary<string, string>
+            {
+                {
+                    Constants.EntityTypeCtorTemplate.ToLower(CultureInfo.InvariantCulture),
+                    ctorTemplateFile
+                },
+                {
+                    Constants.EntityTypeImportTemplate.ToLower(CultureInfo.InvariantCulture),
+                    importTemplateFile
+                },
+                {
+                    Constants.EntityTypePropertyTemplate.ToLower(CultureInfo.InvariantCulture),
+                    propertyTemplateFile
+                },
+            };
             return templates;
         }
     }

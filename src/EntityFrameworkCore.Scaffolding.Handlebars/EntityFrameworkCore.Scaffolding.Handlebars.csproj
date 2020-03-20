@@ -74,6 +74,9 @@
     <None Update="CodeTemplates\CSharpDbContext\Partials\DbConstructor.hbs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="CodeTemplates\CSharpDbContext\Partials\DbOnConfiguring.hbs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="CodeTemplates\CSharpDbContext\Partials\DbSets.hbs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -96,6 +99,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="CodeTemplates\TypeScriptDbContext\Partials\DbConstructor.hbs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CodeTemplates\TypeScriptDbContext\Partials\DbOnConfiguring.hbs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="CodeTemplates\TypeScriptDbContext\Partials\DbSets.hbs">

@@ -1,0 +1,10 @@
+﻿{{spaces 8}}protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{{spaces 8}}{
+{{spaces 12}}if (!optionsBuilder.IsConfigured)
+{{spaces 12}}{
+{{#if suppress-connectionstring-warning}}
+{{spaces 16}}{{sensitive-information-warning}}
+{{/if}}
+{{spaces 16}}optionsBuilder{{options-builder-provider}};
+{{spaces 11}} }
+{{spaces 7}} }

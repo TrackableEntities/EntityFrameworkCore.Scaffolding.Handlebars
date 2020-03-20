@@ -26,6 +26,16 @@ namespace ScaffoldingSample.Contexts
         {
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True");
+            }
+        }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Category>(entity =>
@@ -37,6 +47,8 @@ namespace ScaffoldingSample.Contexts
 
             modelBuilder.Entity<Customer>(entity =>
             {
+                entity.HasComment("hello table Customer");
+
                 entity.Property(e => e.CustomerId)
                     .HasMaxLength(5)
                     .IsFixedLength();
@@ -45,7 +57,8 @@ namespace ScaffoldingSample.Contexts
 
                 entity.Property(e => e.CompanyName)
                     .IsRequired()
-                    .HasMaxLength(40);
+                    .HasMaxLength(40)
+                    .HasComment("hello CompanyName");
 
                 entity.Property(e => e.ContactName).HasMaxLength(30);
 

@@ -206,7 +206,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     sb.AppendLine("}");
                 }
 
-                sb.AppendLine("}"); 
+                sb.AppendLine("}");
             }
 
             var onConfiguring = sb.ToString();

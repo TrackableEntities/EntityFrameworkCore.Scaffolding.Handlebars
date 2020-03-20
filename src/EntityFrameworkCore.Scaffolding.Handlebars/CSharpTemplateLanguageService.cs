@@ -69,38 +69,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         FileName = Constants.EntityTypeTemplate + Constants.TemplateExtension
                     }
                 },
-                //{
-                //    Constants.EntityTypeImportTemplate,
-                //    new TemplateFileInfo
-                //    {
-                //        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
-                //        FileName = Constants.EntityTypeImportTemplate + Constants.TemplateExtension
-                //    }
-                //},
-                //{
-                //    Constants.EntityTypeCtorTemplate,
-                //    new TemplateFileInfo
-                //    {
-                //        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
-                //        FileName = Constants.EntityTypeCtorTemplate + Constants.TemplateExtension
-                //    }
-                //},
-                //{
-                //    Constants.EntityTypePropertyTemplate,
-                //    new TemplateFileInfo
-                //    {
-                //        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
-                //        FileName = Constants.EntityTypePropertyTemplate + Constants.TemplateExtension
-                //    }
-                //},
-                //{
-                //    Constants.EntityTypePropertyTemplate + "item"   ,
-                //    new TemplateFileInfo
-                //    {
-                //        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
-                //        FileName = Constants.EntityTypePropertyTemplate + "item" + Constants.TemplateExtension
-                //    }
-                //},
             };
             
             foreach(var file in fileService.RetrieveAllFileNames(Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory))
@@ -112,8 +80,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 });
             }
 
-
-            //EntityFrameworkCore.Scaffolding.Handlebars.FileService.
             return result;
         }
     }

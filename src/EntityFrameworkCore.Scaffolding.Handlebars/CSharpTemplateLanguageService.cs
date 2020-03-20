@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Get DbContext template file information.
         /// </summary>
         /// <returns>Dictionary of templates with file information.</returns>
-        public Dictionary<string, TemplateFileInfo> GetDbContextTemplateFileInfo()
+        public Dictionary<string, TemplateFileInfo> GetDbContextTemplateFileInfo(ITemplateFileService fileService)
         {
             var result = new Dictionary<string, TemplateFileInfo>
             {
@@ -49,6 +49,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     }
                 },
             };
+
             return result;
         }
 
@@ -56,7 +57,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Get Entities template file information.
         /// </summary>
         /// <returns>Dictionary of templates with file information.</returns>
-        public Dictionary<string, TemplateFileInfo> GetEntitiesTemplateFileInfo()
+        public Dictionary<string, TemplateFileInfo> GetEntitiesTemplateFileInfo(ITemplateFileService fileService)
         {
             var result = new Dictionary<string, TemplateFileInfo>
             {
@@ -68,31 +69,51 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         FileName = Constants.EntityTypeTemplate + Constants.TemplateExtension
                     }
                 },
-                {
-                    Constants.EntityTypeImportTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
-                        FileName = Constants.EntityTypeImportTemplate + Constants.TemplateExtension
-                    }
-                },
-                {
-                    Constants.EntityTypeCtorTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
-                        FileName = Constants.EntityTypeCtorTemplate + Constants.TemplateExtension
-                    }
-                },
-                {
-                    Constants.EntityTypePropertyTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
-                        FileName = Constants.EntityTypePropertyTemplate + Constants.TemplateExtension
-                    }
-                },
+                //{
+                //    Constants.EntityTypeImportTemplate,
+                //    new TemplateFileInfo
+                //    {
+                //        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
+                //        FileName = Constants.EntityTypeImportTemplate + Constants.TemplateExtension
+                //    }
+                //},
+                //{
+                //    Constants.EntityTypeCtorTemplate,
+                //    new TemplateFileInfo
+                //    {
+                //        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
+                //        FileName = Constants.EntityTypeCtorTemplate + Constants.TemplateExtension
+                //    }
+                //},
+                //{
+                //    Constants.EntityTypePropertyTemplate,
+                //    new TemplateFileInfo
+                //    {
+                //        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
+                //        FileName = Constants.EntityTypePropertyTemplate + Constants.TemplateExtension
+                //    }
+                //},
+                //{
+                //    Constants.EntityTypePropertyTemplate + "item"   ,
+                //    new TemplateFileInfo
+                //    {
+                //        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
+                //        FileName = Constants.EntityTypePropertyTemplate + "item" + Constants.TemplateExtension
+                //    }
+                //},
             };
+            
+            foreach(var file in fileService.RetrieveAllFileNames(Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory))
+            {
+                result.Add(file, new TemplateFileInfo()
+                {
+                    RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
+                    FileName = file + Constants.TemplateExtension
+                });
+            }
+
+
+            //EntityFrameworkCore.Scaffolding.Handlebars.FileService.
             return result;
         }
     }

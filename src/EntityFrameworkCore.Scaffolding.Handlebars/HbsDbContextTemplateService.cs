@@ -26,7 +26,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public HbsDbContextTemplateService(ITemplateFileService fileService,
             ITemplateLanguageService languageService) : base(fileService, languageService)
         {
-            DbContextTemplateFiles = LanguageService.GetDbContextTemplateFileInfo();
+            DbContextTemplateFiles = LanguageService.GetDbContextTemplateFileInfo(fileService);
         }
 
         /// <summary>
@@ -67,33 +67,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         protected override IDictionary<string, string> GetPartialTemplates(
             LanguageOptions language = LanguageOptions.CSharp)
         {
-            DbContextTemplateFiles.TryGetValue(Constants.DbContextImportTemplate, out TemplateFileInfo importFile);
-            var importTemplateFile = FileService.RetrieveTemplateFileContents(
-                importFile.RelativeDirectory, importFile.FileName);
-
-            DbContextTemplateFiles.TryGetValue(Constants.DbContextCtorTemplate, out TemplateFileInfo ctorFile);
-            var ctorTemplateFile = FileService.RetrieveTemplateFileContents(
-                ctorFile.RelativeDirectory, ctorFile.FileName);
-
-            DbContextTemplateFiles.TryGetValue(Constants.DbContextDbSetsTemplate, out TemplateFileInfo propertyFile);
-            var propertyTemplateFile = FileService.RetrieveTemplateFileContents(
-                propertyFile.RelativeDirectory, propertyFile.FileName);
-
-            var templates = new Dictionary<string, string>
+            var templates = new Dictionary<string, string>();
+            foreach(var item in DbContextTemplateFiles)
             {
+                if(item.Value.RelativeDirectory == Constants.CSharpTemplateDirectories.DbContextPartialsDirectory)
                 {
-                    Constants.DbContextImportTemplate.ToLower(),
-                    importTemplateFile
-                },
-                {
-                    Constants.DbContextCtorTemplate.ToLower(),
-                    ctorTemplateFile
-                },
-                {
-                    Constants.DbContextDbSetsTemplate.ToLower(),
-                    propertyTemplateFile
-                },
-            };
+                    templates.Add(item.Key, FileService.RetrieveTemplateFileContents(item.Value.RelativeDirectory, item.Value.FileName));
+                }
+            }
             return templates;
         }
     }

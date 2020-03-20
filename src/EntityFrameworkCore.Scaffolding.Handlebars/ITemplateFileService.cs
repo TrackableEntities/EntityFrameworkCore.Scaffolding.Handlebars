@@ -24,5 +24,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns>File contents.</returns>
         string RetrieveTemplateFileContents(string relativeDirectory, string fileName,
             string altRelativeDirectory = null);
+
+
+        string[] RetrieveAllFileNames(string relativeDirectory);
     }
 }

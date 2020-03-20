@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Get DbContext template file information.
         /// </summary>
         /// <returns>Dictionary of templates with file information.</returns>
-        public Dictionary<string, TemplateFileInfo> GetDbContextTemplateFileInfo()
+        public Dictionary<string, TemplateFileInfo> GetDbContextTemplateFileInfo(ITemplateFileService fileService)
         {
             var result = new Dictionary<string, TemplateFileInfo>
             {
@@ -56,7 +56,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Get Entities template file information.
         /// </summary>
         /// <returns>Dictionary of templates with file information.</returns>
-        public Dictionary<string, TemplateFileInfo> GetEntitiesTemplateFileInfo()
+        public Dictionary<string, TemplateFileInfo> GetEntitiesTemplateFileInfo(ITemplateFileService fileService)
         {
             var result = new Dictionary<string, TemplateFileInfo>
             {

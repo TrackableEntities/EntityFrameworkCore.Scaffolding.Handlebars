@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -33,6 +34,15 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
 
             return filePaths.ToArray();
+        }
+
+        public string[] RetrieveAllFileNames(string relativeDirectory)
+        {
+            if (!NameToContentMap.TryGetValue(relativeDirectory, out var filesMap))
+            {
+                throw new DirectoryNotFoundException("Could not find directory " + relativeDirectory);
+            }
+            return filesMap.Select(x=> x.Key).ToArray();
         }
 
         /// <summary>

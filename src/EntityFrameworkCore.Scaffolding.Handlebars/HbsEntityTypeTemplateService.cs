@@ -26,7 +26,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public HbsEntityTypeTemplateService(ITemplateFileService fileService,
             ITemplateLanguageService languageService) : base(fileService, languageService)
         {
-            EntitiesTemplateFiles = LanguageService.GetEntitiesTemplateFileInfo();
+            EntitiesTemplateFiles = LanguageService.GetEntitiesTemplateFileInfo(fileService);
         }
 
         /// <summary>
@@ -67,33 +67,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         protected override IDictionary<string, string> GetPartialTemplates(
             LanguageOptions language = LanguageOptions.CSharp)
         {
-            EntitiesTemplateFiles.TryGetValue(Constants.EntityTypeCtorTemplate, out TemplateFileInfo ctorFile);
-            var ctorTemplateFile = FileService.RetrieveTemplateFileContents(
-                ctorFile.RelativeDirectory, ctorFile.FileName);
-
-            EntitiesTemplateFiles.TryGetValue(Constants.EntityTypeImportTemplate, out TemplateFileInfo importFile);
-            var importTemplateFile = FileService.RetrieveTemplateFileContents(
-                importFile.RelativeDirectory, importFile.FileName);
-
-            EntitiesTemplateFiles.TryGetValue(Constants.EntityTypePropertyTemplate, out TemplateFileInfo propertyFile);
-            var propertyTemplateFile = FileService.RetrieveTemplateFileContents(
-                propertyFile.RelativeDirectory, propertyFile.FileName);
-
-            var templates = new Dictionary<string, string>
+           
+            var templates = new Dictionary<string, string>();
+            foreach (var item in EntitiesTemplateFiles)
             {
+                if (item.Value.RelativeDirectory == Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory)
                 {
-                    Constants.EntityTypeCtorTemplate.ToLower(),
-                    ctorTemplateFile
-                },
-                {
-                    Constants.EntityTypeImportTemplate.ToLower(),
-                    importTemplateFile
-                },
-                {
-                    Constants.EntityTypePropertyTemplate.ToLower(),
-                    propertyTemplateFile
-                },
-            };
+                    templates.Add(item.Key, FileService.RetrieveTemplateFileContents(item.Value.RelativeDirectory, item.Value.FileName));
+                }
+            }
+
             return templates;
         }
     }

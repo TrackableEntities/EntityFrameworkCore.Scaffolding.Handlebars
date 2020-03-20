@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 
@@ -27,6 +28,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             return filePaths.ToArray();
         }
+
+        public string[] RetrieveAllFileNames(string relativeDirectory)
+        {            
+            return Directory.GetFiles(relativeDirectory).Select(x => Path.GetFileNameWithoutExtension(x)).ToArray();
+        }
+
 
         /// <summary>
         /// Retreive template file contents from the file system. 

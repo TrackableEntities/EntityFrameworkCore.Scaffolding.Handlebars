@@ -126,7 +126,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     { "property-type", transformedProp.PropertyType },
                     { "property-name", transformedProp.PropertyName },
-                    { "property-annotations", property["property-annotations"] }
+                    { "property-annotations", property["property-annotations"] },
+                    { "property-comment", property["property-comment"] },
                 });
             }
 

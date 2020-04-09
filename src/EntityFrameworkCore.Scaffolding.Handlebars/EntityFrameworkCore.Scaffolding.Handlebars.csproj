@@ -7,7 +7,7 @@
     <Authors>Tony Sneed</Authors>
     <Company>Tony Sneed</Company>
     <Title>Entity Framework Core Scaffolding with Handlebars</Title>
-    <Description>Custom Allows customization of classes reverse engineered from an existing database using the Entity Framework Core toolchain with Handlebars templates.</Description>
+    <Description>Allows customization of classes reverse engineered from an existing database using the Entity Framework Core toolchain with Handlebars templates.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
@@ -19,8 +19,8 @@
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
     <AssemblyVersion>3.1.0.1</AssemblyVersion>
     <FileVersion>3.1.0.1</FileVersion>
-    <Version>3.6.1</Version>
-    <PackageId>Custom.EntityFrameworkCore.Scaffolding.Handlebars</PackageId>
+    <Version>3.0.0</Version>
+    <PackageId>EntityFrameworkCore.Scaffolding.Handlebars</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

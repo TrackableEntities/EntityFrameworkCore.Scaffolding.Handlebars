@@ -410,7 +410,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             if (entityType.GetComment() != null)
             {
-                TemplateData.Add(entityType.DisplayName() + "-comment", entityType.GetComment());
                 lines.Add(
                     $".{nameof(RelationalEntityTypeBuilderExtensions.HasComment)}" +
                     $"({CSharpHelper.Literal(entityType.GetComment())})");

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using Microsoft.EntityFrameworkCore.Design;
 using HandlebarsLib = HandlebarsDotNet.Handlebars;
@@ -82,15 +83,15 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var templates = new Dictionary<string, string>
             {
                 {
-                    Constants.EntityTypeCtorTemplate.ToLower(),
+                    Constants.EntityTypeCtorTemplate.ToLower(CultureInfo.InvariantCulture),
                     ctorTemplateFile
                 },
                 {
-                    Constants.EntityTypeImportTemplate.ToLower(),
+                    Constants.EntityTypeImportTemplate.ToLower(CultureInfo.InvariantCulture),
                     importTemplateFile
                 },
                 {
-                    Constants.EntityTypePropertyTemplate.ToLower(),
+                    Constants.EntityTypePropertyTemplate.ToLower(CultureInfo.InvariantCulture),
                     propertyTemplateFile
                 },
             };

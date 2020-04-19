@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Threading;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using HandlebarsDotNet;
@@ -102,11 +104,14 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations)
+        [InlineData(false, "en-US")]
+        [InlineData(true, "en-US")]
+        [InlineData(false, "tr-TR")]
+        [InlineData(true, "tr-TR")]
+        public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations, string culture)
         {
             // Arrange
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
             var options = ReverseEngineerOptions.DbContextOnly;
             var scaffolder = CreateScaffolder(options);
 
@@ -137,11 +142,14 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations)
+        [InlineData(false, "en-US")]
+        [InlineData(true, "en-US")]
+        [InlineData(false, "tr-TR")]
+        [InlineData(true, "tr-TR")]
+        public void WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations, string culture)
         {
             // Arrange
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
             var options = ReverseEngineerOptions.EntitiesOnly;
             var scaffolder = CreateScaffolder(options);
 
@@ -177,11 +185,14 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WriteCode_Should_Generate_Context_and_Entity_Files(bool useDataAnnotations)
+        [InlineData(false, "en-US")]
+        [InlineData(true, "en-US")]
+        [InlineData(false, "tr-TR")]
+        [InlineData(true, "tr-TR")]
+        public void WriteCode_Should_Generate_Context_and_Entity_Files(bool useDataAnnotations, string culture)
         {
             // Arrange
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
             var options = ReverseEngineerOptions.DbContextAndEntities;
             var scaffolder = CreateScaffolder(options);
 

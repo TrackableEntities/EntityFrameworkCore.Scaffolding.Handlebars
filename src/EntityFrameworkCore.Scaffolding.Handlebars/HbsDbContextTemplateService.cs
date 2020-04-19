@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using Microsoft.EntityFrameworkCore.Design;
 using HandlebarsLib = HandlebarsDotNet.Handlebars;
@@ -72,6 +73,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 if(item.Value.RelativeDirectory == Constants.CSharpTemplateDirectories.DbContextPartialsDirectory)
                 {
+
                     templates.Add(item.Key, FileService.RetrieveTemplateFileContents(item.Value.RelativeDirectory, item.Value.FileName));
                 }
             }

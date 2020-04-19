@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -29,11 +30,34 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return filePaths.ToArray();
         }
 
-        public string[] RetrieveAllFileNames(string relativeDirectory)
+        /// <summary>
+        /// Find all files in relative directory
+        /// </summary>
+        /// <param name="relativeDirectory">Relative Directory.</param>
+        /// <returns></returns>
+        public virtual string[] RetrieveAllFileNames(string relativeDirectory)
         {            
-            return Directory.GetFiles(relativeDirectory).Select(x => Path.GetFileNameWithoutExtension(x)).ToArray();
+            return Directory.GetFiles(relativeDirectory, $"*.{Constants.TemplateExtension}").Select(x => Path.GetFileNameWithoutExtension(x)).ToArray();
         }
 
+        /// <summary>
+        /// Finds all partial templates
+        /// </summary>
+        /// <param name="result">Dictionary containing template info</param>
+        /// <param name="relativeDirectory">Relative Directory.</param>
+        /// <returns></returns>
+        public virtual Dictionary<string, TemplateFileInfo> FindAllPartialTemplates(Dictionary<string, TemplateFileInfo> result, string relativeDirectory)
+        {
+            foreach (var file in RetrieveAllFileNames(relativeDirectory))
+            {
+                result.Add(file, new TemplateFileInfo()
+                {
+                    RelativeDirectory = relativeDirectory,
+                    FileName = file + Constants.TemplateExtension
+                });
+            }
+            return result;
+        }
 
         /// <summary>
         /// Retreive template file contents from the file system. 

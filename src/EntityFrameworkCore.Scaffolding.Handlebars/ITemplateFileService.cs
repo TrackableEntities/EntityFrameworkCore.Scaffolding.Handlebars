@@ -1,4 +1,5 @@
 ﻿using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
+using System.Collections.Generic;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -25,7 +26,19 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         string RetrieveTemplateFileContents(string relativeDirectory, string fileName,
             string altRelativeDirectory = null);
 
-
+        /// <summary>
+        /// Retries all files from a relative directory.
+        /// </summary>
+        /// <param name="relativeDirectory">Relative directory name.</param>
+        /// <returns></returns>
         string[] RetrieveAllFileNames(string relativeDirectory);
+
+        /// <summary>
+        /// Finds all partial templates
+        /// </summary>
+        /// <param name="result">Dictionary containing template info</param>
+        /// <param name="relativeDirectory">Relative Directory.</param>
+        /// <returns></returns>
+        Dictionary<string, TemplateFileInfo> FindAllPartialTemplates(Dictionary<string, TemplateFileInfo> result, string relativeDirectory);
     }
 }

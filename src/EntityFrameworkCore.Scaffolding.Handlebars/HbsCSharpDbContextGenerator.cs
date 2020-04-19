@@ -162,55 +162,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             Check.NotNull(connectionString, nameof(connectionString));
 
-            var sb = new IndentedStringBuilder();
-            using (sb.Indent())
-            using (sb.Indent())
+            TemplateData.Add("connection-string", connectionString);
+            TemplateData.Add("suppress-connectionstring-warning", suppressConnectionStringWarning);
+            TemplateData.Add("sensitive-information-warning", $"#warning {DesignStrings.SensitiveInformationWarning}");
+
+            var useProviderCall = ProviderConfigurationCodeGenerator.GenerateUseProvider(
+                 connectionString,
+                 ProviderConfigurationCodeGenerator.GenerateProviderOptions());
+            var contextOptions = ProviderConfigurationCodeGenerator.GenerateContextOptions();
+            if (contextOptions != null)
             {
-                sb.AppendLine("protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)");
-                sb.AppendLine("{");
-
-                using (sb.Indent())
-                {
-                    sb.AppendLine("if (!optionsBuilder.IsConfigured)");
-                    sb.AppendLine("{");
-
-                    using (sb.Indent())
-                    {
-                        if (!suppressConnectionStringWarning)
-                        {
-                            sb.DecrementIndent()
-                                .DecrementIndent()
-                                .DecrementIndent()
-                                .DecrementIndent()
-                                .AppendLine("#warning " + DesignStrings.SensitiveInformationWarning)
-                                .IncrementIndent()
-                                .IncrementIndent()
-                                .IncrementIndent()
-                                .IncrementIndent();
-                        }
-
-                        sb.Append("optionsBuilder");
-
-                        var useProviderCall = ProviderConfigurationCodeGenerator.GenerateUseProvider(
-                            connectionString,
-                            ProviderConfigurationCodeGenerator.GenerateProviderOptions());
-                        var contextOptions = ProviderConfigurationCodeGenerator.GenerateContextOptions();
-                        if (contextOptions != null)
-                        {
-                            useProviderCall = useProviderCall.Chain(contextOptions);
-                        }
-
-                        sb.Append(CSharpHelper.Fragment(useProviderCall))
-                          .AppendLine(";");
-                    }
-                    sb.AppendLine("}");
-                }
-
-                sb.AppendLine("}"); 
+                useProviderCall = useProviderCall.Chain(contextOptions);
             }
 
-            var onConfiguring = sb.ToString();
-            TemplateData.Add("on-configuring", onConfiguring);
+            TemplateData.Add("options-builder-provider", CSharpHelper.Fragment(useProviderCall));
         }
 
         /// <summary>

@@ -23,33 +23,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextDirectory,
                         FileName = Constants.DbContextTemplate + Constants.TemplateExtension
                     }
-                },
-                {
-                    Constants.DbContextImportTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextPartialsDirectory,
-                        FileName = Constants.DbContextImportTemplate + Constants.TemplateExtension
-                    }
-                },
-                {
-                    Constants.DbContextCtorTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextPartialsDirectory,
-                        FileName = Constants.DbContextCtorTemplate + Constants.TemplateExtension
-                    }
-                },
-                {
-                    Constants.DbContextDbSetsTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextPartialsDirectory,
-                        FileName = Constants.DbContextDbSetsTemplate + Constants.TemplateExtension
-                    }
-                },
+                }
             };
 
+            result = fileService.FindAllPartialTemplates(result, Constants.CSharpTemplateDirectories.DbContextPartialsDirectory);
             return result;
         }
 
@@ -70,16 +47,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     }
                 },
             };
-            
-            foreach(var file in fileService.RetrieveAllFileNames(Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory))
-            {
-                result.Add(file, new TemplateFileInfo()
-                {
-                    RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
-                    FileName = file + Constants.TemplateExtension
-                });
-            }
 
+            result = fileService.FindAllPartialTemplates(result, Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory);
             return result;
         }
     }

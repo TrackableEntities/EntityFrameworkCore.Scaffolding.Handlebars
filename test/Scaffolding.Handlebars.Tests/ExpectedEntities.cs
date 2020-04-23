@@ -96,7 +96,7 @@ namespace FakeNamespace
         public byte[] RowVersion { get; set; }
         public int? CategoryId { get; set; }
 
-        [ForeignKey(""CategoryId"")]
+        [ForeignKey(nameof(CategoryId))]
         [InverseProperty(""Product"")]
         public virtual Category Category { get; set; }
     }

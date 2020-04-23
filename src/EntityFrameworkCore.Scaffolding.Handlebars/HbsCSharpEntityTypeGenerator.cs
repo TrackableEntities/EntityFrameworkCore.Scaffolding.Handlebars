@@ -401,9 +401,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     var foreignKeyAttribute = new AttributeWriter(nameof(ForeignKeyAttribute));
 
-                    foreignKeyAttribute.AddParameter(
-                        CSharpHelper.Literal(
-                            string.Join(",", navigation.ForeignKey.Properties.Select(p => p.Name))));
+                    if (navigation.ForeignKey.Properties.Count > 1)
+                    {
+                        foreignKeyAttribute.AddParameter(
+                                CSharpHelper.Literal(
+                                    string.Join(",", navigation.ForeignKey.Properties.Select(p => p.Name))));
+                    }
+                    else
+                    { 
+                        foreignKeyAttribute.AddParameter($"nameof({navigation.ForeignKey.Properties.First().Name})");
+                    }
 
                     NavPropertyAnnotations.Add(new Dictionary<string, object>
                     {
@@ -423,7 +430,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     var inversePropertyAttribute = new AttributeWriter(nameof(InversePropertyAttribute));
 
-                    inversePropertyAttribute.AddParameter(CSharpHelper.Literal(inverseNavigation.Name));
+                    inversePropertyAttribute.AddParameter(
+                        !navigation.DeclaringEntityType.GetPropertiesAndNavigations().Any(
+                                m => m.Name == inverseNavigation.DeclaringEntityType.Name)
+                            ? $"nameof({inverseNavigation.DeclaringEntityType.Name}.{inverseNavigation.Name})"
+                            : CSharpHelper.Literal(inverseNavigation.Name));
 
                     NavPropertyAnnotations.Add(new Dictionary<string, object>
                     {

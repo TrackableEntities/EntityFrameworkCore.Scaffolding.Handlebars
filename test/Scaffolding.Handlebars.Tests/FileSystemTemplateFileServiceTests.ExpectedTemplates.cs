@@ -33,7 +33,7 @@ namespace {{namespace}}
 namespace {{namespace}}
 {
 {{#if class-annotation}}
-{{{class-annotation}}}
+{{spaces 4}}{{{class-annotation}}}
 {{/if}}
     public partial class {{class}}
     {

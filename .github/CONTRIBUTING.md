@@ -6,6 +6,10 @@ _Contributions from the community are welcome!_
 
 ## Pull Request Process
 
+> For an overview of the pull request process, watch this [online tutorial](https://youtu.be/gxhbH9fzTDo).
+
+### Fork, Branch, Test
+
 1. Before creating a pull request, first create an [issue](https://guides.github.com/features/issues/) to discuss the contribution you would like to make.
 2. [Fork](https://guides.github.com/activities/forking/) this repository.
 3. [Clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) your **fork** (not the original repository).
@@ -42,6 +46,9 @@ _Contributions from the community are welcome!_
     ```
 10. Re-run the EF Core scaffolding command.
     - Ensure that context and model classes are generated as expected.
+
+### Stage, Commit, Push
+
 11. [Stage](https://www.atlassian.com/git/tutorials/saving-changes) and [commit](https://www.atlassian.com/git/tutorials/saving-changes/git-commit) your changes.
     - Add as many commits as you like. (Later you will squash these into a single commit.)
     ```
@@ -52,6 +59,9 @@ _Contributions from the community are welcome!_
     ```
     git push -u origin @fix/my-bug-fix
     ```
+
+### Create Pull Request
+
 13. Create a [pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests).
     - Include a general description of your proposed changes.
     - Put `Closes #XXXX` in your comment. This will auto-close the issue that your PR fixes.
@@ -80,6 +90,9 @@ _Contributions from the community are welcome!_
     ```
     git push --force
     ```
+
+### Squash Commits
+
 16. After the reviewer accepts your PR, [squash](http://gitready.com/advanced/2009/02/10/squashing-commits-with-rebase.html) your commits into a single commit.
     - If you like install [Visual Studio Code](https://code.visualstudio.com/) and make it your default Git editor.
     ```

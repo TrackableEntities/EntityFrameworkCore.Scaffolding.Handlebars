@@ -340,7 +340,7 @@ namespace Scaffolding.Handlebars.Tests
             }
         }
 
-        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options)
+        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options, PluralizerOptions pluralizerOptions = PluralizerOptions.UseHumanizerPluralization)
         {
             var fileService = new InMemoryTemplateFileService();
             fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate, ContextCtorTemplate, ContextDbSetsTemplate,
@@ -388,6 +388,9 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IHbsBlockHelperService>(provider =>
                 new HbsBlockHelperService(new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>()))
                 .AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
+
+            if (pluralizerOptions == PluralizerOptions.UseHumanizerPluralization)
+                services.AddSingleton<IPluralizer, HumanizerPluralizer>();
 
             new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);
             var scaffolder = services

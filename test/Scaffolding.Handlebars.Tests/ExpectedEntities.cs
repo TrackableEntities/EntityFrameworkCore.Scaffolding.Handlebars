@@ -14,13 +14,13 @@ namespace FakeNamespace
     {
         public Category()
         {
-            Product = new HashSet<Product>();
+            Products = new HashSet<Product>();
         }
 
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
 
-        public virtual ICollection<Product> Product { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
     }
 }
 ";
@@ -56,11 +56,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FakeNamespace
 {
+    [Table(""Category"")]
     public partial class Category
     {
         public Category()
         {
-            Product = new HashSet<Product>();
+            Products = new HashSet<Product>();
         }
 
         [Key]
@@ -69,8 +70,8 @@ namespace FakeNamespace
         [StringLength(15)]
         public string CategoryName { get; set; }
 
-        [InverseProperty(""Category"")]
-        public virtual ICollection<Product> Product { get; set; }
+        [InverseProperty(nameof(Product.Category))]
+        public virtual ICollection<Product> Products { get; set; }
     }
 }
 ";
@@ -83,6 +84,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FakeNamespace
 {
+    [Table(""Product"")]
     public partial class Product
     {
         [Key]
@@ -97,7 +99,7 @@ namespace FakeNamespace
         public int? CategoryId { get; set; }
 
         [ForeignKey(nameof(CategoryId))]
-        [InverseProperty(""Product"")]
+        [InverseProperty(""Products"")]
         public virtual Category Category { get; set; }
     }
 }

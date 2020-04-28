@@ -17,14 +17,60 @@ namespace Microsoft.EntityFrameworkCore.Design
     /// </summary>
     public static class ServiceCollectionExtensions
     {
+        #region Methods
+
+        /// <summary>
+        /// Register Handlebars block helpers.
+        ///     <para>
+        ///         Note: You must first call AddHandlebarsScaffolding before calling AddHandlebarsBlockHelpers.
+        ///     </para>        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add services to. </param>
+        /// <param name="handlebarsBlockHelpers">Handlebars block helpers.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddHandlebarsBlockHelpers(this IServiceCollection services,
+            params (string helperName, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]> helperFunction)[] handlebarsBlockHelpers)
+        {
+            services.AddSingleton<IHbsBlockHelperService>(provider =>
+            {
+                var helpers = new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>();
+                handlebarsBlockHelpers.ToList().ForEach(h => helpers.Add(h.helperName, h.helperFunction));
+                return new HbsBlockHelperService(helpers);
+            });
+            return services;
+        }
+
+        /// <summary>
+        /// Register Handlebars helpers.
+        ///     <para>
+        ///         Note: You must first call AddHandlebarsScaffolding before calling AddHandlebarsHelpers.
+        ///     </para>
+        /// </summary>
+        /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
+        /// <param name="handlebarsHelpers">Handlebars helpers.</param>
+        /// <returns>The same service collection so that multiple calls can be chained.</returns>
+        public static IServiceCollection AddHandlebarsHelpers(this IServiceCollection services,
+            params (string helperName, Action<TextWriter, Dictionary<string, object>, object[]> helperFunction)[] handlebarsHelpers)
+        {
+            services.AddSingleton<IHbsHelperService>(provider =>
+            {
+                var helpers = new Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>>
+                {
+                    {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
+                };
+                handlebarsHelpers.ToList().ForEach(h => helpers.Add(h.helperName, h.helperFunction));
+                return new HbsHelperService(helpers);
+            });
+            return services;
+        }
+
         /// <summary>
         ///     <para>
         ///         Registers the Handlebars scaffolding generator as a service in the <see cref="IServiceCollection" />.
-        ///         This allows you to customize generated DbContext and entity type classes by modifying the Handlebars 
+        ///         This allows you to customize generated DbContext and entity type classes by modifying the Handlebars
         ///         templates in the CodeTemplates folder.
         ///     </para>
         ///     <para>
-        ///         Has <paramref name="options" /> that allow you to choose whether to generate only the DbContext class, 
+        ///         Has <paramref name="options" /> that allow you to choose whether to generate only the DbContext class,
         ///         only entity type classes, or both DbContext and entity type classes (the default).
         ///     </para>
         /// </summary>
@@ -46,11 +92,11 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <summary>
         ///     <para>
         ///         Registers the Handlebars scaffolding generator as a service in the <see cref="IServiceCollection" />.
-        ///         This allows you to customize generated DbContext and entity type classes by modifying the Handlebars 
+        ///         This allows you to customize generated DbContext and entity type classes by modifying the Handlebars
         ///         templates in the CodeTemplates folder.
         ///     </para>
         ///     <para>
-        ///         Has <paramref name="configureOptions" /> that allow you to choose whether to generate only the DbContext class, 
+        ///         Has <paramref name="configureOptions" /> that allow you to choose whether to generate only the DbContext class,
         ///         only entity type classes, or both DbContext and entity type classes (the default).
         ///         It also allows you to exclude tables from the generation.
         ///         This can be useful when placing model classes in a separate class library.
@@ -106,6 +152,11 @@ namespace Microsoft.EntityFrameworkCore.Design
                 services.AddSingleton<ITemplateLanguageService, CSharpTemplateLanguageService>();
             }
 
+            if (scaffoldingOptions.PluralizerOptions == PluralizerOptions.UseHumanizerPluralization)
+            {
+                services.AddSingleton<IPluralizer, HumanizerPluralizer>();
+            }
+
             if (scaffoldingOptions.EmbeddedTemplatesAssembly != null)
             {
                 services.AddSingleton<ITemplateFileService>(new EmbeddedResourceTemplateFileService(
@@ -131,50 +182,6 @@ namespace Microsoft.EntityFrameworkCore.Design
             services.AddSingleton<IHbsBlockHelperService, HbsBlockHelperService>(provider =>
             {
                 var helpers = new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>();
-                return new HbsBlockHelperService(helpers);
-            });
-            return services;
-        }
-
-        /// <summary>
-        /// Register Handlebars helpers.
-        ///     <para>
-        ///         Note: You must first call AddHandlebarsScaffolding before calling AddHandlebarsHelpers.
-        ///     </para>
-        /// </summary>
-        /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
-        /// <param name="handlebarsHelpers">Handlebars helpers.</param>
-        /// <returns>The same service collection so that multiple calls can be chained.</returns>
-        public static IServiceCollection AddHandlebarsHelpers(this IServiceCollection services,
-            params (string helperName, Action<TextWriter, Dictionary<string, object>, object[]> helperFunction)[] handlebarsHelpers)
-        {
-            services.AddSingleton<IHbsHelperService>(provider =>
-            {
-                var helpers = new Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>>
-                {
-                    {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
-                };
-                handlebarsHelpers.ToList().ForEach(h => helpers.Add(h.helperName, h.helperFunction));
-                return new HbsHelperService(helpers);
-            });
-            return services;
-        }
-
-        /// <summary>
-        /// Register Handlebars block helpers.
-        ///     <para>
-        ///         Note: You must first call AddHandlebarsScaffolding before calling AddHandlebarsBlockHelpers.
-        ///     </para>        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection" /> to add services to. </param>
-        /// <param name="handlebarsBlockHelpers">Handlebars block helpers.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddHandlebarsBlockHelpers(this IServiceCollection services,
-            params (string helperName, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]> helperFunction)[] handlebarsBlockHelpers)
-        {
-            services.AddSingleton<IHbsBlockHelperService>(provider =>
-            {
-                var helpers = new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>();
-                handlebarsBlockHelpers.ToList().ForEach(h => helpers.Add(h.helperName, h.helperFunction));
                 return new HbsBlockHelperService(helpers);
             });
             return services;
@@ -209,5 +216,7 @@ namespace Microsoft.EntityFrameworkCore.Design
                     navPropertyTransformer));
             return services;
         }
+
+        #endregion
     }
 }

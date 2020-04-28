@@ -13,8 +13,8 @@ namespace FakeNamespace
 {
     public partial class FakeDbContext : DbContext
     {
-        public virtual DbSet<Category> Category { get; set; }
-        public virtual DbSet<Product> Product { get; set; }
+        public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
 
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
         {
@@ -33,6 +33,8 @@ namespace FakeNamespace
         {
             modelBuilder.Entity<Category>(entity =>
             {
+                entity.ToTable(""Category"");
+
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
                     .HasMaxLength(15);
@@ -40,6 +42,8 @@ namespace FakeNamespace
 
             modelBuilder.Entity<Product>(entity =>
             {
+                entity.ToTable(""Product"");
+
                 entity.HasIndex(e => e.CategoryId);
 
                 entity.Property(e => e.ProductName)
@@ -51,7 +55,7 @@ namespace FakeNamespace
                 entity.Property(e => e.UnitPrice).HasColumnType(""money"");
 
                 entity.HasOne(d => d.Category)
-                    .WithMany(p => p.Product)
+                    .WithMany(p => p.Products)
                     .HasForeignKey(d => d.CategoryId);
             });
 
@@ -75,8 +79,8 @@ namespace FakeNamespace
 {
     public partial class FakeDbContext : DbContext
     {
-        public virtual DbSet<Category> Category { get; set; }
-        public virtual DbSet<Product> Product { get; set; }
+        public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
 
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
         {

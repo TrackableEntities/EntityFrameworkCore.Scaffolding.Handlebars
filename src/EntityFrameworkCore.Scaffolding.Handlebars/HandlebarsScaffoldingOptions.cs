@@ -14,10 +14,22 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// </summary>
     public class HandlebarsScaffoldingOptions
     {
+        #region Properties
+
         /// <summary>
-        /// Gets or sets which type of scaffolding should be generated.
+        /// Gets or sets an assembly to read embedded templates from (optional).
         /// </summary>
-        public ReverseEngineerOptions ReverseEngineerOptions { get; set; } = ReverseEngineerOptions.DbContextAndEntities;
+        public Assembly EmbeddedTemplatesAssembly { get; set; }
+
+        /// <summary>
+        /// Gets or sets the namespace of the embedded templates to read (optional).
+        /// </summary>
+        public string EmbeddedTemplatesNamespace { get; set; }
+
+        /// <summary>
+        /// Gets or sets tables that should be excluded from; can include schema.
+        /// </summary>
+        public List<string> ExcludedTables { get; set; }
 
         /// <summary>
         /// Gets or sets language options for generated scaffolding.
@@ -25,23 +37,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public LanguageOptions LanguageOptions { get; set; }
 
         /// <summary>
-        /// Gets or sets tables that should be excluded from; can include schema. 
+        /// Gets or sets pluralizer options for generated scaffolding.
         /// </summary>
-        public List<string> ExcludedTables { get; set; }
+        public PluralizerOptions PluralizerOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets which type of scaffolding should be generated.
+        /// </summary>
+        public ReverseEngineerOptions ReverseEngineerOptions { get; set; } = ReverseEngineerOptions.DbContextAndEntities;
 
         /// <summary>
         /// Gets or sets Template data to pass in to template creation.
         /// </summary>
         public IDictionary<string, object> TemplateData { get; set; }
 
-        /// <summary>
-        /// Gets or sets an assembly to read embedded templates from (optional).
-        /// </summary>  
-        public Assembly EmbeddedTemplatesAssembly { get; set; }
-
-        /// <summary>
-        /// Gets or sets the namespace of the embedded templates to read (optional).
-        /// </summary>
-        public string EmbeddedTemplatesNamespace { get; set; }
+        #endregion
     }
 }

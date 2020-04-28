@@ -20,8 +20,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns></returns>
         public string Pluralize(string identifier)
         {
-            string result = identifier.Pluralize(false);
-            return result;
+            return identifier.Pluralize(false);
         }
 
         /// <summary>
@@ -31,8 +30,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns></returns>
         public string Singularize(string identifier)
         {
-            string result = identifier.Singularize(false);
-            return result;
+            return identifier.Singularize(false);
         }
 
         #endregion

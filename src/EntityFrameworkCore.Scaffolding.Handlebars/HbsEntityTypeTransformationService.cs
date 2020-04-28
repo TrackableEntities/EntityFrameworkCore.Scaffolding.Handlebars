@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System;
 using System.Collections.Generic;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -11,12 +13,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Entity name transformer.
         /// </summary>
-        public Func<string, string> EntityNameTransformer { get; }
+        public Func<IEntityType, string> EntityNameTransformer { get; }
 
         /// <summary>
         /// Entity file name transformer.
         /// </summary>
-        public Func<string, string> EntityFileNameTransformer { get; }
+        public Func<IEntityType, string> EntityFileNameTransformer { get; }
 
         /// <summary>
         /// Constructor transformer.
@@ -42,8 +44,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="propertyTransformer">Property name transformer.</param>
         /// <param name="navPropertyTransformer">Navigation property name transformer.</param>
         public HbsEntityTypeTransformationService(
-            Func<string, string> entityNameTransformer = null,
-            Func<string, string> entityFileNameTransformer = null,
+            Func<IEntityType, string> entityNameTransformer = null,
+            Func<IEntityType, string> entityFileNameTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null)
@@ -58,18 +60,18 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Transform entity type name.
         /// </summary>
-        /// <param name="entityName">Entity type name.</param>
+        /// <param name="entityType">Entity type.</param>
         /// <returns>Transformed entity type name.</returns>
-        public string TransformEntityName(string entityName) =>
-            EntityNameTransformer?.Invoke(entityName) ?? entityName;
+        public string TransformEntityName(IEntityType entityType) =>
+            EntityNameTransformer?.Invoke(entityType) ?? entityType.Name;
 
         /// <summary>
         /// Transform entity file name.
         /// </summary>
-        /// <param name="entityFileName">Entity file name.</param>
+        /// <param name="entityType">Entity type.</param>
         /// <returns>Transformed entity file name.</returns>
-        public string TransformEntityFileName(string entityFileName) =>
-            EntityFileNameTransformer?.Invoke(entityFileName) ?? entityFileName;
+        public string TransformEntityFileName(IEntityType entityType) =>
+            EntityFileNameTransformer?.Invoke(entityType) ?? entityType.DisplayName();
 
         /// <summary>
         /// Transform single property name.

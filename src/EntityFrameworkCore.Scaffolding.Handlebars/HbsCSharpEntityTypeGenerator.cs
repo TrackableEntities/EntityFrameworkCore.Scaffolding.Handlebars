@@ -151,7 +151,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 GenerateEntityTypeDataAnnotations(entityType);
             }
 
-            var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
+            var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType);
 
             TemplateData.Add("class", transformedEntityName);
 

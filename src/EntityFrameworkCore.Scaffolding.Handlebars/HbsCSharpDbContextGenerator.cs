@@ -327,7 +327,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
             {
-                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
+                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType);
                 dbSets.Add(new Dictionary<string, object>
                 {
                     { "set-property-type", transformedEntityName },
@@ -357,7 +357,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             if (!_entityTypeBuilderInitialized)
             {
-                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
+                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType);
                 
                 sb.AppendLine();
                 sb.AppendLine($"modelBuilder.Entity<{transformedEntityName}>({EntityLambdaIdentifier} =>");

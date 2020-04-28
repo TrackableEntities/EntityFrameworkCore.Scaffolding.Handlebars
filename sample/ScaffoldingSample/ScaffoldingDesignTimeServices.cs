@@ -55,8 +55,8 @@ namespace ScaffoldingSample
 
             // Add optional Handlebars transformers
             //services.AddHandlebarsTransformers(
-            //    entityNameTransformer: n => n + "Foo",
-            //    entityFileNameTransformer: n => n + "Foo",
+            //    entityNameTransformer: et => et.Name + "Foo",
+            //    entityFileNameTransformer: et => $@"{et.GetSchema()}\{et.DisplayName()}",
             //    constructorTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"),
             //    propertyTransformer: e => new EntityPropertyInfo(e.PropertyType, e.PropertyName + "Foo"),
             //    navPropertyTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"));

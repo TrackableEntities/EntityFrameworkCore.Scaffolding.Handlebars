@@ -117,7 +117,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             Check.NotNull(entityType, nameof(entityType));
 
-            var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
+            var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType);
 
             TemplateData.Add("class", transformedEntityName);
 

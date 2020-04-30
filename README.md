@@ -4,6 +4,10 @@ Scaffold EF Core models using Handlebars templates.
 
 - Uses [Handlebars.NET](https://github.com/rexm/Handlebars.Net) to compile [Handlebars](http://handlebarsjs.com) templates when generating models with the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore) scaffolding tools.
  
+## Contributing
+
+Before creating a pull request, please refer to the [Contributing Guidelines](https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/blob/master/.github/CONTRIBUTING.md).
+
 ## Prerequisites
 
 - [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.4 or greater.

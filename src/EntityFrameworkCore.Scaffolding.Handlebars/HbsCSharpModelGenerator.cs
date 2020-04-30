@@ -132,6 +132,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                     var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.DisplayName());
                     var entityTypeFileName = transformedFileName + FileExtension;
+                    if (_options?.Value?.EnableSchemaFolders == true) {
+                        entityTypeFileName = entityType.GetSchema() + @"\" + entityTypeFileName;
+                    }
                     resultingFiles.AdditionalFiles.Add(
                         new ScaffoldedFile
                         {

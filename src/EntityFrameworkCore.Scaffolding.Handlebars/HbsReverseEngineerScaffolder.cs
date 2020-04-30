@@ -66,6 +66,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             foreach (var entityTypeFile in scaffoldedModel.AdditionalFiles)
             {
                 var additionalFilePath = Path.Combine(outputDir, entityTypeFile.Path);
+                Directory.CreateDirectory(Path.GetDirectoryName(additionalFilePath));
                 File.WriteAllText(additionalFilePath, entityTypeFile.Code, Encoding.UTF8);
                 additionalFiles.Add(additionalFilePath);
             }

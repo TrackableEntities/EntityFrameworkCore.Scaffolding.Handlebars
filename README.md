@@ -173,6 +173,9 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
                 { "models-namespace", "ScaffoldingSample.Models" },
                 { "base-class", "EntityBase" }
             };
+
+            // Place models in folders by schema
+            //options.EnableSchemaFolders = true;
         });
 
         // Register Handlebars helper

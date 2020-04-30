@@ -76,7 +76,8 @@ _Contributions from the community are welcome!_
     ```
     git remote add upstream https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars.git
     ```
-    - Pull upstream commits to `master` and rebase local commits on top.
+    - Pull commits from `upstream master` and rebase your new commits on top.
+        > **Note**: Make sure you are on the branch from which you are submitting your PR. For example: `git checkout @fix/my-bug-fix`
     ```
     git pull --rebase upstream master
     ```

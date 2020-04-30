@@ -43,5 +43,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Gets or sets the namespace of the embedded templates to read (optional).
         /// </summary>
         public string EmbeddedTemplatesNamespace { get; set; }
+
+        /// <summary>
+        /// Gets or sets if schema folders are created for table entity classes as per db schema naming.
+        /// </summary>
+        public bool EnableSchemaFolders { get; set; }
     }
 }

@@ -106,9 +106,9 @@ _Contributions from the community are welcome!_
     ```
     git lg
     ```
-    - Use interactive rebase to squash all your commits into one commit, specifying after `HEAD~` the number of commits you wish to squash. During this process you will set the commit message.
+    - Use interactive rebase to squash all your commits into one commit, specifying after `HEAD~` the number of commits you wish to squash. (Replace `#` below with the number of commits you wish to squash.) During this process you will set the commit message.
     ```
-    git rebase -i HEAD~4
+    git rebase -i HEAD~#
     ```
 17. Push your squashed commit.
     - Because rebase changes commits, you will need to add the `--force` flag when pushing your commits.

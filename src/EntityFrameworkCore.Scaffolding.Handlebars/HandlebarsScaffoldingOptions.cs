@@ -25,6 +25,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public LanguageOptions LanguageOptions { get; set; }
 
         /// <summary>
+        /// Gets or sets usage of pluralizer for generated scaffolding.
+        /// </summary>
+        public bool EnablePluralization { get; set; }
+
+        /// <summary>
         /// Gets or sets tables that should be excluded from; can include schema. 
         /// </summary>
         public List<string> ExcludedTables { get; set; }

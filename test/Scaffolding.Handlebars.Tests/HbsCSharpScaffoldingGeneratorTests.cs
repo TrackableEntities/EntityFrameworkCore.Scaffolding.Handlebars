@@ -48,7 +48,7 @@ namespace Scaffolding.Handlebars.Tests
             var entityTemplatesVirtualPath =
                 $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.CSharpTemplateDirectories.EntityTypeFolder}";
             var entityPartialsVirtualPath = entityTemplatesVirtualPath + $"/{Constants.Templates.PartialsFolder}";
-            var entityTemplatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder, 
+            var entityTemplatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder,
                 Constants.Templates.CodeTemplatesFolder, Constants.Templates.CSharpTemplateDirectories.EntityTypeFolder);
             var entityPartialTemplatesPath = Path.Combine(entityTemplatesPath, Constants.Templates.PartialsFolder);
 
@@ -104,16 +104,21 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         [Theory]
-        [InlineData(false, "en-US")]
-        [InlineData(true, "en-US")]
-        [InlineData(false, "tr-TR")]
-        [InlineData(true, "tr-TR")]
-        public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations, string culture)
+        [InlineData(false, false, "en-US")]
+        [InlineData(true, false, "en-US")]
+        [InlineData(false, false, "tr-TR")]
+        [InlineData(true, false, "tr-TR")]
+        [InlineData(false, true, "en-US")]
+        [InlineData(true, true, "en-US")]
+        [InlineData(false, true, "tr-TR")]
+        [InlineData(true, true, "tr-TR")]
+
+        public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations, bool usePluralizer, string culture)
         {
             // Arrange
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
             var options = ReverseEngineerOptions.DbContextOnly;
-            var scaffolder = CreateScaffolder(options);
+            var scaffolder = CreateScaffolder(options, usePluralizer);
 
             // Act
             var model = scaffolder.ScaffoldModel(
@@ -132,26 +137,40 @@ namespace Scaffolding.Handlebars.Tests
 
             // Assert
             var files = GetGeneratedFiles(model, options);
-            object expectedContext = useDataAnnotations
-                ? ExpectedContextsWithAnnotations.ContextClass
-                : ExpectedContexts.ContextClass;
-
+            object expectedContext;
+            if (!usePluralizer)
+            {
+                expectedContext = useDataAnnotations
+                    ? ExpectedContextsWithAnnotations.ContextClass
+                    : ExpectedContexts.ContextClass;
+            }
+            else
+            {
+                expectedContext = useDataAnnotations
+                    ? ExpectedContextsWithAnnotationsPluralized.ContextClass
+                    : ExpectedContextsPluralized.ContextClass;
+            }
             var context = files[Constants.Files.CSharpFiles.DbContextFile];
 
             Assert.Equal(expectedContext, context);
         }
 
         [Theory]
-        [InlineData(false, "en-US")]
-        [InlineData(true, "en-US")]
-        [InlineData(false, "tr-TR")]
-        [InlineData(true, "tr-TR")]
-        public void WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations, string culture)
+        [InlineData(false, false, "en-US")]
+        [InlineData(true, false, "en-US")]
+        [InlineData(false, false, "tr-TR")]
+        [InlineData(true, false, "tr-TR")]
+        [InlineData(false, true, "en-US")]
+        [InlineData(true, true, "en-US")]
+        [InlineData(false, true, "tr-TR")]
+        [InlineData(true, true, "tr-TR")]
+
+        public void WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations, bool usePluralizer, string culture)
         {
             // Arrange
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
             var options = ReverseEngineerOptions.EntitiesOnly;
-            var scaffolder = CreateScaffolder(options);
+            var scaffolder = CreateScaffolder(options, usePluralizer);
 
             // Act
             var model = scaffolder.ScaffoldModel(
@@ -173,28 +192,45 @@ namespace Scaffolding.Handlebars.Tests
             var category = files[Constants.Files.CSharpFiles.CategoryFile];
             var product = files[Constants.Files.CSharpFiles.ProductFile];
 
-            object expectedCategory = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.CategoryClass
-                : ExpectedEntities.CategoryClass;
-            object expectedProduct = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.ProductClass
-                : ExpectedEntities.ProductClass;
-
+            object expectedCategory;
+            object expectedProduct;
+            if (!usePluralizer)
+            {
+                expectedCategory = useDataAnnotations
+                    ? ExpectedEntitiesWithAnnotations.CategoryClass
+                    : ExpectedEntities.CategoryClass;
+                expectedProduct = useDataAnnotations
+                    ? ExpectedEntitiesWithAnnotations.ProductClass
+                    : ExpectedEntities.ProductClass;
+            }
+            else
+            {
+                expectedCategory = useDataAnnotations
+                    ? ExpectedEntitiesWithAnnotationsPluralized.CategoryClass
+                    : ExpectedEntitiesPluralized.CategoryClass;
+                expectedProduct = useDataAnnotations
+                    ? ExpectedEntitiesWithAnnotationsPluralized.ProductClass
+                    : ExpectedEntitiesPluralized.ProductClass;
+            }
             Assert.Equal(expectedCategory, category);
             Assert.Equal(expectedProduct, product);
         }
 
         [Theory]
-        [InlineData(false, "en-US")]
-        [InlineData(true, "en-US")]
-        [InlineData(false, "tr-TR")]
-        [InlineData(true, "tr-TR")]
-        public void WriteCode_Should_Generate_Context_and_Entity_Files(bool useDataAnnotations, string culture)
+        [InlineData(false, false, "en-US")]
+        [InlineData(true, false, "en-US")]
+        [InlineData(false, false, "tr-TR")]
+        [InlineData(true, false, "tr-TR")]
+        [InlineData(false, true, "en-US")]
+        [InlineData(true, true, "en-US")]
+        [InlineData(false, true, "tr-TR")]
+        [InlineData(true, true, "tr-TR")]
+        public void WriteCode_Should_Generate_Context_and_Entity_Files(bool useDataAnnotations, bool usePluralizer, string culture)
         {
             // Arrange
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
             var options = ReverseEngineerOptions.DbContextAndEntities;
-            var scaffolder = CreateScaffolder(options);
+            var scaffolder = CreateScaffolder(options, usePluralizer);
 
             // Act
             var model = scaffolder.ScaffoldModel(
@@ -213,16 +249,33 @@ namespace Scaffolding.Handlebars.Tests
 
             // Assert
             var files = GetGeneratedFiles(model, options);
-            object expectedContext = useDataAnnotations
-                ? ExpectedContextsWithAnnotations.ContextClass
-                : ExpectedContexts.ContextClass;
-            object expectedCategory = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.CategoryClass
-                : ExpectedEntities.CategoryClass;
-            object expectedProduct = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.ProductClass
-                : ExpectedEntities.ProductClass;
-
+            object expectedContext;
+            object expectedCategory;
+            object expectedProduct;
+            if (!usePluralizer)
+            {
+                expectedContext = useDataAnnotations
+                    ? ExpectedContextsWithAnnotations.ContextClass
+                    : ExpectedContexts.ContextClass;
+                expectedCategory = useDataAnnotations
+                    ? ExpectedEntitiesWithAnnotations.CategoryClass
+                    : ExpectedEntities.CategoryClass;
+                expectedProduct = useDataAnnotations
+                    ? ExpectedEntitiesWithAnnotations.ProductClass
+                    : ExpectedEntities.ProductClass;
+            }
+            else
+            {
+                expectedContext = useDataAnnotations
+                    ? ExpectedContextsWithAnnotationsPluralized.ContextClass
+                    : ExpectedContextsPluralized.ContextClass;
+                expectedCategory = useDataAnnotations
+                    ? ExpectedEntitiesWithAnnotationsPluralized.CategoryClass
+                    : ExpectedEntitiesPluralized.CategoryClass;
+                expectedProduct = useDataAnnotations
+                    ? ExpectedEntitiesWithAnnotationsPluralized.ProductClass
+                    : ExpectedEntitiesPluralized.ProductClass;
+            }
             var context = files[Constants.Files.CSharpFiles.DbContextFile];
             var category = files[Constants.Files.CSharpFiles.CategoryFile];
             var product = files[Constants.Files.CSharpFiles.ProductFile];
@@ -238,7 +291,7 @@ namespace Scaffolding.Handlebars.Tests
             using (var directory = new TempDirectory())
             {
                 // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextOnly);
+                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextOnly, false);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
@@ -274,7 +327,7 @@ namespace Scaffolding.Handlebars.Tests
             using (var directory = new TempDirectory())
             {
                 // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.EntitiesOnly);
+                var scaffolder = CreateScaffolder(ReverseEngineerOptions.EntitiesOnly, false);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
@@ -310,7 +363,7 @@ namespace Scaffolding.Handlebars.Tests
             using (var directory = new TempDirectory())
             {
                 // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities);
+                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities, false);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
@@ -340,7 +393,7 @@ namespace Scaffolding.Handlebars.Tests
             }
         }
 
-        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options)
+        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options, bool usePluralizer)
         {
             var fileService = new InMemoryTemplateFileService();
             fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate, ContextCtorTemplate, ContextDbSetsTemplate,
@@ -388,6 +441,9 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IHbsBlockHelperService>(provider =>
                 new HbsBlockHelperService(new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>()))
                 .AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
+
+            if (usePluralizer)
+                services.AddSingleton<IPluralizer, HumanizerPluralizer>();
 
             new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);
             var scaffolder = services

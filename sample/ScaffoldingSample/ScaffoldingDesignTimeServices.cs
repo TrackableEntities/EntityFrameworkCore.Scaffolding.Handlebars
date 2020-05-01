@@ -25,6 +25,12 @@ namespace ScaffoldingSample
                 // Generate both context and entities
                 options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities;
 
+                // Enable Nullable reference types Support https://docs.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
+                options.EnableNullableReferenceTypes = true;
+
+                // Put Models into folders by DB Schema
+                //options.EnableSchemaFolders = true;
+
                 // Exclude some tables
                 options.ExcludedTables = new List<string> { "Territory", "EmployeeTerritories" };
 
@@ -53,8 +59,8 @@ namespace ScaffoldingSample
             services.AddHandlebarsTransformers(
                 propertyTransformer: e =>
                     e.PropertyName == "Country"
-                        ? new EntityPropertyInfo("Country", e.PropertyName)
-                        : new EntityPropertyInfo(e.PropertyType, e.PropertyName));
+                        ? new EntityPropertyInfo("Country", e.PropertyName, false)
+                        : new EntityPropertyInfo(e.PropertyType, e.PropertyName, e.PropertyIsNullable));
 
             // Add optional Handlebars transformers
             //services.AddHandlebarsTransformers(
@@ -74,10 +80,13 @@ namespace ScaffoldingSample
         // Sample Handlebars block helper
         void MyHbsBlockHelper(TextWriter writer, HelperOptions options, Dictionary<string, object> context, object[] args)
         {
-            var val1 = float.Parse(args[0].ToString());
-            var val2 = float.Parse(args[2].ToString());
+            var val0str = args?[0]?.ToString();
+            var val1str = args?[1]?.ToString();
+            var val2str = args?[2]?.ToString();
+            var val1 = float.Parse(val0str ?? "0");
+            var val2 = float.Parse(val2str ?? "0");
 
-            switch (args[1].ToString())
+            switch (val1str)
             {
                 case ">":
                     if (val1 > val2)

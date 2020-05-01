@@ -3,11 +3,11 @@
 namespace {{namespace}}
 { // Comment
 {{#if class-annotation}}
-{{{class-annotation}}}
+{{spaces 4}}{{{class-annotation}}}
 {{/if}}
     public partial class {{class}} : {{base-class}} {{my-helper}}
     {
         {{{> constructor}}}
-        {{> properties}}
+        {{{> properties}}}
     }
 }

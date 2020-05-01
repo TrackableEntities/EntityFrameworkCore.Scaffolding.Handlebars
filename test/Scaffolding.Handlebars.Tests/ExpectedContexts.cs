@@ -1,10 +1,11 @@
-﻿namespace Scaffolding.Handlebars.Tests
+﻿using Constants = Scaffolding.Handlebars.Tests.Helpers.Constants;
+namespace Scaffolding.Handlebars.Tests
 {
     public partial class HbsCSharpScaffoldingGeneratorTests
     {
         private static class ExpectedContexts
         {
-            public const string ContextClass =
+            public static string ContextClass =
 @"using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -25,7 +26,7 @@ namespace FakeNamespace
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer(""Data Source=(localdb)\\MSSQLLocalDB; Initial Catalog=NorthwindTestDb; Integrated Security=True"");
+                optionsBuilder.UseSqlServer(""" + Constants.Connections.SqlServerConnection.Replace(@"\",@"\\") + @""");
             }
         }
 
@@ -66,7 +67,7 @@ namespace FakeNamespace
 
         public static class ExpectedContextsWithAnnotations
         {
-            public const string ContextClass =
+            public static string ContextClass =
 @"using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -87,7 +88,7 @@ namespace FakeNamespace
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer(""Data Source=(localdb)\\MSSQLLocalDB; Initial Catalog=NorthwindTestDb; Integrated Security=True"");
+                optionsBuilder.UseSqlServer(""" + Constants.Connections.SqlServerConnection.Replace(@"\",@"\\") + @""");
             }
         }
 

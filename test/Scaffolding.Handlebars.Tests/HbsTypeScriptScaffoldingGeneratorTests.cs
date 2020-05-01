@@ -348,7 +348,8 @@ namespace Scaffolding.Handlebars.Tests
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
                         provider.GetRequiredService<ICSharpHelper>(),
-                        provider.GetRequiredService<ITypeScriptHelper>());
+                        provider.GetRequiredService<ITypeScriptHelper>(),
+                        provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());
                     return options == ReverseEngineerOptions.EntitiesOnly ||
                            options == ReverseEngineerOptions.DbContextAndEntities
                         ? entityGenerator

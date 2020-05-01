@@ -332,6 +332,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     { "set-property-type", transformedEntityName },
                     { "set-property-name", entityType.GetDbSetName() },
+                    { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
                 });
             }
 

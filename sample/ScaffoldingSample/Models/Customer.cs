@@ -10,14 +10,14 @@ namespace ScaffoldingSample.Models
             Order = new HashSet<Order>();
         }
 
-        public string CustomerId { get; set; }
-        public string CompanyName { get; set; }
-        public string ContactName { get; set; }
-        public string City { get; set; }
-        public Country Country { get; set; }
+        public string CustomerId { get; set; } = default!;
+        public string CompanyName { get; set; } = default!;
+        public string? ContactName { get; set; }
+        public string? City { get; set; }
+        public Country Country { get; set; } = default!;
 
-        public virtual CustomerSetting CustomerSetting { get; set; }
-        public virtual ICollection<Order> Order { get; set; }
+        public virtual CustomerSetting CustomerSetting { get; set; } = default!;
+        public virtual ICollection<Order> Order { get; set; } = default!;
 
         // My Handlebars Block Helper: True
         // My Handlebars Block Helper: False

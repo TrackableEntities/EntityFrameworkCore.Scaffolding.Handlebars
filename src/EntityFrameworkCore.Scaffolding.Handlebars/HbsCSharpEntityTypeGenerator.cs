@@ -180,7 +180,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     lines.Add(new Dictionary<string, object>
                     {
                         { "property-name", navigation.Name },
-                        { "property-type", navigation.GetTargetType().Name },
+                        { "property-type", navigation.GetTargetType().Name }
                     });
                 }
 
@@ -208,12 +208,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     GeneratePropertyDataAnnotations(property);
                 }
-
+                
+                var propertyType = CSharpHelper.Reference(property.ClrType);
+                if (_options?.Value?.EnableNullableReferenceTypes == true 
+                    && property.IsNullable
+                    && !propertyType.EndsWith("?")) {
+                        propertyType += "?";
+                }
                 properties.Add(new Dictionary<string, object>
                 {
-                    { "property-type", CSharpHelper.Reference(property.ClrType) },
+                    { "property-type", propertyType },
                     { "property-name", property.Name },
-                    { "property-annotations",  PropertyAnnotationsData }
+                    { "property-annotations",  PropertyAnnotationsData },
+                    { "property-isnullable", property.IsNullable },
+                    { "nullable-reference-types", _options?.Value?.EnableNullableReferenceTypes == true }
                 });
             }
 
@@ -253,6 +261,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         { "nav-property-type", navigation.GetTargetType().Name },
                         { "nav-property-name", navigation.Name },
                         { "nav-property-annotations", NavPropertyAnnotations },
+                        { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
                     });
                 }
 

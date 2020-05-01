@@ -53,5 +53,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Gets or sets if schema folders are created for table entity classes as per db schema naming.
         /// </summary>
         public bool EnableSchemaFolders { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether entity properties are declared and instantiated in the C# 8.0+ nullable reference types style (optional).
+        /// https://docs.microsoft.com/en-us/dotnet/csharp/nullable-references
+        /// https://docs.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
+        /// </summary>
+        public bool EnableNullableReferenceTypes { get; set; }
     }
 }

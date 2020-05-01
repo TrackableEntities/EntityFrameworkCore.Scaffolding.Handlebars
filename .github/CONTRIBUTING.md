@@ -4,6 +4,20 @@
 
 _Contributions from the community are welcome!_
 
+## Setup
+
+> Install [Visual Studio Code](https://code.visualstudio.com/) and make it your default git editor.
+
+```
+git config --global core.editor "code --wait"
+```
+
+> Configure git log format.
+
+```
+git config --global alias.lg "log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+```
+
 ## Pull Request Process
 
 > For an overview of the pull request process, watch this [online tutorial](https://youtu.be/gxhbH9fzTDo).
@@ -81,7 +95,7 @@ _Contributions from the community are welcome!_
     ```
     git pull --rebase upstream master
     ```
-    - Resolve conflicts if necessary. Using Visual Studio Code, you can select `Accept Current Change`, `Accept Incoming Change`, A`ccept Incoming Change`, `Accept Both Changes`, or `Compare Changes`.
+    - Resolve conflicts if necessary. Using Visual Studio Code, you can select `Accept Current Change`, `Accept Incoming Change`, `Accept Incoming Change`, `Accept Both Changes`, or `Compare Changes`.
     - Once you resolve conflicts in a file, make sure to _save_ the file. Then _stage_ changes and continue rebase.
     ```
     git add .
@@ -94,15 +108,7 @@ _Contributions from the community are welcome!_
 
 ### Squash Commits
 
-16. After the reviewer accepts your PR, [squash](http://gitready.com/advanced/2009/02/10/squashing-commits-with-rebase.html) your commits into a single commit.
-    - If you like install [Visual Studio Code](https://code.visualstudio.com/) and make it your default Git editor.
-    ```
-    git config --global core.editor "code --wait"
-    ```
-    - Configure git log format.
-    ```
-    git config --global alias.lg "log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-    ```
+16. After the reviewer accepts your PR, squash your commits into a single commit.
     - Determine the *number of commits* you need to squash by looking at the git log. Type `q` to exit the log.
     ```
     git lg
@@ -111,6 +117,7 @@ _Contributions from the community are welcome!_
     ```
     git rebase -i HEAD~#
     ```
+    - Follow the remaining steps in these [instructions](http://gitready.com/advanced/2009/02/10/squashing-commits-with-rebase.html).
 17. Push your squashed commit.
     - Because rebase changes commits, you will need to add the `--force` flag when pushing your commits.
     ```

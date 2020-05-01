@@ -445,7 +445,9 @@ namespace Scaffolding.Handlebars.Tests
             if (usePluralizer)
                 services.AddSingleton<IPluralizer, HumanizerPluralizer>();
 
+#pragma warning disable EF1001 // Internal EF Core API usage.
             new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);
+#pragma warning restore EF1001 // Internal EF Core API usage.
             var scaffolder = services
                 .BuildServiceProvider()
                 .GetRequiredService<IReverseEngineerScaffolder>();

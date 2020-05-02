@@ -20,7 +20,7 @@ git config --global alias.lg "log --color --pretty=format:'%Cred%h%Creset -%C(ye
 
 ## Pull Request Process
 
-> For an overview of the pull request process, watch this [online tutorial](https://youtu.be/gxhbH9fzTDo).
+> For an overview of the pull request process, watch this [video tutorial](https://youtu.be/gxhbH9fzTDo).
 
 ### Fork, Branch, Test
 

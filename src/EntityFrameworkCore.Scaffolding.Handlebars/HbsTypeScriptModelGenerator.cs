@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+using Microsoft.Extensions.Options;
 using System.IO;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -45,6 +46,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         protected virtual IEntityTypeTransformationService EntityTypeTransformationService { get; }
 
+        private readonly IOptions<HandlebarsScaffoldingOptions> _options;
+
         /// <summary>
         /// Constructor for the HbsTypeScriptModelGenerator.
         /// </summary>
@@ -56,6 +59,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="dbContextTemplateService"></param>
         /// <param name="entityTypeTemplateService"></param>
         /// <param name="entityTypeTransformationService"></param>
+        /// <param name="options">Handlebar scaffolding options</param>
         public HbsTypeScriptModelGenerator(
             [NotNull] ModelCodeGeneratorDependencies dependencies, 
             [NotNull] ICSharpDbContextGenerator cSharpDbContextGenerator, 
@@ -64,7 +68,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             [NotNull] IHbsBlockHelperService handlebarsBlockHelperService,
             [NotNull] IDbContextTemplateService dbContextTemplateService,
             [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
-            [NotNull] IEntityTypeTransformationService entityTypeTransformationService)
+            [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
+            [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
             : base(dependencies, cSharpDbContextGenerator, cSharpEntityTypeGenerator)
         {
             HandlebarsHelperService = handlebarsHelperService;
@@ -72,6 +77,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             DbContextTemplateService = dbContextTemplateService;
             EntityTypeTemplateService = entityTypeTemplateService;
             EntityTypeTransformationService = entityTypeTransformationService;
+            _options = options;
         }
 
         /// <summary>
@@ -127,6 +133,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                     var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.DisplayName());
                     var entityTypeFileName = transformedFileName + FileExtension;
+                    if (_options?.Value?.EnableSchemaFolders == true) {
+                        entityTypeFileName = entityType.GetSchema() + @"\" + entityTypeFileName;
+                    }
                     resultingFiles.AdditionalFiles.Add(
                         new ScaffoldedFile
                         {

@@ -181,7 +181,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     lines.Add(new Dictionary<string, object>
                     {
                         { "property-name", navigation.Name },
-                        { "property-type", navigation.GetTargetType().Name },
+                        { "property-type", navigation.GetTargetType().Name }
                     });
                 }
 
@@ -209,13 +209,21 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     GeneratePropertyDataAnnotations(property);
                 }
-
+                
+                var propertyType = CSharpHelper.Reference(property.ClrType);
+                if (_options?.Value?.EnableNullableReferenceTypes == true 
+                    && property.IsNullable
+                    && !propertyType.EndsWith("?")) {
+                        propertyType += "?";
+                }
                 properties.Add(new Dictionary<string, object>
                 {
-                    { "property-type", CSharpHelper.Reference(property.ClrType) },
+                    { "property-type", propertyType },
                     { "property-name", property.Name },
                     { "property-annotations",  PropertyAnnotationsData },
-                    { "property-comment", property.GetComment() }
+                    { "property-comment", property.GetComment() },
+                    { "property-isnullable", property.IsNullable },
+                    { "nullable-reference-types", _options?.Value?.EnableNullableReferenceTypes == true }
                 });
             }
 
@@ -255,6 +263,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         { "nav-property-type", navigation.GetTargetType().Name },
                         { "nav-property-name", navigation.Name },
                         { "nav-property-annotations", NavPropertyAnnotations },
+                        { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
                     });
                 }
 
@@ -403,9 +412,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     var foreignKeyAttribute = new AttributeWriter(nameof(ForeignKeyAttribute));
 
-                    foreignKeyAttribute.AddParameter(
-                        CSharpHelper.Literal(
-                            string.Join(",", navigation.ForeignKey.Properties.Select(p => p.Name))));
+                    if (navigation.ForeignKey.Properties.Count > 1)
+                    {
+                        foreignKeyAttribute.AddParameter(
+                                CSharpHelper.Literal(
+                                    string.Join(",", navigation.ForeignKey.Properties.Select(p => p.Name))));
+                    }
+                    else
+                    { 
+                        foreignKeyAttribute.AddParameter($"nameof({navigation.ForeignKey.Properties.First().Name})");
+                    }
 
                     NavPropertyAnnotations.Add(new Dictionary<string, object>
                     {
@@ -425,7 +441,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     var inversePropertyAttribute = new AttributeWriter(nameof(InversePropertyAttribute));
 
-                    inversePropertyAttribute.AddParameter(CSharpHelper.Literal(inverseNavigation.Name));
+                    inversePropertyAttribute.AddParameter(
+                        !navigation.DeclaringEntityType.GetPropertiesAndNavigations().Any(
+                                m => m.Name == inverseNavigation.DeclaringEntityType.Name)
+                            ? $"nameof({inverseNavigation.DeclaringEntityType.Name}.{inverseNavigation.Name})"
+                            : CSharpHelper.Literal(inverseNavigation.Name));
 
                     NavPropertyAnnotations.Add(new Dictionary<string, object>
                     {

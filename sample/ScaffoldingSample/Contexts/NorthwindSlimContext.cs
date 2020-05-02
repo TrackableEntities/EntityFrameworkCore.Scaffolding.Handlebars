@@ -8,19 +8,19 @@ namespace ScaffoldingSample.Contexts
     public partial class NorthwindSlimContext : DbContext
     {
         // My Handlebars Helper
-        public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<Category> Category { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<Customer> Customer { get; set; }
+        public virtual DbSet<Customer> Customer { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<CustomerSetting> CustomerSetting { get; set; }
+        public virtual DbSet<CustomerSetting> CustomerSetting { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<Employee> Employee { get; set; }
+        public virtual DbSet<Employee> Employee { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<Order> Order { get; set; }
+        public virtual DbSet<Order> Order { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<OrderDetail> OrderDetail { get; set; }
+        public virtual DbSet<OrderDetail> OrderDetail { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<Product> Product { get; set; }
+        public virtual DbSet<Product> Product { get; set; } = default!;
 
         public NorthwindSlimContext(DbContextOptions<NorthwindSlimContext> options) : base(options)
         {

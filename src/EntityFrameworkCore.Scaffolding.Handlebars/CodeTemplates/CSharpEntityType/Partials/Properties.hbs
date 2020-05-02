@@ -2,7 +2,7 @@
 {{#each property-annotations}}
 {{spaces 8}}{{{property-annotation}}}
 {{/each}}
-{{spaces 8}}public {{property-type}} {{property-name}} { get; set; }
+{{spaces 8}}public {{property-type}} {{property-name}} { get; set; }{{#if nullable-reference-types }}{{#unless property-isnullable}} = default!;{{/unless}}{{/if}}
 {{/each}}
 {{#if nav-properties}}
 
@@ -11,9 +11,9 @@
 {{spaces 8}}{{{nav-property-annotation}}}
 {{/each}}
 {{#if nav-property-collection}}
-{{spaces 8}}public virtual ICollection<{{nav-property-type}}> {{nav-property-name}} { get; set; }
+{{spaces 8}}public virtual ICollection<{{nav-property-type}}> {{nav-property-name}} { get; set; }{{#if nullable-reference-types}} = default!;{{/if}}
 {{else}}
-{{spaces 8}}public virtual {{nav-property-type}} {{nav-property-name}} { get; set; }
+{{spaces 8}}public virtual {{nav-property-type}} {{nav-property-name}} { get; set; }{{#if nullable-reference-types}} = default!;{{/if}}
 {{/if}}
 {{/each}}
 {{/if}}

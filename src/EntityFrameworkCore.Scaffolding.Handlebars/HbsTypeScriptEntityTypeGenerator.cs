@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -29,6 +30,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// TypeScript helper.
         /// </summary>
         protected ITypeScriptHelper TypeScriptHelper { get; }
+
+        private readonly IOptions<HandlebarsScaffoldingOptions> _options;
 
         /// <summary>
         /// Handlebars template data.
@@ -52,17 +55,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="cSharpHelper">CSharp helper.</param>
         /// <param name="typeScriptHelper">TypeScript helper.</param>
+        /// <param name="options">Handlebars scaffolding options.</param>
         public HbsTypeScriptEntityTypeGenerator(
             [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
             [NotNull] ICSharpHelper cSharpHelper,
-            [NotNull] ITypeScriptHelper typeScriptHelper)
+            [NotNull] ITypeScriptHelper typeScriptHelper,
+            [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
             : base(cSharpHelper)
         {
             EntityTypeTemplateService = entityTypeTemplateService;
             EntityTypeTransformationService = entityTypeTransformationService;
             CSharpHelper = cSharpHelper;
             TypeScriptHelper = typeScriptHelper;
+            _options =options;
         }
 
         /// <summary>
@@ -173,6 +179,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-name",  TypeScriptHelper.ToCamelCase(property.Name) },
                     { "property-annotations",  new List<Dictionary<string, object>>() },
                     { "property-comment", property.GetComment() },
+                    { "property-isnullable", property.IsNullable },
+                    { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
                 });
             }
 
@@ -205,6 +213,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         { "nav-property-type", navigation.GetTargetType().Name },
                         { "nav-property-name", TypeScriptHelper.ToCamelCase(navigation.Name) },
                         { "nav-property-annotations", new List<Dictionary<string, object>>() },
+                        { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
                     });
                 }
 

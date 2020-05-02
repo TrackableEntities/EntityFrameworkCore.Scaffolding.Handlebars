@@ -4,6 +4,10 @@ Scaffold EF Core models using Handlebars templates.
 
 - Uses [Handlebars.NET](https://github.com/rexm/Handlebars.Net) to compile [Handlebars](http://handlebarsjs.com) templates when generating models with the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore) scaffolding tools.
  
+## Contributing
+
+Before creating a pull request, please refer to the [Contributing Guidelines](https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/blob/master/.github/CONTRIBUTING.md).
+
 ## Prerequisites
 
 - [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.4 or greater.
@@ -160,6 +164,12 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
             // Generate both context and entities
             options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities;
 
+            // Enable Nullable reference types Support https://docs.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
+            options.EnableNullableReferenceTypes = true;
+
+            // Put Models into folders by DB Schema
+            //options.EnableSchemaFolders = true;
+
             // Exclude some tables
             options.ExcludedTables = new List<string> { "Territory", "EmployeeTerritories" };
 
@@ -169,6 +179,9 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
                 { "models-namespace", "ScaffoldingSample.Models" },
                 { "base-class", "EntityBase" }
             };
+
+            // Place models in folders by schema
+            //options.EnableSchemaFolders = true;
         });
 
         // Register Handlebars helper
@@ -181,8 +194,8 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
         services.AddHandlebarsTransformers(
             propertyTransformer: e =>
                 e.PropertyName == "Country"
-                    ? new EntityPropertyInfo("Country", e.PropertyName)
-                    : new EntityPropertyInfo(e.PropertyType, e.PropertyName));
+                    ? new EntityPropertyInfo("Country", e.PropertyName, false)
+                    : new EntityPropertyInfo(e.PropertyType, e.PropertyName, e.PropertyIsNullable));
 
         // Add optional Handlebars transformers
         //services.AddHandlebarsTransformers(

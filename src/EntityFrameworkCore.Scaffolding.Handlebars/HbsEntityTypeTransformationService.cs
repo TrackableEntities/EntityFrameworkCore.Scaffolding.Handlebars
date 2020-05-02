@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
     /// <summary>
     /// Default service for transforming entity type definitions.
     /// </summary>
     public class HbsEntityTypeTransformationService : IEntityTypeTransformationService
-    {
+    {    
         /// <summary>
         /// Entity name transformer.
         /// </summary>
@@ -100,7 +99,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 transformedLines.Add(new Dictionary<string, object>
                 {
                     { "property-name", transformedProp.PropertyName },
-                    { "property-type", transformedProp.PropertyType },
+                    { "property-type", transformedProp.PropertyType }
                 });
             }
 
@@ -119,7 +118,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             foreach (var property in properties)
             {
                 var propTypeInfo = new EntityPropertyInfo(property["property-type"] as string, 
-                    property["property-name"] as string);
+                    property["property-name"] as string,
+                    (property["property-isnullable"] as bool?) == true);
                 var transformedProp = PropertyTransformer?.Invoke(propTypeInfo) ?? propTypeInfo;
 
                 transformedProperties.Add(new Dictionary<string, object>
@@ -128,6 +128,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-name", transformedProp.PropertyName },
                     { "property-annotations", property["property-annotations"] },
                     { "property-comment", property["property-comment"] },
+                    { "property-isnullable", transformedProp.PropertyIsNullable },
+                    { "nullable-reference-types", property["nullable-reference-types"] }
                 });
             }
 
@@ -154,7 +156,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "nav-property-collection", navProperty["nav-property-collection"] },
                     { "nav-property-type", transformedProp.PropertyType },
                     { "nav-property-name", transformedProp.PropertyName },
-                    { "nav-property-annotations", navProperty["nav-property-annotations"] }
+                    { "nav-property-annotations", navProperty["nav-property-annotations"] },
+                    { "nullable-reference-types", navProperty["nullable-reference-types"] }
                 });
             }
 

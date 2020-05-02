@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -49,7 +50,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 return s;
             var chars = s.ToCharArray();
             var sb = new StringBuilder();
-            sb.Append(chars[0].ToString().ToLower());
+            sb.Append(chars[0].ToString().ToLower(CultureInfo.InvariantCulture));
             for (int i = 1; i < chars.Length; i++)
             {
                 sb.Append(chars[i]);

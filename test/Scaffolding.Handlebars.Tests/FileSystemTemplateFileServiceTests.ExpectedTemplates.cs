@@ -32,9 +32,14 @@ namespace {{namespace}}
 
 namespace {{namespace}}
 {
-{{#if class-annotation}}
-{{spaces 4}}{{{class-annotation}}}
-{{/if}}
+    {{#if class-annotation}}
+    {{{class-annotation}}}
+    {{/if}}
+    {{#if comment}}
+    /// <summary>
+    /// {{comment}}
+    /// </summary>
+    {{/if}}
     public partial class {{class}}
     {
         {{{> constructor}}}

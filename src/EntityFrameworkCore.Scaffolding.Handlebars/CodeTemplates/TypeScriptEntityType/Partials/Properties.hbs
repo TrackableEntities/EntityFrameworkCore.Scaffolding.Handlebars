@@ -1,4 +1,9 @@
 ﻿{{#each properties}}
+{{#if property-comment}}
+{{spaces 4}}/**
+{{spaces 4}}* {{property-comment}}
+{{spaces 4}}*/
+{{/if}}
 {{spaces 4}}{{property-name}}: {{property-type}};
 {{/each}}
 {{#if nav-properties}}

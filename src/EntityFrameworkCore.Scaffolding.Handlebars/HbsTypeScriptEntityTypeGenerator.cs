@@ -125,6 +125,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
 
+            TemplateData.Add("comment", entityType.GetComment());
             TemplateData.Add("class", transformedEntityName);
 
             GenerateConstructor(entityType);

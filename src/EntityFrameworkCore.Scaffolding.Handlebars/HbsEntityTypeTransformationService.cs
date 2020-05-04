@@ -127,6 +127,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-type", transformedProp.PropertyType },
                     { "property-name", transformedProp.PropertyName },
                     { "property-annotations", property["property-annotations"] },
+                    { "property-comment", property["property-comment"] },
                     { "property-isnullable", transformedProp.PropertyIsNullable },
                     { "nullable-reference-types", property["nullable-reference-types"] }
                 });

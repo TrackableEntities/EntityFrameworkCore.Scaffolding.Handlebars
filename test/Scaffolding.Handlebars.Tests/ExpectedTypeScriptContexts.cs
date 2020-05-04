@@ -34,9 +34,12 @@ namespace FakeNamespace
         {
             modelBuilder.Entity<Category>(entity =>
             {
+                entity.HasComment(""A category of products"");
+
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
-                    .HasMaxLength(15);
+                    .HasMaxLength(15)
+                    .HasComment(""The name of a category"");
             });
 
             modelBuilder.Entity<Product>(entity =>

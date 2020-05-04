@@ -10,6 +10,9 @@ using System.Collections.Generic;
 
 namespace FakeNamespace
 {
+    /// <summary>
+    /// A category of products
+    /// </summary>
     public partial class Category
     {
         public Category()
@@ -18,6 +21,9 @@ namespace FakeNamespace
         }
 
         public int CategoryId { get; set; }
+        /// <summary>
+        /// The name of a category
+        /// </summary>
         public string CategoryName { get; set; }
 
         public virtual ICollection<Product> Product { get; set; }
@@ -56,6 +62,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FakeNamespace
 {
+    /// <summary>
+    /// A category of products
+    /// </summary>
     public partial class Category
     {
         public Category()
@@ -65,6 +74,9 @@ namespace FakeNamespace
 
         [Key]
         public int CategoryId { get; set; }
+        /// <summary>
+        /// The name of a category
+        /// </summary>
         [Required]
         [StringLength(15)]
         public string CategoryName { get; set; }
@@ -112,6 +124,9 @@ using System.Collections.Generic;
 
 namespace FakeNamespace
 {
+    /// <summary>
+    /// A category of products
+    /// </summary>
     public partial class Category
     {
         public Category()
@@ -120,6 +135,9 @@ namespace FakeNamespace
         }
 
         public int CategoryId { get; set; }
+        /// <summary>
+        /// The name of a category
+        /// </summary>
         public string CategoryName { get; set; }
 
         public virtual ICollection<Product> Products { get; set; }
@@ -158,6 +176,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FakeNamespace
 {
+    /// <summary>
+    /// A category of products
+    /// </summary>
     [Table(""Category"")]
     public partial class Category
     {
@@ -168,6 +189,9 @@ namespace FakeNamespace
 
         [Key]
         public int CategoryId { get; set; }
+        /// <summary>
+        /// The name of a category
+        /// </summary>
         [Required]
         [StringLength(15)]
         public string CategoryName { get; set; }

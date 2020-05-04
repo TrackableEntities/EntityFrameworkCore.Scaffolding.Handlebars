@@ -1,5 +1,10 @@
 ﻿{{> imports}}
 
+{{#if comment}}
+/**
+* {{comment}}
+*/
+{{/if}}
 export interface {{class}} {
     {{{> properties}}}
 }

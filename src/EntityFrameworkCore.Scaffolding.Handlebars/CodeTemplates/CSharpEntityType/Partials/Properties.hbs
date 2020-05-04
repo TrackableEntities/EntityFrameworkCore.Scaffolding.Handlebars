@@ -1,4 +1,9 @@
 ﻿{{#each properties}}
+{{#if property-comment}}
+{{spaces 8}}/// <summary>
+{{spaces 8}}/// {{property-comment}}
+{{spaces 8}}/// </summary>
+{{/if}}
 {{#each property-annotations}}
 {{spaces 8}}{{{property-annotation}}}
 {{/each}}

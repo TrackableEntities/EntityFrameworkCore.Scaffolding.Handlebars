@@ -34,9 +34,12 @@ namespace FakeNamespace
         {
             modelBuilder.Entity<Category>(entity =>
             {
+                entity.HasComment(""A category of products"");
+
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
-                    .HasMaxLength(15);
+                    .HasMaxLength(15)
+                    .HasComment(""The name of a category"");
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -94,6 +97,13 @@ namespace FakeNamespace
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.HasComment(""A category of products"");
+
+                entity.Property(e => e.CategoryName).HasComment(""The name of a category"");
+            });
+
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.HasIndex(e => e.CategoryId);
@@ -143,9 +153,12 @@ namespace FakeNamespace
             {
                 entity.ToTable(""Category"");
 
+                entity.HasComment(""A category of products"");
+
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
-                    .HasMaxLength(15);
+                    .HasMaxLength(15)
+                    .HasComment(""The name of a category"");
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -205,6 +218,13 @@ namespace FakeNamespace
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.HasComment(""A category of products"");
+
+                entity.Property(e => e.CategoryName).HasComment(""The name of a category"");
+            });
+
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.HasIndex(e => e.CategoryId);

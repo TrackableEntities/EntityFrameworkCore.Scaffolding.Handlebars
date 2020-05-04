@@ -125,6 +125,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
 
+            TemplateData.Add("comment", entityType.GetComment());
             TemplateData.Add("class", transformedEntityName);
 
             GenerateConstructor(entityType);
@@ -178,6 +179,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-type", TypeScriptHelper.TypeName(property.ClrType) },
                     { "property-name",  TypeScriptHelper.ToCamelCase(property.Name) },
                     { "property-annotations",  new List<Dictionary<string, object>>() },
+                    { "property-comment", property.GetComment() },
                     { "property-isnullable", property.IsNullable },
                     { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
                 });

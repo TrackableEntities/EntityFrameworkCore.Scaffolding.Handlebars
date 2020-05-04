@@ -14,6 +14,10 @@ namespace Scaffolding.Handlebars.Tests.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Category>()
+                .HasComment("A category of products")
+                .Property(category => category.CategoryName)
+                    .HasComment("The name of a category");
         }
     }
 }

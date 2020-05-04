@@ -7,8 +7,14 @@
             public const string CategoryClass =
 @"import { Product } from './Product';
 
+/**
+* A category of products
+*/
 export interface Category {
     categoryId: number;
+    /**
+    * The name of a category
+    */
     categoryName: string;
     product: Product[];
 }

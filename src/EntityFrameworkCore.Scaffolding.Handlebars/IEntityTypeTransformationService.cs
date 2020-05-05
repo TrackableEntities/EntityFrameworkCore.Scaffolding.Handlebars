@@ -25,15 +25,17 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Transform single property name.
         /// </summary>
         /// <param name="propertyName">Property name.</param>
+        /// <param name="propertyType">Property type</param>
         /// <returns>Transformed property name.</returns>
-        string TransformPropertyName(string propertyName);
+        string TransformPropertyName(string propertyName, string propertyType);
 
         /// <summary>
         /// Transform single navigation property name.
         /// </summary>
         /// <param name="propertyName">Property name.</param>
+        /// <param name="propertyType">Property type</param>
         /// <returns>Transformed property name.</returns>
-        string TransformNavPropertyName(string propertyName);
+        string TransformNavPropertyName(string propertyName, string propertyType);
 
         /// <summary>
         /// Transform entity type constructor.

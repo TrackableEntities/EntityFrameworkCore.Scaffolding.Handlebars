@@ -416,11 +416,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     {
                         foreignKeyAttribute.AddParameter(
                                 CSharpHelper.Literal(
-                                    string.Join(",", navigation.ForeignKey.Properties.Select(p => p.Name))));
+                                    string.Join(",", navigation.ForeignKey.Properties.Select(p => EntityTypeTransformationService.TransformNavPropertyName(p.Name, p.ClrType.Name)))));
                     }
                     else
-                    { 
-                        foreignKeyAttribute.AddParameter($"nameof({navigation.ForeignKey.Properties.First().Name})");
+                    {
+                        foreignKeyAttribute.AddParameter($"nameof({EntityTypeTransformationService.TransformNavPropertyName(navigation.ForeignKey.Properties.First().Name, navigation.ForeignKey.Properties.First().ClrType.Name)})");
                     }
 
                     NavPropertyAnnotations.Add(new Dictionary<string, object>
@@ -441,11 +441,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     var inversePropertyAttribute = new AttributeWriter(nameof(InversePropertyAttribute));
 
+                    var propertyName = EntityTypeTransformationService.TransformNavPropertyName(inverseNavigation.Name, navigation.DeclaringType.Name);
                     inversePropertyAttribute.AddParameter(
                         !navigation.DeclaringEntityType.GetPropertiesAndNavigations().Any(
-                                m => m.Name == inverseNavigation.DeclaringEntityType.Name)
-                            ? $"nameof({inverseNavigation.DeclaringEntityType.Name}.{inverseNavigation.Name})"
-                            : CSharpHelper.Literal(inverseNavigation.Name));
+                                m => m.Name == inverseNavigation.DeclaringEntityType.Name ||
+                                    EntityTypeTransformationService.TransformNavPropertyName(m.Name, navigation.GetTargetType().Name) == EntityTypeTransformationService.TransformNavPropertyName(inverseNavigation.DeclaringEntityType.Name, navigation.GetTargetType().Name))
+                            ? $"nameof({EntityTypeTransformationService.TransformEntityName(inverseNavigation.DeclaringType.Name)}.{propertyName})"
+                            : CSharpHelper.Literal(propertyName));
 
                     NavPropertyAnnotations.Add(new Dictionary<string, object>
                     {

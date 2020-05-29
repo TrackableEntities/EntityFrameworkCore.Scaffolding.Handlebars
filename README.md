@@ -167,9 +167,6 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
             // Enable Nullable reference types Support https://docs.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
             options.EnableNullableReferenceTypes = true;
 
-            // Put Models into folders by DB Schema
-            //options.EnableSchemaFolders = true;
-
             // Exclude some tables
             options.ExcludedTables = new List<string> { "Territory", "EmployeeTerritories" };
 
@@ -180,7 +177,7 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
                 { "base-class", "EntityBase" }
             };
 
-            // Place models in folders by schema
+            // Place models in folders by database schema
             //options.EnableSchemaFolders = true;
         });
 

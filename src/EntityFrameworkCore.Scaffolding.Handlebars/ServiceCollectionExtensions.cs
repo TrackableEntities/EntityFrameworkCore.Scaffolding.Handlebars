@@ -5,9 +5,11 @@ using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using HandlebarsDotNet;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.EntityFrameworkCore.Design
@@ -197,21 +199,26 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="constructorTransformer"></param>
         /// <param name="propertyTransformer">Property name transformer.</param>
         /// <param name="navPropertyTransformer">Navigation property name transformer.</param>
+        /// <param name="entityTypeTransformer">Entity type name transformer.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsTransformers(this IServiceCollection services,
             Func<string, string> entityNameTransformer = null,
             Func<string, string> entityFileNameTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
-            Func<EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null)
+            Func<EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null,
+            Func<IEntityType, string> entityTypeTransformer = null)
         {
             services.AddSingleton<IEntityTypeTransformationService>(provider =>
                 new HbsEntityTypeTransformationService(
+                    provider.GetService<IOptions<HandlebarsScaffoldingOptions>>(),
+                    provider.GetService<ICSharpHelper>(),
                     entityNameTransformer,
                     entityFileNameTransformer,
                     constructorTransformer,
                     propertyTransformer,
-                    navPropertyTransformer));
+                    navPropertyTransformer,
+                    entityTypeTransformer));
             return services;
         }
     }

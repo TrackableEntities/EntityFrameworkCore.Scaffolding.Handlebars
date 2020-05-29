@@ -26,6 +26,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     public class HbsCSharpEntityTypeGenerator : CSharpEntityTypeGenerator
     {
         private readonly IOptions<HandlebarsScaffoldingOptions> _options;
+        private string _modelNamespace;
 
         /// <summary>
         /// CSharp helper.
@@ -94,6 +95,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             Check.NotNull(entityType, nameof(entityType));
             Check.NotNull(@namespace, nameof(@namespace));
 
+            _modelNamespace = @namespace;
             UseDataAnnotations = useDataAnnotations;
             TemplateData = new Dictionary<string, object>();
 
@@ -108,6 +110,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             TemplateData.Add("use-data-annotations", UseDataAnnotations);
 
             GenerateImports(entityType);
+
+            if (_options?.Value?.EnableSchemaFolders == true)
+            {
+                var schema = entityType.GetSchema();
+                var schemaNamespace = CSharpHelper.Namespace(schema);
+                @namespace = $"{@namespace}.{schemaNamespace}";
+            }
 
             TemplateData.Add("namespace", @namespace);
 
@@ -134,6 +143,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 imports.Add(new Dictionary<string, object> { { "import", ns } });
             }
+
+            // Add model base namespace for reference
+            if (_options?.Value?.EnableSchemaFolders == true)
+                imports.Add(new Dictionary<string, object> { { "import", $"Models = {_modelNamespace}" } });
 
             TemplateData.Add("imports", imports);
         }
@@ -181,7 +194,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     lines.Add(new Dictionary<string, object>
                     {
                         { "property-name", navigation.Name },
-                        { "property-type", navigation.GetTargetType().Name }
+                        { "property-type", EntityTypeTransformationService.TransformEntityTypeName(navigation.GetTargetType()) }
                     });
                 }
 
@@ -260,7 +273,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     navProperties.Add(new Dictionary<string, object>
                     {
                         { "nav-property-collection", navigation.IsCollection() },
-                        { "nav-property-type", navigation.GetTargetType().Name },
+                        { "nav-property-type", EntityTypeTransformationService.TransformEntityTypeName(navigation.GetTargetType()) },
                         { "nav-property-name", navigation.Name },
                         { "nav-property-annotations", NavPropertyAnnotations },
                         { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
@@ -446,7 +459,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         !navigation.DeclaringEntityType.GetPropertiesAndNavigations().Any(
                                 m => m.Name == inverseNavigation.DeclaringEntityType.Name ||
                                     EntityTypeTransformationService.TransformNavPropertyName(m.Name, navigation.GetTargetType().Name) == EntityTypeTransformationService.TransformNavPropertyName(inverseNavigation.DeclaringEntityType.Name, navigation.GetTargetType().Name))
-                            ? $"nameof({EntityTypeTransformationService.TransformEntityName(inverseNavigation.DeclaringType.Name)}.{propertyName})"
+                            ? $"nameof({EntityTypeTransformationService.TransformEntityTypeName(inverseNavigation.DeclaringEntityType)}.{propertyName})"
                             : CSharpHelper.Literal(propertyName));
 
                     NavPropertyAnnotations.Add(new Dictionary<string, object>

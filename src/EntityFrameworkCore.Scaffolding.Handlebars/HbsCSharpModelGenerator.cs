@@ -7,6 +7,7 @@ using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
@@ -21,6 +22,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     {
         private const string FileExtension = ".cs";
         private readonly IOptions<HandlebarsScaffoldingOptions> _options;
+        
+        /// <summary>
+        /// CSharp helper.
+        /// </summary>
+        protected ICSharpHelper CSharpHelper { get; }
 
         /// <summary>
         /// Handlebars helper service.
@@ -59,6 +65,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="options">Handlebar scaffolding options</param>
+        /// <param name="cSharpHelper"></param>
         public HbsCSharpModelGenerator(
             [NotNull] ModelCodeGeneratorDependencies dependencies, 
             [NotNull] ICSharpDbContextGenerator cSharpDbContextGenerator, 
@@ -68,7 +75,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             [NotNull] IDbContextTemplateService dbContextTemplateService,
             [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
-            [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
+            [NotNull] IOptions<HandlebarsScaffoldingOptions> options,
+            [NotNull] ICSharpHelper cSharpHelper)
             : base(dependencies, cSharpDbContextGenerator, cSharpEntityTypeGenerator)
         {
             HandlebarsHelperService = handlebarsHelperService;
@@ -76,7 +84,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             DbContextTemplateService = dbContextTemplateService;
             EntityTypeTemplateService = entityTypeTemplateService;
             EntityTypeTransformationService = entityTypeTransformationService;
+
             _options = options;
+            CSharpHelper = cSharpHelper;
         }
 
         /// <summary>
@@ -132,8 +142,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                     var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.DisplayName());
                     var entityTypeFileName = transformedFileName + FileExtension;
-                    if (_options?.Value?.EnableSchemaFolders == true) {
-                        entityTypeFileName = entityType.GetSchema() + @"\" + entityTypeFileName;
+                    if (_options?.Value?.EnableSchemaFolders == true)
+                    {
+                        var schema = entityType.GetSchema();
+                        var schemaNamespace = CSharpHelper.Namespace(schema);
+                        entityTypeFileName = Path.Combine(schemaNamespace, entityTypeFileName);
                     }
                     resultingFiles.AdditionalFiles.Add(
                         new ScaffoldedFile

@@ -1,12 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Options;
+
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
     /// <summary>
     /// Default service for transforming entity type definitions.
     /// </summary>
     public class HbsEntityTypeTransformationService : IEntityTypeTransformationService
-    {    
+    {   
+        private readonly IOptions<HandlebarsScaffoldingOptions> _options;
+
+        /// <summary>
+        /// CSharp helper.
+        /// </summary>
+        protected ICSharpHelper CSharpHelper { get; }
+
+
         /// <summary>
         /// Entity name transformer.
         /// </summary>
@@ -33,25 +46,40 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public Func<EntityPropertyInfo, EntityPropertyInfo> NavPropertyTransformer { get; }
 
         /// <summary>
+        /// Entity type transformer.
+        /// </summary>
+        public Func<IEntityType, string> EntityTypeTransformer { get; }
+
+        /// <summary>
         /// HbsEntityTypeTransformationService constructor.
         /// </summary>
+        /// <param name="options">Handlebars scaffolding options.</param>
+        /// <param name="cSharpHelper"></param>
         /// <param name="entityNameTransformer">Entity name transformer.</param>
         /// <param name="entityFileNameTransformer">Entity file name transformer.</param>
         /// <param name="constructorTransformer">Constructor transformer.</param>
         /// <param name="propertyTransformer">Property name transformer.</param>
         /// <param name="navPropertyTransformer">Navigation property name transformer.</param>
+        /// <param name="entityTypeTransformer">entity type transformer</param>
         public HbsEntityTypeTransformationService(
+            IOptions<HandlebarsScaffoldingOptions> options,
+            ICSharpHelper cSharpHelper,
             Func<string, string> entityNameTransformer = null,
             Func<string, string> entityFileNameTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
-            Func<EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null)
+            Func<EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null,
+            Func<IEntityType, string> entityTypeTransformer = null)
         {
+            _options = options;
+            CSharpHelper = cSharpHelper;
+
             EntityNameTransformer = entityNameTransformer;
             EntityFileNameTransformer = entityFileNameTransformer;
             ConstructorTransformer = constructorTransformer;
             PropertyTransformer = propertyTransformer;
             NavPropertyTransformer = navPropertyTransformer;
+            EntityTypeTransformer = entityTypeTransformer;
         }
 
         /// <summary>
@@ -175,6 +203,27 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
 
             return transformedNavProperties;
+        }
+        
+        /// <summary>
+        /// Transform entity type name
+        /// </summary>
+        /// <param name="entityType">Entity type</param>
+        /// <returns>Transformed entity type name.</returns>
+        public string TransformEntityTypeName(IEntityType entityType)
+        {
+            var transformedEntityName = TransformEntityName(entityType.Name);
+
+            if (_options?.Value?.EnableSchemaFolders == true
+                && _options.Value.LanguageOptions == LanguageOptions.CSharp)
+            {
+                var schema = entityType.GetSchema();
+                var schemaNamespace = CSharpHelper.Namespace(schema);
+
+                transformedEntityName = $"Models.{schemaNamespace}.{transformedEntityName}";
+            }
+
+            return transformedEntityName;
         }
     }
 }

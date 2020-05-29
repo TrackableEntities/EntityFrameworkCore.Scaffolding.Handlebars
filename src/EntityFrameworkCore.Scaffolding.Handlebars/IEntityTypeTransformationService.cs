@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -7,6 +8,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// </summary>
     public interface IEntityTypeTransformationService
     {
+        /// <summary>
+        /// Transform entity type name
+        /// </summary>
+        /// <param name="entityType">Entity type</param>
+        /// <returns>Transformed entity type name.</returns>
+        string TransformEntityTypeName(IEntityType entityType);
+
         /// <summary>
         /// Transform entity type name.
         /// </summary>

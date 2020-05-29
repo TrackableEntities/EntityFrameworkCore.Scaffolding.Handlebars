@@ -75,7 +75,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="options">Handlebars scaffolding options.</param>
         public HbsCSharpDbContextGenerator(
-            [NotNull] IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator, 
+            [NotNull] IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator,
             [NotNull] IAnnotationCodeGenerator annotationCodeGenerator,
             [NotNull] IDbContextTemplateService dbContextTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
@@ -107,7 +107,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             Check.NotNull(model, nameof(model));
 
-            if (!string.IsNullOrEmpty(modelNamespace) && string.CompareOrdinal(contextNamespace, modelNamespace) != 0)
+            // add base model namespace if it differs from the context namespace OR if model namespace is distributed into schema folders
+            if (!string.IsNullOrEmpty(modelNamespace) && string.CompareOrdinal(contextNamespace, modelNamespace) != 0
+                || _options?.Value?.EnableSchemaFolders == true)
                 _modelNamespace = modelNamespace;
 
             TemplateData = new Dictionary<string, object>();
@@ -137,14 +139,18 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="useDataAnnotations">Use fluent modeling API if false.</param>
         /// <param name="suppressConnectionStringWarning">Suppress connection string warning.</param>
         protected override void GenerateClass(
-            IModel model, string contextName, string connectionString, bool useDataAnnotations, 
+            IModel model, string contextName, string connectionString, bool useDataAnnotations,
             bool suppressConnectionStringWarning)
         {
             Check.NotNull(model, nameof(model));
             Check.NotNull(contextName, nameof(contextName));
             Check.NotNull(connectionString, nameof(connectionString));
 
-            TemplateData.Add("model-namespace", _modelNamespace);
+            TemplateData.Add("model-namespace",
+                _options?.Value?.EnableSchemaFolders == true
+                    ? $"Models = {_modelNamespace}"
+                    : _modelNamespace);
+
             TemplateData.Add("class", contextName);
 
             GenerateDbSets(model);
@@ -206,7 +212,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     sb.AppendLine("}");
                 }
 
-                sb.AppendLine("}"); 
+                sb.AppendLine("}");
             }
 
             var onConfiguring = sb.ToString();
@@ -327,12 +333,18 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
             {
-                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
+                var transformedEntityName = EntityTypeTransformationService.TransformEntityTypeName(entityType);
+
+                var schema = entityType.GetSchema();
+                var schemaNamespace = CSharpHelper.Namespace(schema);
+
                 dbSets.Add(new Dictionary<string, object>
                 {
                     { "set-property-type", transformedEntityName },
                     { "set-property-name", entityType.GetDbSetName() },
-                    { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
+                    { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true },
+                    { "schema", schema },
+                    { "schemaNamespace", schemaNamespace }
                 });
             }
 
@@ -358,8 +370,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             if (!_entityTypeBuilderInitialized)
             {
-                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
-                
+                var transformedEntityName = EntityTypeTransformationService.TransformEntityTypeName(entityType);
+
                 sb.AppendLine();
                 sb.AppendLine($"modelBuilder.Entity<{transformedEntityName}>({EntityLambdaIdentifier} =>");
                 sb.Append("{");
@@ -810,13 +822,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 canUseDataAnnotations = false;
                 lines.Add(
                     $".{nameof(ReferenceReferenceBuilder.HasPrincipalKey)}"
-                    + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformPropertyName(((ITypeBase)foreignKey.PrincipalEntityType).DisplayName(), "")}>" : "")
+                    + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformEntityTypeName(foreignKey.PrincipalEntityType)}>" : "")
                     + $"(p => {GenerateLambdaToKey(foreignKey.PrincipalKey.Properties, "p", EntityTypeTransformationService.TransformNavPropertyName)})");
             }
 
             lines.Add(
                 $".{nameof(ReferenceReferenceBuilder.HasForeignKey)}"
-                + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformEntityName(((ITypeBase)foreignKey.DeclaringEntityType).DisplayName())}>" : "")
+                + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformEntityTypeName(foreignKey.DeclaringEntityType)}>" : "")
                 + $"(d => {GenerateLambdaToKey(foreignKey.Properties, "d", EntityTypeTransformationService.TransformPropertyName)})");
 
             var defaultOnDeleteAction = foreignKey.IsRequired

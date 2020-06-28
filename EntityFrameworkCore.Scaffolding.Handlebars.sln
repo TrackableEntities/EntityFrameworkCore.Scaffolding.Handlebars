@@ -13,7 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scaffolding.Handlebars.Test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7C70A676-4947-49A1-87CD-DB51F0E42056}"
 	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
@@ -26,9 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScaffoldingSample.Api", "sa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScaffoldingSample.TypeScript", "sample\ScaffoldingSample.TypeScript\ScaffoldingSample.TypeScript.csproj", "{2713D6F6-6ADE-4E3F-8D07-30E19C14AD68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemplatesAssembly", "sample\TemplatesAssembly\TemplatesAssembly.csproj", "{BA4575F5-1DDF-4E7D-A06E-09E56703C3FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TemplatesAssembly", "sample\TemplatesAssembly\TemplatesAssembly.csproj", "{BA4575F5-1DDF-4E7D-A06E-09E56703C3FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScaffoldingSample.Embedded", "sample\ScaffoldingSample.Embedded\ScaffoldingSample.Embedded.csproj", "{9288FD98-43FC-4E6B-87FC-FC43E8071C07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScaffoldingSample.Embedded", "sample\ScaffoldingSample.Embedded\ScaffoldingSample.Embedded.csproj", "{9288FD98-43FC-4E6B-87FC-FC43E8071C07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

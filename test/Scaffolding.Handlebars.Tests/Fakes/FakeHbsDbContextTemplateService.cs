@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using Microsoft.EntityFrameworkCore.Design;
 using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
-namespace EntityFrameworkCore.Scaffolding.Handlebars
+namespace Scaffolding.Handlebars.Tests.Fakes
 {
     /// <summary>
     /// Provide services required to generate the DbContext class using Handlebars templates.
     /// </summary>
-    public class HbsDbContextTemplateService : HbsTemplateService, IDbContextTemplateService
+    public class FakeHbsDbContextTemplateService : HbsTemplateService, IDbContextTemplateService
     {
         private Dictionary<string, TemplateFileInfo> DbContextTemplateFiles { get; }
 
@@ -23,7 +25,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         /// <param name="fileService">Template file service.</param>
         /// <param name="languageService">Template language service.</param>
-        public HbsDbContextTemplateService(ITemplateFileService fileService,
+        public FakeHbsDbContextTemplateService(ITemplateFileService fileService,
             ITemplateLanguageService languageService) : base(fileService, languageService)
         {
             DbContextTemplateFiles = LanguageService.GetDbContextTemplateFileInfo(fileService);
@@ -67,14 +69,33 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         protected override IDictionary<string, string> GetPartialTemplates(
             LanguageOptions language = LanguageOptions.CSharp)
         {
-            var templates = new Dictionary<string, string>();
-            foreach(var item in DbContextTemplateFiles)
+            DbContextTemplateFiles.TryGetValue(Constants.DbContextImportTemplate, out TemplateFileInfo importFile);
+            var importTemplateFile = FileService.RetrieveTemplateFileContents(
+                importFile.RelativeDirectory, importFile.FileName);
+
+            DbContextTemplateFiles.TryGetValue(Constants.DbContextCtorTemplate, out TemplateFileInfo ctorFile);
+            var ctorTemplateFile = FileService.RetrieveTemplateFileContents(
+                ctorFile.RelativeDirectory, ctorFile.FileName);
+
+            DbContextTemplateFiles.TryGetValue(Constants.DbContextDbSetsTemplate, out TemplateFileInfo propertyFile);
+            var propertyTemplateFile = FileService.RetrieveTemplateFileContents(
+                propertyFile.RelativeDirectory, propertyFile.FileName);
+
+            var templates = new Dictionary<string, string>
             {
-                if(item.Value.RelativeDirectory == Constants.CSharpTemplateDirectories.DbContextPartialsDirectory)
                 {
-                    templates.Add(item.Key, FileService.RetrieveTemplateFileContents(item.Value.RelativeDirectory, item.Value.FileName));
-                }
-            }
+                    Constants.DbContextImportTemplate.ToLower(CultureInfo.InvariantCulture),
+                    importTemplateFile
+                },
+                {
+                    Constants.DbContextCtorTemplate.ToLower(CultureInfo.InvariantCulture),
+                    ctorTemplateFile
+                },
+                {
+                    Constants.DbContextDbSetsTemplate.ToLower(CultureInfo.InvariantCulture),
+                    propertyTemplateFile
+                },
+            };
             return templates;
         }
     }

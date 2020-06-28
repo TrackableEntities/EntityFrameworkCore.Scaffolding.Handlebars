@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using HandlebarsDotNet;
@@ -19,6 +20,9 @@ namespace ScaffoldingSample
     {
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
+            // Uncomment to launch JIT debugger and hit breakpoints
+            //Debugger.Launch();
+
             // Add Handlebars scaffolding templates
             services.AddHandlebarsScaffolding(options =>
             {

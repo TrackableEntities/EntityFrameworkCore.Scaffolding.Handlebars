@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.SqlServer.Design.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Scaffolding.Handlebars.Tests.Fakes;
 using Scaffolding.Handlebars.Tests.Helpers;
 using Xunit;
 using Constants = Scaffolding.Handlebars.Tests.Helpers.Constants;
@@ -321,12 +322,12 @@ namespace Scaffolding.Handlebars.Tests
 
             var services = new ServiceCollection()
                 .AddEntityFrameworkDesignTimeServices()
-                .AddSingleton<IDbContextTemplateService, HbsDbContextTemplateService>()
-                .AddSingleton<IEntityTypeTemplateService, HbsEntityTypeTemplateService>()
+                .AddSingleton<IDbContextTemplateService, FakeHbsDbContextTemplateService>()
+                .AddSingleton<IEntityTypeTemplateService, FakeHbsEntityTypeTemplateService>()
                 .AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>()
                 .AddSingleton<ITypeScriptHelper, TypeScriptHelper>()
                 .AddSingleton<ITemplateFileService>(fileService)
-                .AddSingleton<ITemplateLanguageService, TypeScriptTemplateLanguageService>()
+                .AddSingleton<ITemplateLanguageService, FakeTypeScriptTemplateLanguageService>()
                 .AddSingleton<IModelCodeGenerator, HbsTypeScriptModelGenerator>()
                 .AddSingleton(provider =>
                 {

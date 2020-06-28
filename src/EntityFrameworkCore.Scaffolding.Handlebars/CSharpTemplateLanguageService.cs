@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Get DbContext template file information.
         /// </summary>
         /// <returns>Dictionary of templates with file information.</returns>
-        public Dictionary<string, TemplateFileInfo> GetDbContextTemplateFileInfo()
+        public Dictionary<string, TemplateFileInfo> GetDbContextTemplateFileInfo(ITemplateFileService fileService)
         {
             var result = new Dictionary<string, TemplateFileInfo>
             {
@@ -23,32 +23,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextDirectory,
                         FileName = Constants.DbContextTemplate + Constants.TemplateExtension
                     }
-                },
-                {
-                    Constants.DbContextImportTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextPartialsDirectory,
-                        FileName = Constants.DbContextImportTemplate + Constants.TemplateExtension
-                    }
-                },
-                {
-                    Constants.DbContextCtorTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextPartialsDirectory,
-                        FileName = Constants.DbContextCtorTemplate + Constants.TemplateExtension
-                    }
-                },
-                {
-                    Constants.DbContextDbSetsTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextPartialsDirectory,
-                        FileName = Constants.DbContextDbSetsTemplate + Constants.TemplateExtension
-                    }
-                },
+                }
             };
+
+            result = fileService.FindAllPartialTemplates(result, Constants.CSharpTemplateDirectories.DbContextPartialsDirectory);
             return result;
         }
 
@@ -56,7 +34,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Get Entities template file information.
         /// </summary>
         /// <returns>Dictionary of templates with file information.</returns>
-        public Dictionary<string, TemplateFileInfo> GetEntitiesTemplateFileInfo()
+        public Dictionary<string, TemplateFileInfo> GetEntitiesTemplateFileInfo(ITemplateFileService fileService)
         {
             var result = new Dictionary<string, TemplateFileInfo>
             {
@@ -68,31 +46,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         FileName = Constants.EntityTypeTemplate + Constants.TemplateExtension
                     }
                 },
-                {
-                    Constants.EntityTypeImportTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
-                        FileName = Constants.EntityTypeImportTemplate + Constants.TemplateExtension
-                    }
-                },
-                {
-                    Constants.EntityTypeCtorTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
-                        FileName = Constants.EntityTypeCtorTemplate + Constants.TemplateExtension
-                    }
-                },
-                {
-                    Constants.EntityTypePropertyTemplate,
-                    new TemplateFileInfo
-                    {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
-                        FileName = Constants.EntityTypePropertyTemplate + Constants.TemplateExtension
-                    }
-                },
             };
+
+            result = fileService.FindAllPartialTemplates(result, Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory);
             return result;
         }
     }

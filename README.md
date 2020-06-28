@@ -70,6 +70,16 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
     specific interfaces.
     - When you run the _dotnet-ef-dbcontext-scaffold_ command again, you will see your updated reflected in the generated classes.
 
+## Additional Partial Templates
+
+You can add new partial templates to one of the `Partials` folders, then reference with the usual Handlebars syntax. For example, a file named **Comment.hbs** can be referenced from **Class.hbs**.
+
+```hbs
+{{{> comment}}}
+public class {{class}}
+{
+```
+
 ## Excluded Tables
 
 You can optionally exclude certain tables from code generation. These may also be qualified by schema name.

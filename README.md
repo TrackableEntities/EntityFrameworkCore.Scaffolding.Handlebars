@@ -1,6 +1,6 @@
 # Entity Framework Core Scaffolding with Handlebars
 
-Scaffold EF Core models using Handlebars templates.
+_Scaffold EF Core models using Handlebars templates._
 
 - Uses [Handlebars.NET](https://github.com/rexm/Handlebars.Net) to compile [Handlebars](http://handlebarsjs.com) templates when generating models with the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore) scaffolding tools.
  
@@ -11,7 +11,16 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
 ## Prerequisites
 
 - [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.4 or greater.
-- The .[NET Core 3.1 SDK](https://www.microsoft.com/net/download/core).
+- .[NET Core 3.1 SDK](https://www.microsoft.com/net/download/core).
+- [EF Core CLI](https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet).
+  - Install global `dotnet-ef` tool.
+    ```
+    dotnet tool install --global dotnet-ef
+    ```
+  - Update global `dotnet-ef` tool.
+    ```
+    dotnet tool update --global dotnet-ef
+    ```
 
 ## Database Setup
 
@@ -53,7 +62,7 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
     }
     ```
 
-5. Open a command prompt at the project level and use the **EF .NET Core CLI** tools to reverse engineer a context and models from an existing database.
+5. Open a command prompt at the project level and use the `dotnet ef` tool to reverse engineer a context and models from an existing database.
     - Get help on _dotnet-ef-dbcontext-scaffold_ at the command line: `dotnet ef dbcontext scaffold -h`
     - Execute the following command to reverse engineer classes from the NorthwindSlim database:
 
@@ -70,14 +79,35 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
     specific interfaces.
     - When you run the _dotnet-ef-dbcontext-scaffold_ command again, you will see your updated reflected in the generated classes.
 
-## Additional Partial Templates
+## Nullable Reference Types
 
-You can add new partial templates to one of the `Partials` folders, then reference with the usual Handlebars syntax. For example, a file named **Comment.hbs** can be referenced from **Class.hbs**.
+Take advantage of C# nullable reference types by enabling them in your .csproj file.
 
-```hbs
-{{{> comment}}}
-public class {{class}}
+```xml
+<PropertyGroup>
+  <TargetFramework>netcoreapp3.1</TargetFramework>
+  <LangVersion>8.0</LangVersion>
+  <Nullable>enable</Nullable>
+</PropertyGroup>
+```
+
+Then enable nullable reference types for Handlebars scaffolding.
+
+```csharp
+services.AddHandlebarsScaffolding(options =>
 {
+    options.EnableNullableReferenceTypes = true;
+});
+```
+
+Non-nullable properties will include the [null forgiving operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/null-forgiving).
+
+```csharp
+public partial class Product
+{
+    public string ProductName { get; set; } = default!;
+    public decimal? UnitPrice { get; set; }
+}
 ```
 
 ## Excluded Tables
@@ -90,6 +120,16 @@ services.AddHandlebarsScaffolding(options =>
     // Exclude some tables
     options.ExcludedTables = new List<string> { "Territory", "dbo.EmployeeTerritories" };
 });
+```
+
+## Additional Partial Templates
+
+You can add new partial templates to one of the `Partials` folders, then reference with the usual Handlebars syntax. For example, a file named **Comment.hbs** can be referenced from **Class.hbs**.
+
+```hbs
+{{{> comment}}}
+public class {{class}}
+{
 ```
 
 ## Custom Template Data
@@ -174,7 +214,7 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
             // Generate both context and entities
             options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities;
 
-            // Enable Nullable reference types Support https://docs.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
+            // Enable Nullable reference types
             options.EnableNullableReferenceTypes = true;
 
             // Put Models into folders by DB Schema
@@ -189,9 +229,6 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
                 { "models-namespace", "ScaffoldingSample.Models" },
                 { "base-class", "EntityBase" }
             };
-
-            // Place models in folders by schema
-            //options.EnableSchemaFolders = true;
         });
 
         // Register Handlebars helper
@@ -271,16 +308,3 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
     }
 }
 ```
-
-- You can also omit `c` and `--context-dir` arguments from the EF Core scaffolding command.
-
-- Install the global `dotnet ef` tool.
-```
-dotnet tool install --global dotnet-ef --version 3.1.0-*
-```
-- Open a command prompt at the project root and execute:
-```
-dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -o Models -c NorthwindSlimContext -f --context-dir Contexts
-```
-
-

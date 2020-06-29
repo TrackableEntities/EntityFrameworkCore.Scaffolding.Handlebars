@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic; // Comment
 
-namespace ScaffoldingSample.Models
+namespace ScaffoldingSample.Models.dbo
 { // Comment
     public partial class Category : EntityBase // My Handlebars Helper
     {

@@ -144,9 +144,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             Check.NotNull(contextName, nameof(contextName));
             Check.NotNull(connectionString, nameof(connectionString));
 
-            TemplateData.Add("model-namespace", _modelNamespace);
+            if (_options?.Value?.EnableSchemaFolders != true)
+                TemplateData.Add("model-namespace", _modelNamespace);
+            else
+                GenerateModelImports(model);
             TemplateData.Add("class", contextName);
-
             GenerateDbSets(model);
             GenerateEntityTypeErrors(model);
             GenerateOnConfiguring(connectionString, suppressConnectionStringWarning);
@@ -327,16 +329,36 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
             {
-                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
+                var transformedEntityTypeName = GetEntityTypeName(
+                    entityType, EntityTypeTransformationService.TransformTypeEntityName(entityType.Name));
                 dbSets.Add(new Dictionary<string, object>
                 {
-                    { "set-property-type", transformedEntityName },
+                    { "set-property-type", transformedEntityTypeName },
                     { "set-property-name", entityType.GetDbSetName() },
                     { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
                 });
             }
 
             TemplateData.Add("dbsets", dbSets);
+        }
+
+        private void GenerateModelImports(IModel model)
+        {
+            var modelImports = new List<Dictionary<string, object>>();
+            var schemas = model.GetScaffoldEntityTypes(_options.Value)
+                .Select(e => e.GetSchema())
+                .OrderBy(s => s)
+                .Distinct();
+
+            foreach (var schema in schemas)
+            {
+                modelImports.Add(new Dictionary<string, object>
+                {
+                    { "model-import", $"{schema} = {_modelNamespace}.{schema}"}
+                });
+            }
+
+            TemplateData.Add("model-imports", modelImports);
         }
 
         private void GenerateEntityTypeErrors(IModel model)
@@ -358,14 +380,21 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             if (!_entityTypeBuilderInitialized)
             {
-                var transformedEntityName = EntityTypeTransformationService.TransformEntityName(entityType.Name);
-                
+                var transformedEntityTypeName = GetEntityTypeName(
+                    entityType, EntityTypeTransformationService.TransformTypeEntityName(entityType.Name));
+
                 sb.AppendLine();
-                sb.AppendLine($"modelBuilder.Entity<{transformedEntityName}>({EntityLambdaIdentifier} =>");
+                sb.AppendLine($"modelBuilder.Entity<{transformedEntityTypeName}>({EntityLambdaIdentifier} =>");
                 sb.Append("{");
             }
 
             _entityTypeBuilderInitialized = true;
+        }
+
+        private string GetEntityTypeName(IEntityType entityType, string entityTypeName)
+        {
+            return _options?.Value?.EnableSchemaFolders == true
+                ? $"{entityType.GetSchema()}.{entityTypeName}" : entityTypeName;
         }
 
         private void GenerateEntityType(IEntityType entityType, bool useDataAnnotations, IndentedStringBuilder sb)
@@ -816,7 +845,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             lines.Add(
                 $".{nameof(ReferenceReferenceBuilder.HasForeignKey)}"
-                + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformEntityName(((ITypeBase)foreignKey.DeclaringEntityType).DisplayName())}>" : "")
+                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(foreignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(((ITypeBase)foreignKey.DeclaringEntityType).DisplayName()))}>" : "")
                 + $"(d => {GenerateLambdaToKey(foreignKey.Properties, "d", EntityTypeTransformationService.TransformPropertyName)})");
 
             var defaultOnDeleteAction = foreignKey.IsRequired

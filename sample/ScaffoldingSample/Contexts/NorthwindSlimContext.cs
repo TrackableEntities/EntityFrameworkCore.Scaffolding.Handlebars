@@ -1,26 +1,26 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata; // Comment
-using ScaffoldingSample.Models;
+using dbo = ScaffoldingSample.Models.dbo;
 
 namespace ScaffoldingSample.Contexts
 { // Comment
     public partial class NorthwindSlimContext : DbContext
     {
         // My Handlebars Helper
-        public virtual DbSet<Category> Category { get; set; } = default!;
+        public virtual DbSet<dbo.Category> Category { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<Customer> Customer { get; set; } = default!;
+        public virtual DbSet<dbo.Customer> Customer { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<CustomerSetting> CustomerSetting { get; set; } = default!;
+        public virtual DbSet<dbo.CustomerSetting> CustomerSetting { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<Employee> Employee { get; set; } = default!;
+        public virtual DbSet<dbo.Employee> Employee { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<Order> Order { get; set; } = default!;
+        public virtual DbSet<dbo.Order> Order { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<OrderDetail> OrderDetail { get; set; } = default!;
+        public virtual DbSet<dbo.OrderDetail> OrderDetail { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<Product> Product { get; set; } = default!;
+        public virtual DbSet<dbo.Product> Product { get; set; } = default!;
 
         public NorthwindSlimContext(DbContextOptions<NorthwindSlimContext> options) : base(options)
         {
@@ -38,14 +38,14 @@ namespace ScaffoldingSample.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Category>(entity =>
+            modelBuilder.Entity<dbo.Category>(entity =>
             {
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
                     .HasMaxLength(15);
             });
 
-            modelBuilder.Entity<Customer>(entity =>
+            modelBuilder.Entity<dbo.Customer>(entity =>
             {
                 entity.HasComment("hello table Customer");
 
@@ -65,7 +65,7 @@ namespace ScaffoldingSample.Contexts
                 entity.Property(e => e.Country).HasMaxLength(15);
             });
 
-            modelBuilder.Entity<CustomerSetting>(entity =>
+            modelBuilder.Entity<dbo.CustomerSetting>(entity =>
             {
                 entity.HasKey(e => e.CustomerId)
                     .HasName("PK_dbo.CustomerSetting");
@@ -80,12 +80,12 @@ namespace ScaffoldingSample.Contexts
 
                 entity.HasOne(d => d.Customer)
                     .WithOne(p => p.CustomerSetting)
-                    .HasForeignKey<CustomerSetting>(d => d.CustomerId)
+                    .HasForeignKey<dbo.CustomerSetting>(d => d.CustomerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CustomerSetting_Customer");
             });
 
-            modelBuilder.Entity<Employee>(entity =>
+            modelBuilder.Entity<dbo.Employee>(entity =>
             {
                 entity.Property(e => e.BirthDate).HasColumnType("datetime");
 
@@ -104,7 +104,7 @@ namespace ScaffoldingSample.Contexts
                     .HasMaxLength(20);
             });
 
-            modelBuilder.Entity<Order>(entity =>
+            modelBuilder.Entity<dbo.Order>(entity =>
             {
                 entity.Property(e => e.CustomerId)
                     .HasMaxLength(5)
@@ -124,7 +124,7 @@ namespace ScaffoldingSample.Contexts
                     .HasConstraintName("FK_Orders_Customers");
             });
 
-            modelBuilder.Entity<OrderDetail>(entity =>
+            modelBuilder.Entity<dbo.OrderDetail>(entity =>
             {
                 entity.Property(e => e.Quantity).HasDefaultValueSql("((1))");
 
@@ -143,7 +143,7 @@ namespace ScaffoldingSample.Contexts
                     .HasConstraintName("FK_Order_Details_Products");
             });
 
-            modelBuilder.Entity<Product>(entity =>
+            modelBuilder.Entity<dbo.Product>(entity =>
             {
                 entity.Property(e => e.ProductName)
                     .IsRequired()

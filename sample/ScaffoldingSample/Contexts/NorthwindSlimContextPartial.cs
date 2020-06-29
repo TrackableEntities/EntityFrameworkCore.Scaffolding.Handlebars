@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using ScaffoldingSample.Models;
+using dbo = ScaffoldingSample.Models.dbo;
 
 namespace ScaffoldingSample.Contexts
 {
@@ -8,13 +9,13 @@ namespace ScaffoldingSample.Contexts
     {
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Employee>()
+            modelBuilder.Entity<dbo.Employee>()
                 .Property(e => e.Country)
                 .HasConversion(
                     v => v.ToString(),
                     v => (Country)Enum.Parse(typeof(Country), v));
 
-            modelBuilder.Entity<Customer>()
+            modelBuilder.Entity<dbo.Customer>()
                 .Property(e => e.Country)
                 .HasConversion(
                     v => v.ToString(),

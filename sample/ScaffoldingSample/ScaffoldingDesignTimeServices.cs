@@ -33,7 +33,7 @@ namespace ScaffoldingSample
                 options.EnableNullableReferenceTypes = true;
 
                 // Put Models into folders by DB Schema
-                //options.EnableSchemaFolders = true;
+                options.EnableSchemaFolders = true;
 
                 // Exclude some tables
                 options.ExcludedTables = new List<string> { "Territory", "EmployeeTerritories" };

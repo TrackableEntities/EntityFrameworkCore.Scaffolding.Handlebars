@@ -166,6 +166,19 @@ services.AddHandlebarsScaffolding(options =>
     };
 });
 ```
+
+## Schema Folders
+
+You can generate models in different folders by database schema.
+
+```csharp
+services.AddHandlebarsScaffolding(options =>
+{
+    // Put Models into folders by DB Schema
+    options.EnableSchemaFolders = true;
+});
+```
+
 ## Embedded Templates
 
 Handlebars templates may be embdedded in a separate .NET Standard project that can be shared among multiple .NET Core scaffolding projects. Simply copy the **CodeTemplates** folder to the .NET Standard project and edit the .csproj file to embed them as a resource in the assembly.

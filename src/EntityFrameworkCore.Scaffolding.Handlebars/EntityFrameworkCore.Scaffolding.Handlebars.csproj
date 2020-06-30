@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>3.8.0</PackageVersion>
+    <Version>3.8.0</Version>
     <Authors>Tony Sneed</Authors>
     <Company>Tony Sneed</Company>
     <Title>Entity Framework Core Scaffolding with Handlebars</Title>
@@ -12,7 +12,7 @@
     <PackageProjectUrl>https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageTags>scaffolding reverse-engineer entity-framework-core handlebars</PackageTags>
-    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v3.7.0</PackageReleaseNotes>
+    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v3.8.0</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
     <IncludeSource>true</IncludeSource>
     <SignAssembly>true</SignAssembly>
@@ -40,14 +40,9 @@
   <ItemGroup>
     <!-- pack  tempate files -->
     <Content Include="CodeTemplates\CSharpDbContext\DbContext.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\" />
-    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbOnConfiguring.hbs">
-      <PackagePath>lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\</PackagePath>
-    </Content>
-    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbOnConfiguring.hbs">
-      <PackagePath>lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\</PackagePath>
-    </Content>
     <Content Include="CodeTemplates\CSharpDbContext\Partials\DbImports.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\" />
     <Content Include="CodeTemplates\CSharpDbContext\Partials\DbConstructor.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\" />
+    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbOnConfiguring.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\" />
     <Content Include="CodeTemplates\CSharpDbContext\Partials\DbSets.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\" />
     <Content Include="CodeTemplates\CSharpEntityType\Class.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpEntityType\" />
     <Content Include="CodeTemplates\CSharpEntityType\Partials\Constructor.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpEntityType\Partials\" />
@@ -56,6 +51,7 @@
     <Content Include="CodeTemplates\TypeScriptDbContext\DbContext.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptDbContext\" />
     <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbImports.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptDbContext\Partials\" />
     <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbConstructor.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptDbContext\Partials\" />
+    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbOnConfiguring.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptDbContext\Partials\" />
     <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbSets.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptDbContext\Partials\" />
     <Content Include="CodeTemplates\TypeScriptEntityType\Class.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptEntityType\" />
     <Content Include="CodeTemplates\TypeScriptEntityType\Partials\Constructor.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\TypeScriptEntityType\Partials\" />

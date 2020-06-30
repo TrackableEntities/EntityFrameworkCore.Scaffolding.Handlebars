@@ -30,12 +30,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="CodeTemplates\CSharpDbContext\Partials\DbOnConfiguring.hbs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- pack  tempate files -->
     <Content Include="CodeTemplates\CSharpDbContext\DbContext.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\" />
+    <Content Include="CodeTemplates\CSharpDbContext\Partials\DbOnConfiguring.hbs">
+      <PackagePath>lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\</PackagePath>
+    </Content>
+    <Content Include="CodeTemplates\TypeScriptDbContext\Partials\DbOnConfiguring.hbs">
+      <PackagePath>lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\</PackagePath>
+    </Content>
     <Content Include="CodeTemplates\CSharpDbContext\Partials\DbImports.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\" />
     <Content Include="CodeTemplates\CSharpDbContext\Partials\DbConstructor.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\" />
     <Content Include="CodeTemplates\CSharpDbContext\Partials\DbSets.hbs" PackagePath="lib\netstandard2.1\CodeTemplates\CSharpDbContext\Partials\" />

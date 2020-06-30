@@ -35,6 +35,9 @@
         /// <summary>DbContext constructor template.</summary>
         public const string DbContextCtorTemplate = "DbConstructor";
 
+        /// <summary>DbContext OnConfiguring template.</summary>
+        public const string DbContextOnConfiguringTemplate = "DbOnConfiguring";
+
         /// <summary>DbContext DbSets template.</summary>
         public const string DbContextDbSetsTemplate = "DbSets";
 

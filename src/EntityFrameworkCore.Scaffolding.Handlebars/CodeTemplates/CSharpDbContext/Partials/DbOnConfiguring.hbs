@@ -2,7 +2,9 @@
 {{spaces 8}}{
 {{spaces 12}}if (!optionsBuilder.IsConfigured)
 {{spaces 12}}{
+{{#if connectionstring-warning}}
 {{connectionstring-warning}}
+{{/if}}
 {{spaces 16}}optionsBuilder{{options-builder-provider}};
 {{spaces 11}} }
 {{spaces 7}} }

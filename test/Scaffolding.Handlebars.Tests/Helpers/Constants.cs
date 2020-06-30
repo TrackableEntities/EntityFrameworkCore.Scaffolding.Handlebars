@@ -28,6 +28,7 @@
             public const string ContextClassFile = "DbContext.hbs";
             public const string ContextImportsFile = "DbImports.hbs";
             public const string ContextCtorFile = "DbConstructor.hbs";
+            public const string ContextOnConfiguringFile = "DbOnConfiguring.hbs";
             public const string ContextDbSetsFile = "DbSets.hbs";
             public static class CSharpTemplateDirectories
             {

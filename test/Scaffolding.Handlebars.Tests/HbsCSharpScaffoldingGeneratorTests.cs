@@ -26,6 +26,7 @@ namespace Scaffolding.Handlebars.Tests
         private InputFile ContextClassTemplate { get; }
         private InputFile ContextImportsTemplate { get; }
         private InputFile ContextCtorTemplate { get; }
+        private InputFile ContextOnConfiguringTemplate { get; }
         private InputFile ContextDbSetsTemplate { get; }
         private InputFile EntityClassTemplate { get; }
         private InputFile EntityImportsTemplate { get; }
@@ -70,6 +71,12 @@ namespace Scaffolding.Handlebars.Tests
                 Directory = contextPartialsVirtualPath,
                 File = Constants.Templates.ContextCtorFile,
                 Contents = File.ReadAllText(Path.Combine(contextPartialTemplatesPath, Constants.Templates.ContextCtorFile))
+            };
+            ContextOnConfiguringTemplate = new InputFile
+            {
+                Directory = contextPartialsVirtualPath,
+                File = Constants.Templates.ContextOnConfiguringFile,
+                Contents = File.ReadAllText(Path.Combine(contextPartialTemplatesPath, Constants.Templates.ContextOnConfiguringFile))
             };
             ContextDbSetsTemplate = new InputFile
             {
@@ -397,7 +404,8 @@ namespace Scaffolding.Handlebars.Tests
         private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options, bool usePluralizer)
         {
             var fileService = new InMemoryTemplateFileService();
-            fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate, ContextCtorTemplate, ContextDbSetsTemplate,
+            fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate,
+                ContextCtorTemplate, ContextOnConfiguringTemplate, ContextDbSetsTemplate,
                 EntityClassTemplate, EntityImportsTemplate, EntityCtorTemplate, EntityPropertiesTemplate);
 
             var services = new ServiceCollection()

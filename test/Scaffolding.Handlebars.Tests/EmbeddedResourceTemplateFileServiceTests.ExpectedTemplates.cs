@@ -21,7 +21,8 @@ namespace {{namespace}}
 
 {{{> dbconstructor}}}
 
-{{{on-configuring}}}
+{{{> dbonconfiguring}}}
+
 {{{on-model-creating}}}
     }
 }

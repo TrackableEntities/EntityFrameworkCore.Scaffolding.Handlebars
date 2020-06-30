@@ -35,7 +35,6 @@ namespace ScaffoldingSample.Contexts
             }
         }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<dbo.Category>(entity =>

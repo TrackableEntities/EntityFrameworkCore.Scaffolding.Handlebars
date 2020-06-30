@@ -77,6 +77,10 @@ namespace Scaffolding.Handlebars.Tests.Fakes
             var ctorTemplateFile = FileService.RetrieveTemplateFileContents(
                 ctorFile.RelativeDirectory, ctorFile.FileName);
 
+            DbContextTemplateFiles.TryGetValue(Constants.DbContextOnConfiguringTemplate, out TemplateFileInfo onConfiguringFile);
+            var onConfiguringTemplateFile = FileService.RetrieveTemplateFileContents(
+                ctorFile.RelativeDirectory, onConfiguringFile.FileName);
+
             DbContextTemplateFiles.TryGetValue(Constants.DbContextDbSetsTemplate, out TemplateFileInfo propertyFile);
             var propertyTemplateFile = FileService.RetrieveTemplateFileContents(
                 propertyFile.RelativeDirectory, propertyFile.FileName);
@@ -90,6 +94,10 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                 {
                     Constants.DbContextCtorTemplate.ToLower(CultureInfo.InvariantCulture),
                     ctorTemplateFile
+                },
+                {
+                    Constants.DbContextOnConfiguringTemplate.ToLower(CultureInfo.InvariantCulture),
+                    onConfiguringTemplateFile
                 },
                 {
                     Constants.DbContextDbSetsTemplate.ToLower(CultureInfo.InvariantCulture),

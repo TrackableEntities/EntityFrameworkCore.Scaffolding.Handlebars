@@ -35,6 +35,14 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                     }
                 },
                 {
+                    Constants.DbContextOnConfiguringTemplate,
+                    new TemplateFileInfo
+                    {
+                        RelativeDirectory = Constants.TypeScriptTemplateDirectories.DbContextPartialsDirectory,
+                        FileName = Constants.DbContextOnConfiguringTemplate + Constants.TemplateExtension
+                    }
+                },
+                {
                     Constants.DbContextDbSetsTemplate,
                     new TemplateFileInfo
                     {

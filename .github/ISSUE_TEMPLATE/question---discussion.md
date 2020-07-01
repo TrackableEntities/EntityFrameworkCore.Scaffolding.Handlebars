@@ -1,7 +1,7 @@
 ---
 name: Question / Discussion
 about: Describe this issue template's purpose here.
-title: "[QUESTION / DISCUSSION]"
+title: "[Question] "
 labels: question
 assignees: ''
 

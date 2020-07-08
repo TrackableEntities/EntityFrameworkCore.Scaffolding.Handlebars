@@ -28,7 +28,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         public FakeHbsDbContextTemplateService(ITemplateFileService fileService,
             ITemplateLanguageService languageService) : base(fileService, languageService)
         {
-            DbContextTemplateFiles = LanguageService.GetDbContextTemplateFileInfo(fileService);
+            DbContextTemplateFiles = LanguageService.GetDbContextTemplateFileInfo();
         }
 
         /// <summary>

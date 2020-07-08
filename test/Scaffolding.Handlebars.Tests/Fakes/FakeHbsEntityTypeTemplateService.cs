@@ -28,7 +28,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         public FakeHbsEntityTypeTemplateService(ITemplateFileService fileService,
             ITemplateLanguageService languageService) : base(fileService, languageService)
         {
-            EntitiesTemplateFiles = LanguageService.GetEntitiesTemplateFileInfo(fileService);
+            EntitiesTemplateFiles = LanguageService.GetEntitiesTemplateFileInfo();
         }
 
         /// <summary>

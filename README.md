@@ -122,16 +122,6 @@ services.AddHandlebarsScaffolding(options =>
 });
 ```
 
-## Additional Partial Templates
-
-You can add new partial templates to one of the `Partials` folders, then reference with the usual Handlebars syntax. For example, a file named **Comment.hbs** can be referenced from **Class.hbs**.
-
-```hbs
-{{{> comment}}}
-public class {{class}}
-{
-```
-
 ## Custom Template Data
 
 You may find it useful to add your own custom template data for use in your Handlebars templates. For example, the model namespace is not included by default in the `DbContext` class import statements. To compensate you may wish to add a `models-namespace` template to the **DbImports.hbs** template file.

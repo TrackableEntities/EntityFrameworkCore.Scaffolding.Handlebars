@@ -11,12 +11,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Get DbContext template file information.
         /// </summary>
         /// <returns>Dictionary of templates with file information.</returns>
-        Dictionary<string, TemplateFileInfo> GetDbContextTemplateFileInfo(ITemplateFileService fileService);
+        Dictionary<string, TemplateFileInfo> GetDbContextTemplateFileInfo();
 
         /// <summary>
         /// Get Entities template file information.
         /// </summary>
         /// <returns>Dictionary of templates with file information.</returns>
-        Dictionary<string, TemplateFileInfo> GetEntitiesTemplateFileInfo(ITemplateFileService fileService);
+        Dictionary<string, TemplateFileInfo> GetEntitiesTemplateFileInfo();
     }
 }

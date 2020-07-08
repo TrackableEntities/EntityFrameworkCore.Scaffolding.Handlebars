@@ -38,39 +38,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         }
 
         /// <summary>
-        /// Retries all files from a relative directory.
-        /// </summary>
-        /// <param name="relativeDirectory">Relative directory name.</param>
-        /// <returns>File names.</returns>
-        public string[] RetrieveAllFileNames(string relativeDirectory)
-        {
-            if (!NameToContentMap.TryGetValue(relativeDirectory, out var filesMap))
-            {
-                throw new DirectoryNotFoundException("Could not find directory " + relativeDirectory);
-            }
-            return filesMap.Select(x=> x.Key).ToArray();
-        }
-
-        /// <summary>
-        /// Finds all partial templates
-        /// </summary>
-        /// <param name="result">Dictionary containing template info</param>
-        /// <param name="relativeDirectory">Relative Directory.</param>
-        /// <returns></returns>
-        public virtual Dictionary<string, TemplateFileInfo> FindAllPartialTemplates(Dictionary<string, TemplateFileInfo> result, string relativeDirectory)
-        {
-            foreach (var file in RetrieveAllFileNames(relativeDirectory))
-            {
-                result.Add(file, new TemplateFileInfo()
-                {
-                    RelativeDirectory = relativeDirectory,
-                    FileName = file + Constants.TemplateExtension
-                });
-            }
-            return result;
-        }
-
-        /// <summary>
         /// Retrieve template file contents from the file system. 
         /// If template is not present, copy it locally.
         /// </summary>

@@ -6,7 +6,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
 {
     public class FakeCSharpTemplateLanguageService : ITemplateLanguageService
     {
-        public Dictionary<string, TemplateFileInfo> GetDbContextTemplateFileInfo(ITemplateFileService fileService)
+        public Dictionary<string, TemplateFileInfo> GetDbContextTemplateFileInfo()
         {
             var result = new Dictionary<string, TemplateFileInfo>
             {
@@ -54,7 +54,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
             return result;
         }
 
-        public Dictionary<string, TemplateFileInfo> GetEntitiesTemplateFileInfo(ITemplateFileService fileService)
+        public Dictionary<string, TemplateFileInfo> GetEntitiesTemplateFileInfo()
         {
             var result = new Dictionary<string, TemplateFileInfo>
             {

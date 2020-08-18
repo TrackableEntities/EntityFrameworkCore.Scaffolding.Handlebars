@@ -795,9 +795,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.HasOne)}(" + (foreignKey.DependentToPrincipal != null ? $"d => d.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.DependentToPrincipal.Name, foreignKey.PrincipalToDependent.DeclaringType.Name)}" : null) + ")",
+                $".{nameof(EntityTypeBuilder.HasOne)}(" + (foreignKey.DependentToPrincipal != null ? $"d => d.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.DependentToPrincipal?.Name, foreignKey.PrincipalToDependent?.DeclaringType.Name)}" : null) + ")",
                 $".{(foreignKey.IsUnique ? nameof(ReferenceNavigationBuilder.WithOne) : nameof(ReferenceNavigationBuilder.WithMany))}"
-                + $"(" + (foreignKey.PrincipalToDependent != null ? $"p => p.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.PrincipalToDependent.Name, foreignKey.DependentToPrincipal.DeclaringType.Name)}" : null) + ")"
+                + $"(" + (foreignKey.PrincipalToDependent != null ? $"p => p.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.PrincipalToDependent?.Name, foreignKey.DependentToPrincipal?.DeclaringType.Name)}" : null) + ")"
             };
 
             if (!foreignKey.PrincipalKey.IsPrimaryKey())

@@ -49,6 +49,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         protected virtual IEntityTypeTransformationService EntityTypeTransformationService { get; }
 
         /// <summary>
+        /// Service for transforming context definitions.
+        /// </summary>
+        protected IContextTransformationService ContextTransformationService { get; }
+
+        /// <summary>
         /// CSharp helper.
         /// </summary>
         public ICSharpHelper CSharpHelper { get; }
@@ -64,6 +69,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
+        /// <param name="contextTransformationService">Service for transforming context definitions.</param>
         /// <param name="cSharpHelper">CSharp helper.</param>
         /// <param name="options">Handlebar scaffolding options.</param>
         public HbsCSharpModelGenerator(
@@ -75,6 +81,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             [NotNull] IDbContextTemplateService dbContextTemplateService,
             [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
+            [NotNull] IContextTransformationService contextTransformationService,
             [NotNull] ICSharpHelper cSharpHelper,
             [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
             : base(dependencies, cSharpDbContextGenerator, cSharpEntityTypeGenerator)
@@ -84,6 +91,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             DbContextTemplateService = dbContextTemplateService;
             EntityTypeTemplateService = entityTypeTemplateService;
             EntityTypeTransformationService = entityTypeTransformationService;
+            ContextTransformationService = contextTransformationService;
             CSharpHelper = cSharpHelper;
             _options = options;
         }
@@ -120,7 +128,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     options.UseDataAnnotations, 
                     options.SuppressConnectionStringWarning);
 
-                var dbContextFileName = options.ContextName + FileExtension;
+                var dbContextFileName = ContextTransformationService.TransformContextFileName(options.ContextName) + FileExtension;
                 resultingFiles.ContextFile = new ScaffoldedFile
                 {
                     Path = options.ContextDir != null

@@ -3,6 +3,7 @@
 
 // Modifications copyright(C) 2019 Tony Sneed.
 
+using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.Options;
-using System.IO;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -46,6 +46,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         protected virtual IEntityTypeTransformationService EntityTypeTransformationService { get; }
 
+        /// <summary>
+        /// Service for transforming context definitions.
+        /// </summary>
+        protected IContextTransformationService ContextTransformationService { get; }
+
         private readonly IOptions<HandlebarsScaffoldingOptions> _options;
 
         /// <summary>
@@ -59,6 +64,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="dbContextTemplateService"></param>
         /// <param name="entityTypeTemplateService"></param>
         /// <param name="entityTypeTransformationService"></param>
+        /// <param name="contextTransformationService">Service for transforming context definitions.</param>
         /// <param name="options">Handlebar scaffolding options</param>
         public HbsTypeScriptModelGenerator(
             [NotNull] ModelCodeGeneratorDependencies dependencies, 
@@ -69,6 +75,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             [NotNull] IDbContextTemplateService dbContextTemplateService,
             [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
+            [NotNull] IContextTransformationService contextTransformationService,
             [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
             : base(dependencies, cSharpDbContextGenerator, cSharpEntityTypeGenerator)
         {
@@ -77,6 +84,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             DbContextTemplateService = dbContextTemplateService;
             EntityTypeTemplateService = entityTypeTemplateService;
             EntityTypeTransformationService = entityTypeTransformationService;
+            ContextTransformationService = contextTransformationService;
             _options = options;
         }
 
@@ -112,7 +120,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     options.UseDataAnnotations,
                     options.SuppressConnectionStringWarning);
 
-                var dbContextFileName = options.ContextName + ".cs";
+                var dbContextFileName = ContextTransformationService.TransformContextFileName(options.ContextName) + ".cs";
                 resultingFiles.ContextFile = new ScaffoldedFile
                 {
                     Path = options.ContextDir != null

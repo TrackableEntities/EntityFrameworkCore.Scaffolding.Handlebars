@@ -286,6 +286,43 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         [Fact]
+        public void Save_Should_Write_Context_and_Entity_Files_With_Prefix()
+        {
+            using (var directory = new TempDirectory())
+            {
+                // Arrange
+                var filenamePrefix = "prefix.";
+                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities, filenamePrefix);
+                var model = scaffolder.ScaffoldModel(
+                    connectionString: Constants.Connections.SqlServerConnection,
+                    databaseOptions: new DatabaseModelFactoryOptions(),
+                    modelOptions: new ModelReverseEngineerOptions(),
+                    codeOptions: new ModelCodeGenerationOptions
+                    {
+                        ContextNamespace = Constants.Parameters.RootNamespace,
+                        ModelNamespace = Constants.Parameters.RootNamespace,
+                        ContextName = Constants.Parameters.ContextName,
+                        ContextDir = Path.Combine(directory.Path, "Contexts"),
+                        UseDataAnnotations = false,
+                        Language = "C#",
+                    });
+
+                // Act
+                var result = scaffolder.Save(model,
+                    Path.Combine(directory.Path, "Models"),
+                    overwriteFiles: false);
+
+                // Assert
+                var expectedContextPath = Path.Combine(directory.Path, "Contexts", $"{filenamePrefix}{Constants.Files.TypeScriptFiles.DbContextFile}");
+                var expectedCategoryPath = Path.Combine(directory.Path, "Models", $"{filenamePrefix}{Constants.Files.TypeScriptFiles.CategoryFile}");
+                var expectedProductPath = Path.Combine(directory.Path, "Models", $"{filenamePrefix}{ Constants.Files.TypeScriptFiles.ProductFile}");
+                Assert.Equal(expectedContextPath, result.ContextFile);
+                Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
+                Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
+            }
+        }
+
+        [Fact]
         public void Save_Should_Write_Context_and_Entity_Files()
         {
             using (var directory = new TempDirectory())
@@ -321,7 +358,7 @@ namespace Scaffolding.Handlebars.Tests
             }
         }
 
-        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options)
+        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options, string filenamePrefix = null)
         {
             var fileService = new InMemoryTemplateFileService();
             fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate,
@@ -332,7 +369,6 @@ namespace Scaffolding.Handlebars.Tests
                 .AddEntityFrameworkDesignTimeServices()
                 .AddSingleton<IDbContextTemplateService, FakeHbsDbContextTemplateService>()
                 .AddSingleton<IEntityTypeTemplateService, FakeHbsEntityTypeTemplateService>()
-                .AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>()
                 .AddSingleton<ITypeScriptHelper, TypeScriptHelper>()
                 .AddSingleton<ITemplateFileService>(fileService)
                 .AddSingleton<ITemplateLanguageService, FakeTypeScriptTemplateLanguageService>()
@@ -372,6 +408,20 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IHbsBlockHelperService>(provider =>
                     new HbsBlockHelperService(new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>()))
                 .AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
+
+
+            if (string.IsNullOrWhiteSpace(filenamePrefix))
+            {
+                services
+                    .AddSingleton<IContextTransformationService, HbsContextTransformationService>()
+                    .AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>();
+            }
+            else
+            {
+                services
+                    .AddSingleton<IContextTransformationService>(y => new HbsContextTransformationService(contextName => $"{filenamePrefix}{contextName}"))
+                    .AddSingleton<IEntityTypeTransformationService>(y => new HbsEntityTypeTransformationService(entityFileNameTransformer: entityName => $"{filenamePrefix}{entityName}"));
+            }
 
             new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);
             var scaffolder = services

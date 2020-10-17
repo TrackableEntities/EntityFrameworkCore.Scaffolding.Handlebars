@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 using System.Reflection;
 
 /*
@@ -13,6 +14,9 @@ namespace ScaffoldingSample.Embedded
     {
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
+            // Uncomment to launch JIT debugger and hit breakpoints
+            //Debugger.Launch();
+
             // Get templates assembly
             var templatesAssembly = Assembly.Load("TemplatesAssembly, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
 

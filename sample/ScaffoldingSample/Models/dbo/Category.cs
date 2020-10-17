@@ -7,13 +7,13 @@ namespace ScaffoldingSample.Models.dbo
     {
         public Category()
         {
-            Product = new HashSet<Product>();
+            Products = new HashSet<Product>();
         }
 
         public int CategoryId { get; set; } = default!;
         public string CategoryName { get; set; } = default!;
 
-        public virtual ICollection<Product> Product { get; set; } = default!;
+        public virtual ICollection<Product> Products { get; set; } = default!;
 
         // My Handlebars Block Helper: True
         // My Handlebars Block Helper: False

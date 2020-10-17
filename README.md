@@ -10,16 +10,16 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
 
 ## Prerequisites
 
-- [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.4 or greater.
-- .[NET Core 3.1 SDK](https://www.microsoft.com/net/download/core).
-- [EF Core CLI](https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet).
+- [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.8 Preview 4.0 or greater.
+- .[NET Core 5.0 SDK](https://dotnet.microsoft.com/download/dotnet/5.0) RC2 or greater.
+- [EF Core CLI 5.0](https://devblogs.microsoft.com/dotnet/announcing-entity-framework-core-ef-core-5-rc2/) RC2 or greater.
   - Install global `dotnet-ef` tool.
     ```
-    dotnet tool install --global dotnet-ef
+    dotnet tool install --global dotnet-ef --version 5.0.0-rc.2.20475.6
     ```
   - Update global `dotnet-ef` tool.
     ```
-    dotnet tool update --global dotnet-ef
+    dotnet tool update --global dotnet-ef --version 5.0.0-rc.2.20475.6
     ```
 
 ## Database Setup
@@ -42,8 +42,17 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
     - `Microsoft.EntityFrameworkCore.SqlServer`
     - `Microsoft.EntityFrameworkCore.Design`
 
+    ```
+    dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 5.0.0-rc.2.20475.6
+    dotnet add package Microsoft.EntityFrameworkCore.Design --version 5.0.0-rc.2.20475.6
+    ```
+
 3. Add the **EntityFrameworkCore.Scaffolding.Handlebars** NuGet package:
     - `EntityFrameworkCore.Scaffolding.Handlebars`
+
+    ```
+    dotnet add package EntityFrameworkCore.Scaffolding.Handlebars --version 5.0.0-rc.2
+    ```
 
 4. Remove Class1.cs and add a **ScaffoldingDesignTimeServices** class.
     - Implement `IDesignTimeServices` by adding a `ConfigureDesignTimeServices` method

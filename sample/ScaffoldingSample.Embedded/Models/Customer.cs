@@ -7,7 +7,7 @@ namespace ScaffoldingSample.Embedded.Models
     {
         public Customer()
         {
-            Order = new HashSet<Order>();
+            Orders = new HashSet<Order>();
         }
 
         public string CustomerId { get; set; }
@@ -17,6 +17,6 @@ namespace ScaffoldingSample.Embedded.Models
         public string Country { get; set; }
 
         public virtual CustomerSetting CustomerSetting { get; set; }
-        public virtual ICollection<Order> Order { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

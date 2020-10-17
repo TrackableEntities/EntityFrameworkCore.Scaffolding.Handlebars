@@ -9,5 +9,5 @@ export interface Order {
     shipVia: number;
     freight: number;
     customer: Customer;
-    orderDetail: OrderDetail[];
+    orderDetails: OrderDetail[];
 }

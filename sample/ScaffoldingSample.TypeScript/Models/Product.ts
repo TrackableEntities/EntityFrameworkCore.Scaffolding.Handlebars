@@ -9,5 +9,5 @@ export interface Product {
     discontinued: boolean;
     rowVersion: any;
     category: Category;
-    orderDetail: OrderDetail[];
+    orderDetails: OrderDetail[];
 }

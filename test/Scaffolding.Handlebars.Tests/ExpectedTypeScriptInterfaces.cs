@@ -16,7 +16,7 @@ export interface Category {
     * The name of a category
     */
     categoryName: string;
-    product: Product[];
+    products: Product[];
 }
 ";
 

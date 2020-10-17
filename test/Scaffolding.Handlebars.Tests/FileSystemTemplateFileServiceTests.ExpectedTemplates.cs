@@ -14,15 +14,17 @@ namespace {{namespace}}
 {{{> dbsets}}}
 {{#if entity-type-errors}}
 {{#each entity-type-errors}}
-{{spaces 8}}{{{entity-type-error}}}
+        {{{entity-type-error}}}
 {{/each}}
 
 {{/if}}
 
 {{{> dbconstructor}}}
 
+{{#unless suppress-on-configuring}}
 {{{> dbonconfiguring}}}
 
+{{/unless}}
 {{{on-model-creating}}}
     }
 }
@@ -38,9 +40,9 @@ namespace {{namespace}}
     /// {{comment}}
     /// </summary>
     {{/if}}
-    {{#if class-annotation}}
+    {{#each class-annotations}}
     {{{class-annotation}}}
-    {{/if}}
+    {{/each}}
     public partial class {{class}}
     {
         {{{> constructor}}}

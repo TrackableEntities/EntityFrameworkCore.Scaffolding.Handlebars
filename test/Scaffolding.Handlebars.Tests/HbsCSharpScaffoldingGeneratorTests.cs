@@ -112,21 +112,17 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         [Theory]
-        [InlineData(false, false, "en-US")]
-        [InlineData(true, false, "en-US")]
-        [InlineData(false, false, "tr-TR")]
-        [InlineData(true, false, "tr-TR")]
-        [InlineData(false, true, "en-US")]
-        [InlineData(true, true, "en-US")]
-        [InlineData(false, true, "tr-TR")]
-        [InlineData(true, true, "tr-TR")]
-
-        public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations, bool usePluralizer, string culture)
+        [InlineData(false, "en-US", true)]
+        [InlineData(false, "en-US", false)]
+        [InlineData(true, "en-US", false)]
+        [InlineData(false, "tr-TR", false)]
+        [InlineData(true, "tr-TR", false)]
+        public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations, string culture, bool suppressOnConfiguring)
         {
             // Arrange
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
             var options = ReverseEngineerOptions.DbContextOnly;
-            var scaffolder = CreateScaffolder(options, usePluralizer);
+            var scaffolder = CreateScaffolder(options);
 
             // Act
             var model = scaffolder.ScaffoldModel(
@@ -141,22 +137,18 @@ namespace Scaffolding.Handlebars.Tests
                     ContextDir = Constants.Parameters.ProjectPath,
                     UseDataAnnotations = useDataAnnotations,
                     Language = "C#",
+                    SuppressOnConfiguring = suppressOnConfiguring
                 });
 
             // Assert
             var files = GetGeneratedFiles(model, options);
             object expectedContext;
-            if (!usePluralizer)
+            expectedContext = useDataAnnotations
+                ? ExpectedContextsWithAnnotations.ContextClass
+                : ExpectedContexts.ContextClass;
+            if (suppressOnConfiguring)
             {
-                expectedContext = useDataAnnotations
-                    ? ExpectedContextsWithAnnotations.ContextClass
-                    : ExpectedContexts.ContextClass;
-            }
-            else
-            {
-                expectedContext = useDataAnnotations
-                    ? ExpectedContextsWithAnnotationsPluralized.ContextClass
-                    : ExpectedContextsPluralized.ContextClass;
+                expectedContext = ExpectedContextsSupressOnConfiguring.ContextClass;
             }
             var context = files[Constants.Files.CSharpFiles.DbContextFile];
 
@@ -164,21 +156,16 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         [Theory]
-        [InlineData(false, false, "en-US")]
-        [InlineData(true, false, "en-US")]
-        [InlineData(false, false, "tr-TR")]
-        [InlineData(true, false, "tr-TR")]
-        [InlineData(false, true, "en-US")]
-        [InlineData(true, true, "en-US")]
-        [InlineData(false, true, "tr-TR")]
-        [InlineData(true, true, "tr-TR")]
-
-        public void WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations, bool usePluralizer, string culture)
+        [InlineData(false, "en-US")]
+        [InlineData(true, "en-US")]
+        [InlineData(false, "tr-TR")]
+        [InlineData(true, "tr-TR")]
+        public void WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations, string culture)
         {
             // Arrange
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
             var options = ReverseEngineerOptions.EntitiesOnly;
-            var scaffolder = CreateScaffolder(options, usePluralizer);
+            var scaffolder = CreateScaffolder(options);
 
             // Act
             var model = scaffolder.ScaffoldModel(
@@ -202,43 +189,27 @@ namespace Scaffolding.Handlebars.Tests
 
             object expectedCategory;
             object expectedProduct;
-            if (!usePluralizer)
-            {
-                expectedCategory = useDataAnnotations
-                    ? ExpectedEntitiesWithAnnotations.CategoryClass
-                    : ExpectedEntities.CategoryClass;
-                expectedProduct = useDataAnnotations
-                    ? ExpectedEntitiesWithAnnotations.ProductClass
-                    : ExpectedEntities.ProductClass;
-            }
-            else
-            {
-                expectedCategory = useDataAnnotations
-                    ? ExpectedEntitiesWithAnnotationsPluralized.CategoryClass
-                    : ExpectedEntitiesPluralized.CategoryClass;
-                expectedProduct = useDataAnnotations
-                    ? ExpectedEntitiesWithAnnotationsPluralized.ProductClass
-                    : ExpectedEntitiesPluralized.ProductClass;
-            }
+            expectedCategory = useDataAnnotations
+                ? ExpectedEntitiesWithAnnotations.CategoryClass
+                : ExpectedEntities.CategoryClass;
+            expectedProduct = useDataAnnotations
+                ? ExpectedEntitiesWithAnnotations.ProductClass
+                : ExpectedEntities.ProductClass;
             Assert.Equal(expectedCategory, category);
             Assert.Equal(expectedProduct, product);
         }
 
         [Theory]
-        [InlineData(false, false, "en-US")]
-        [InlineData(true, false, "en-US")]
-        [InlineData(false, false, "tr-TR")]
-        [InlineData(true, false, "tr-TR")]
-        [InlineData(false, true, "en-US")]
-        [InlineData(true, true, "en-US")]
-        [InlineData(false, true, "tr-TR")]
-        [InlineData(true, true, "tr-TR")]
-        public void WriteCode_Should_Generate_Context_and_Entity_Files(bool useDataAnnotations, bool usePluralizer, string culture)
+        [InlineData(false, "en-US")]
+        [InlineData(true, "en-US")]
+        [InlineData(false, "tr-TR")]
+        [InlineData(true, "tr-TR")]
+        public void WriteCode_Should_Generate_Context_and_Entity_Files(bool useDataAnnotations, string culture)
         {
             // Arrange
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
             var options = ReverseEngineerOptions.DbContextAndEntities;
-            var scaffolder = CreateScaffolder(options, usePluralizer);
+            var scaffolder = CreateScaffolder(options);
 
             // Act
             var model = scaffolder.ScaffoldModel(
@@ -260,30 +231,15 @@ namespace Scaffolding.Handlebars.Tests
             object expectedContext;
             object expectedCategory;
             object expectedProduct;
-            if (!usePluralizer)
-            {
-                expectedContext = useDataAnnotations
-                    ? ExpectedContextsWithAnnotations.ContextClass
-                    : ExpectedContexts.ContextClass;
-                expectedCategory = useDataAnnotations
-                    ? ExpectedEntitiesWithAnnotations.CategoryClass
-                    : ExpectedEntities.CategoryClass;
-                expectedProduct = useDataAnnotations
-                    ? ExpectedEntitiesWithAnnotations.ProductClass
-                    : ExpectedEntities.ProductClass;
-            }
-            else
-            {
-                expectedContext = useDataAnnotations
-                    ? ExpectedContextsWithAnnotationsPluralized.ContextClass
-                    : ExpectedContextsPluralized.ContextClass;
-                expectedCategory = useDataAnnotations
-                    ? ExpectedEntitiesWithAnnotationsPluralized.CategoryClass
-                    : ExpectedEntitiesPluralized.CategoryClass;
-                expectedProduct = useDataAnnotations
-                    ? ExpectedEntitiesWithAnnotationsPluralized.ProductClass
-                    : ExpectedEntitiesPluralized.ProductClass;
-            }
+            expectedContext = useDataAnnotations
+                ? ExpectedContextsWithAnnotations.ContextClass
+                : ExpectedContexts.ContextClass;
+            expectedCategory = useDataAnnotations
+                ? ExpectedEntitiesWithAnnotations.CategoryClass
+                : ExpectedEntities.CategoryClass;
+            expectedProduct = useDataAnnotations
+                ? ExpectedEntitiesWithAnnotations.ProductClass
+                : ExpectedEntities.ProductClass;
             var context = files[Constants.Files.CSharpFiles.DbContextFile];
             var category = files[Constants.Files.CSharpFiles.CategoryFile];
             var product = files[Constants.Files.CSharpFiles.ProductFile];
@@ -299,7 +255,7 @@ namespace Scaffolding.Handlebars.Tests
             using (var directory = new TempDirectory())
             {
                 // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextOnly, false);
+                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextOnly);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
@@ -335,7 +291,7 @@ namespace Scaffolding.Handlebars.Tests
             using (var directory = new TempDirectory())
             {
                 // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.EntitiesOnly, false);
+                var scaffolder = CreateScaffolder(ReverseEngineerOptions.EntitiesOnly);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
@@ -372,7 +328,7 @@ namespace Scaffolding.Handlebars.Tests
             {
                 // Arrange
                 var filenamePrefix = "prefix.";
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities, false, filenamePrefix);
+                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities, filenamePrefix);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
@@ -408,7 +364,7 @@ namespace Scaffolding.Handlebars.Tests
             using (var directory = new TempDirectory())
             {
                 // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities, false);
+                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities);
                 var model = scaffolder.ScaffoldModel(
                     connectionString: Constants.Connections.SqlServerConnection,
                     databaseOptions: new DatabaseModelFactoryOptions(),
@@ -438,7 +394,7 @@ namespace Scaffolding.Handlebars.Tests
             }
         }
 
-        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options, bool usePluralizer, string filenamePrefix = null)
+        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options, string filenamePrefix = null)
         {
             var fileService = new InMemoryTemplateFileService();
             fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate,
@@ -469,6 +425,7 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton(provider =>
                 {
                     ICSharpEntityTypeGenerator entityGenerator = new HbsCSharpEntityTypeGenerator(
+                        provider.GetRequiredService<IAnnotationCodeGenerator>(),
                         provider.GetRequiredService<ICSharpHelper>(),
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
@@ -500,9 +457,6 @@ namespace Scaffolding.Handlebars.Tests
                     .AddSingleton<IContextTransformationService>(y => new HbsContextTransformationService(contextName => $"{filenamePrefix}{contextName}"))
                     .AddSingleton<IEntityTypeTransformationService>(y => new HbsEntityTypeTransformationService(entityFileNameTransformer: entityName => $"{filenamePrefix}{entityName}"));
             }
-
-            if (usePluralizer)
-                services.AddSingleton<IPluralizer, HumanizerPluralizer>();
 
 #pragma warning disable EF1001 // Internal EF Core API usage.
             new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);

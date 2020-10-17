@@ -7,9 +7,9 @@ namespace {{namespace}}
     /// {{comment}}
     /// </summary>
     {{/if}}
-    {{#if class-annotation}}
+    {{#each class-annotations}}
     {{{class-annotation}}}
-    {{/if}}
+    {{/each}}
     public partial class {{class}}
     {
         {{{> constructor}}}

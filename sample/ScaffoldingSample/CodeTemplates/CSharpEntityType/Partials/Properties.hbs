@@ -1,22 +1,22 @@
 ﻿{{#each properties}}
 {{#each property-annotations}}
-{{spaces 8}}{{{property-annotation}}}
+        {{{property-annotation}}}
 {{/each}}
-{{spaces 8}}public {{property-type}} {{property-name}} { get; set; }{{#if nullable-reference-types }}{{#unless property-isnullable}} = default!;{{/unless}}{{/if}}
+        public {{property-type}} {{property-name}} { get; set; }{{#if nullable-reference-types }}{{#unless property-isnullable}} = default!;{{/unless}}{{/if}}
 {{/each}}
 {{#if nav-properties}}
 
 {{#each nav-properties}}
 {{#each nav-property-annotations}}
-{{spaces 8}}{{{nav-property-annotation}}}
+        {{{nav-property-annotation}}}
 {{/each}}
 {{#if nav-property-collection}}
-{{spaces 8}}public virtual ICollection<{{nav-property-type}}> {{nav-property-name}} { get; set; }{{#if nullable-reference-types}} = default!;{{/if}}
+        public virtual ICollection<{{nav-property-type}}> {{nav-property-name}} { get; set; }{{#if nullable-reference-types}} = default!;{{/if}}
 {{else}}
-{{spaces 8}}public virtual {{nav-property-type}} {{nav-property-name}} { get; set; }{{#if nullable-reference-types}} = default!;{{/if}}
+        public virtual {{nav-property-type}} {{nav-property-name}} { get; set; }{{#if nullable-reference-types}} = default!;{{/if}}
 {{/if}}
 {{/each}}
 {{/if}}
 
-{{spaces 8}}// My Handlebars Block Helper: {{#ifCond '1' '==' '1'}}True{{else}}False{{/ifCond}}
-{{spaces 8}}// My Handlebars Block Helper: {{#ifCond '2' '==' '1'}}True{{else}}False{{/ifCond}}
+        // My Handlebars Block Helper: {{#ifCond '1' '==' '1'}}True{{else}}False{{/ifCond}}
+        // My Handlebars Block Helper: {{#ifCond '2' '==' '1'}}True{{else}}False{{/ifCond}}

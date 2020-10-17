@@ -390,6 +390,7 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton(provider =>
                 {
                     ICSharpEntityTypeGenerator entityGenerator = new HbsTypeScriptEntityTypeGenerator(
+                        provider.GetRequiredService<IAnnotationCodeGenerator>(),
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
                         provider.GetRequiredService<ICSharpHelper>(),

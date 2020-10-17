@@ -7,7 +7,7 @@ namespace ScaffoldingSample.Embedded.Models
     {
         public Employee()
         {
-            EmployeeTerritories = new HashSet<EmployeeTerritories>();
+            EmployeeTerritories = new HashSet<EmployeeTerritory>();
         }
 
         public int EmployeeId { get; set; }
@@ -18,6 +18,6 @@ namespace ScaffoldingSample.Embedded.Models
         public string City { get; set; }
         public string Country { get; set; }
 
-        public virtual ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
+        public virtual ICollection<EmployeeTerritory> EmployeeTerritories { get; set; }
     }
 }

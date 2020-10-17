@@ -7,7 +7,7 @@ namespace ScaffoldingSample.Models.dbo
     {
         public Order()
         {
-            OrderDetail = new HashSet<OrderDetail>();
+            OrderDetails = new HashSet<OrderDetail>();
         }
 
         public int OrderId { get; set; } = default!;
@@ -18,7 +18,7 @@ namespace ScaffoldingSample.Models.dbo
         public decimal? Freight { get; set; }
 
         public virtual Customer Customer { get; set; } = default!;
-        public virtual ICollection<OrderDetail> OrderDetail { get; set; } = default!;
+        public virtual ICollection<OrderDetail> OrderDetails { get; set; } = default!;
 
         // My Handlebars Block Helper: True
         // My Handlebars Block Helper: False

@@ -7,7 +7,7 @@ namespace ScaffoldingSample.Embedded.Models
     {
         public Product()
         {
-            OrderDetail = new HashSet<OrderDetail>();
+            OrderDetails = new HashSet<OrderDetail>();
         }
 
         public int ProductId { get; set; }
@@ -18,6 +18,6 @@ namespace ScaffoldingSample.Embedded.Models
         public byte[] RowVersion { get; set; }
 
         public virtual Category Category { get; set; }
-        public virtual ICollection<OrderDetail> OrderDetail { get; set; }
+        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

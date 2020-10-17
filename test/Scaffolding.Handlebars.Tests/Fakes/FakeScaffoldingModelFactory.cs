@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Design.Internal;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 
@@ -25,7 +26,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         {
         }
 
-        public override IModel Create(DatabaseModel databaseModel, bool useDatabaseNames)
+        public override IModel Create(DatabaseModel databaseModel, ModelReverseEngineerOptions options)
         {
             foreach (var sequence in databaseModel.Sequences)
             {
@@ -62,7 +63,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                 }
             }
 
-            return base.Create(databaseModel, useDatabaseNames);
+            return base.Create(databaseModel, options);
         }
     }
 }

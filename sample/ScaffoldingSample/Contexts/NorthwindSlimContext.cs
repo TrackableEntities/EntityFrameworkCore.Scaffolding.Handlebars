@@ -8,19 +8,19 @@ namespace ScaffoldingSample.Contexts
     public partial class NorthwindSlimContext : DbContext
     {
         // My Handlebars Helper
-        public virtual DbSet<dbo.Category> Category { get; set; } = default!;
+        public virtual DbSet<dbo.Category> Categories { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.Customer> Customer { get; set; } = default!;
+        public virtual DbSet<dbo.Customer> Customers { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.CustomerSetting> CustomerSetting { get; set; } = default!;
+        public virtual DbSet<dbo.CustomerSetting> CustomerSettings { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.Employee> Employee { get; set; } = default!;
+        public virtual DbSet<dbo.Employee> Employees { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.Order> Order { get; set; } = default!;
+        public virtual DbSet<dbo.Order> Orders { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.OrderDetail> OrderDetail { get; set; } = default!;
+        public virtual DbSet<dbo.OrderDetail> OrderDetails { get; set; } = default!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.Product> Product { get; set; } = default!;
+        public virtual DbSet<dbo.Product> Products { get; set; } = default!;
 
         public NorthwindSlimContext(DbContextOptions<NorthwindSlimContext> options) : base(options)
         {
@@ -30,7 +30,7 @@ namespace ScaffoldingSample.Contexts
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True");
             }
         }
@@ -39,25 +39,29 @@ namespace ScaffoldingSample.Contexts
         {
             modelBuilder.Entity<dbo.Category>(entity =>
             {
+                entity.ToTable("Category");
+
+                entity.HasComment("hello table Customer");
+
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
-                    .HasMaxLength(15);
+                    .HasMaxLength(15)
+                    .HasComment("hello CompanyName");
             });
 
             modelBuilder.Entity<dbo.Customer>(entity =>
             {
-                entity.HasComment("hello table Customer");
+                entity.ToTable("Customer");
 
                 entity.Property(e => e.CustomerId)
                     .HasMaxLength(5)
-                    .IsFixedLength();
+                    .IsFixedLength(true);
 
                 entity.Property(e => e.City).HasMaxLength(15);
 
                 entity.Property(e => e.CompanyName)
                     .IsRequired()
-                    .HasMaxLength(40)
-                    .HasComment("hello CompanyName");
+                    .HasMaxLength(40);
 
                 entity.Property(e => e.ContactName).HasMaxLength(30);
 
@@ -69,9 +73,11 @@ namespace ScaffoldingSample.Contexts
                 entity.HasKey(e => e.CustomerId)
                     .HasName("PK_dbo.CustomerSetting");
 
+                entity.ToTable("CustomerSetting");
+
                 entity.Property(e => e.CustomerId)
                     .HasMaxLength(5)
-                    .IsFixedLength();
+                    .IsFixedLength(true);
 
                 entity.Property(e => e.Setting)
                     .IsRequired()
@@ -86,6 +92,8 @@ namespace ScaffoldingSample.Contexts
 
             modelBuilder.Entity<dbo.Employee>(entity =>
             {
+                entity.ToTable("Employee");
+
                 entity.Property(e => e.BirthDate).HasColumnType("datetime");
 
                 entity.Property(e => e.City).HasMaxLength(15);
@@ -105,9 +113,11 @@ namespace ScaffoldingSample.Contexts
 
             modelBuilder.Entity<dbo.Order>(entity =>
             {
+                entity.ToTable("Order");
+
                 entity.Property(e => e.CustomerId)
                     .HasMaxLength(5)
-                    .IsFixedLength();
+                    .IsFixedLength(true);
 
                 entity.Property(e => e.Freight)
                     .HasColumnType("money")
@@ -118,25 +128,27 @@ namespace ScaffoldingSample.Contexts
                 entity.Property(e => e.ShippedDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Customer)
-                    .WithMany(p => p.Order)
+                    .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.CustomerId)
                     .HasConstraintName("FK_Orders_Customers");
             });
 
             modelBuilder.Entity<dbo.OrderDetail>(entity =>
             {
+                entity.ToTable("OrderDetail");
+
                 entity.Property(e => e.Quantity).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.UnitPrice).HasColumnType("money");
 
                 entity.HasOne(d => d.Order)
-                    .WithMany(p => p.OrderDetail)
+                    .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.OrderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Order_Details_Orders");
 
                 entity.HasOne(d => d.Product)
-                    .WithMany(p => p.OrderDetail)
+                    .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Order_Details_Products");
@@ -144,18 +156,22 @@ namespace ScaffoldingSample.Contexts
 
             modelBuilder.Entity<dbo.Product>(entity =>
             {
+                entity.ToTable("Product");
+
                 entity.Property(e => e.ProductName)
                     .IsRequired()
                     .HasMaxLength(40);
 
-                entity.Property(e => e.RowVersion).IsRowVersion();
+                entity.Property(e => e.RowVersion)
+                    .IsRowVersion()
+                    .IsConcurrencyToken();
 
                 entity.Property(e => e.UnitPrice)
                     .HasColumnType("money")
                     .HasDefaultValueSql("((0))");
 
                 entity.HasOne(d => d.Category)
-                    .WithMany(p => p.Product)
+                    .WithMany(p => p.Products)
                     .HasForeignKey(d => d.CategoryId)
                     .HasConstraintName("FK_Products_Categories");
             });

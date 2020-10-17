@@ -93,6 +93,7 @@ namespace Microsoft.EntityFrameworkCore.Design
             }
 
             services.AddSingleton(entityGeneratorType, entityGeneratorImpl);
+            services.AddSingleton<IContextTransformationService, HbsContextTransformationService>();
 
             if (scaffoldingOptions.LanguageOptions == LanguageOptions.TypeScript)
             {
@@ -104,11 +105,6 @@ namespace Microsoft.EntityFrameworkCore.Design
             {
                 services.AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
                 services.AddSingleton<ITemplateLanguageService, CSharpTemplateLanguageService>();
-            }
-
-            if (scaffoldingOptions.EnablePluralization)
-            {
-                services.AddSingleton<IPluralizer, HumanizerPluralizer>();
             }
 
             if (scaffoldingOptions.EmbeddedTemplatesAssembly != null)

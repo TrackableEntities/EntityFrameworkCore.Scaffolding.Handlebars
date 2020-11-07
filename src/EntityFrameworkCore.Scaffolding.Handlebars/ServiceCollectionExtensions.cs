@@ -93,6 +93,7 @@ namespace Microsoft.EntityFrameworkCore.Design
             }
 
             services.AddSingleton(entityGeneratorType, entityGeneratorImpl);
+            services.AddSingleton<IContextTransformationService, HbsContextTransformationService>();
 
             if (scaffoldingOptions.LanguageOptions == LanguageOptions.TypeScript)
             {

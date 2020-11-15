@@ -7,12 +7,12 @@ namespace ScaffoldingSample.Embedded.Models
     {
         public Territory()
         {
-            EmployeeTerritories = new HashSet<EmployeeTerritories>();
+            EmployeeTerritories = new HashSet<EmployeeTerritory>();
         }
 
         public string TerritoryId { get; set; }
         public string TerritoryDescription { get; set; }
 
-        public virtual ICollection<EmployeeTerritories> EmployeeTerritories { get; set; }
+        public virtual ICollection<EmployeeTerritory> EmployeeTerritories { get; set; }
     }
 }

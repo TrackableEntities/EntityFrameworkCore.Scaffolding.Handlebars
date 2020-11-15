@@ -1,9 +1,9 @@
 ﻿{{#if lines}}
-{{spaces 8}}public {{class}}()
-{{spaces 8}}{
+        public {{class}}()
+        {
 {{#each lines}}
-{{spaces 8}}    {{property-name}} = new HashSet<{{property-type}}>();
+            {{property-name}} = new HashSet<{{property-type}}>();
 {{/each}}
-{{spaces 7}} }
+        }
 
 {{/if}}

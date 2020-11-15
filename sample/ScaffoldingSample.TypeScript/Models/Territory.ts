@@ -1,7 +1,7 @@
-﻿import { EmployeeTerritories } from './EmployeeTerritories';
+﻿import { EmployeeTerritory } from './EmployeeTerritory';
 
 export interface Territory {
     territoryId: string;
     territoryDescription: string;
-    employeeTerritories: EmployeeTerritories[];
+    employeeTerritories: EmployeeTerritory[];
 }

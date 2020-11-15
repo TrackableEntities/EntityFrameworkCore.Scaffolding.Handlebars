@@ -51,18 +51,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Constructor for the Handlebars entity types generator.
         /// </summary>
+        /// <param name="annotationCodeGenerator">Annotation code generator.</param>
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="cSharpHelper">CSharp helper.</param>
         /// <param name="typeScriptHelper">TypeScript helper.</param>
         /// <param name="options">Handlebars scaffolding options.</param>
         public HbsTypeScriptEntityTypeGenerator(
+            [NotNull] IAnnotationCodeGenerator annotationCodeGenerator,
             [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
             [NotNull] ICSharpHelper cSharpHelper,
             [NotNull] ITypeScriptHelper typeScriptHelper,
             [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
-            : base(cSharpHelper)
+            : base(annotationCodeGenerator, cSharpHelper)
         {
             EntityTypeTemplateService = entityTypeTemplateService;
             EntityTypeTransformationService = entityTypeTransformationService;
@@ -100,8 +102,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             Check.NotNull(entityType, nameof(entityType));
 
             var sortedNavigations = entityType.GetNavigations()
-                .OrderBy(n => n.IsDependentToPrincipal() ? 0 : 1)
-                .ThenBy(n => n.IsCollection() ? 1 : 0)
+                .OrderBy(n => n.IsOnDependent ? 0 : 1)
+                .ThenBy(n => n.IsCollection ? 1 : 0)
                 .Distinct();
 
             if (sortedNavigations.Any())
@@ -109,7 +111,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 var imports = new List<Dictionary<string, object>>();
                 foreach (var navigation in sortedNavigations)
                 {
-                    imports.Add(new Dictionary<string, object> { { "import", navigation.GetTargetType().Name } });
+                    imports.Add(new Dictionary<string, object> { { "import", navigation.TargetEntityType.Name } });
                 }
                 TemplateData.Add("imports", imports);
             }
@@ -141,7 +143,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             Check.NotNull(entityType, nameof(entityType));
 
-            var collectionNavigations = entityType.GetNavigations().Where(n => n.IsCollection()).ToList();
+            var collectionNavigations = entityType.GetNavigations().Where(n => n.IsCollection).ToList();
 
             if (collectionNavigations.Count > 0)
             {
@@ -152,7 +154,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     lines.Add(new Dictionary<string, object>
                     {
                         { "property-name", navigation.Name },
-                        { "property-type", navigation.GetTargetType().Name },
+                        { "property-type", navigation.TargetEntityType.Name },
                     });
                 }
 
@@ -199,8 +201,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             Check.NotNull(entityType, nameof(entityType));
 
             var sortedNavigations = entityType.GetNavigations()
-                .OrderBy(n => n.IsDependentToPrincipal() ? 0 : 1)
-                .ThenBy(n => n.IsCollection() ? 1 : 0);
+                .OrderBy(n => n.IsOnDependent ? 0 : 1)
+                .ThenBy(n => n.IsCollection ? 1 : 0);
 
             if (sortedNavigations.Any())
             {
@@ -210,8 +212,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     navProperties.Add(new Dictionary<string, object>
                     {
-                        { "nav-property-collection", navigation.IsCollection() },
-                        { "nav-property-type", navigation.GetTargetType().Name },
+                        { "nav-property-collection", navigation.IsCollection },
+                        { "nav-property-type", navigation.TargetEntityType.Name },
                         { "nav-property-name", TypeScriptHelper.ToCamelCase(navigation.Name) },
                         { "nav-property-annotations", new List<Dictionary<string, object>>() },
                         { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }

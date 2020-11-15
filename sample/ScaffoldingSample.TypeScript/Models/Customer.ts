@@ -8,5 +8,5 @@ export interface Customer {
     city: string;
     country: string;
     customerSetting: CustomerSetting;
-    order: Order[];
+    orders: Order[];
 }

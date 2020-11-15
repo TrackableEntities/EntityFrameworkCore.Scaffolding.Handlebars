@@ -21,7 +21,7 @@ namespace ScaffoldingSample.Api.Controllers
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            var employees = await _context.Employee
+            var employees = await _context.Employees
                 .OrderBy(e => e.LastName).ThenBy(e => e.FirstName)
                 .Select(e => new
                 {

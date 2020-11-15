@@ -118,7 +118,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     options.ContextNamespace,
                     options.ModelNamespace,
                     options.UseDataAnnotations,
-                    options.SuppressConnectionStringWarning);
+                    options.SuppressConnectionStringWarning,
+                    options.SuppressOnConfiguring);
 
                 var dbContextFileName = ContextTransformationService.TransformContextFileName(options.ContextName) + ".cs";
                 resultingFiles.ContextFile = new ScaffoldedFile

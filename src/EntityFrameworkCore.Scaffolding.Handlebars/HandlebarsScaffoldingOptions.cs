@@ -3,6 +3,7 @@
 
 // Modifications copyright(C) 2019 Tony Sneed.
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Design;
@@ -23,11 +24,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Gets or sets language options for generated scaffolding.
         /// </summary>
         public LanguageOptions LanguageOptions { get; set; }
-
-        /// <summary>
-        /// Gets or sets usage of pluralizer for generated scaffolding.
-        /// </summary>
-        public bool EnablePluralization { get; set; }
 
         /// <summary>
         /// Gets or sets tables that should be excluded from; can include schema. 

@@ -8,7 +8,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
+using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Design.Internal;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
@@ -30,14 +33,24 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="cSharpUtilities">C# utilities.</param>
         /// <param name="cSharpHelper">C# helper.</param>
         /// <param name="connectionStringResolver">Connection string resolver.</param>
+        /// <param name="reporter">Operation reporter.</param>
         public HbsReverseEngineerScaffolder(
-            IDatabaseModelFactory databaseModelFactory,
-            IScaffoldingModelFactory scaffoldingModelFactory,
-            IModelCodeGeneratorSelector modelCodeGeneratorSelector,
-            ICSharpUtilities cSharpUtilities,
-            ICSharpHelper cSharpHelper,
-            INamedConnectionStringResolver connectionStringResolver) : base(databaseModelFactory, scaffoldingModelFactory, modelCodeGeneratorSelector, cSharpUtilities, cSharpHelper, connectionStringResolver)
+            [NotNull] IDatabaseModelFactory databaseModelFactory,
+            [NotNull] IScaffoldingModelFactory scaffoldingModelFactory,
+            [NotNull] IModelCodeGeneratorSelector modelCodeGeneratorSelector,
+            [NotNull] ICSharpUtilities cSharpUtilities,
+            [NotNull] ICSharpHelper cSharpHelper,
+            [NotNull] INamedConnectionStringResolver connectionStringResolver,
+            [NotNull] IOperationReporter reporter)
+            : base(databaseModelFactory, scaffoldingModelFactory, modelCodeGeneratorSelector, cSharpUtilities, cSharpHelper, connectionStringResolver, reporter)
         {
+            Check.NotNull(databaseModelFactory, nameof(databaseModelFactory));
+            Check.NotNull(scaffoldingModelFactory, nameof(scaffoldingModelFactory));
+            Check.NotNull(modelCodeGeneratorSelector, nameof(modelCodeGeneratorSelector));
+            Check.NotNull(cSharpUtilities, nameof(cSharpUtilities));
+            Check.NotNull(cSharpHelper, nameof(cSharpHelper));
+            Check.NotNull(connectionStringResolver, nameof(connectionStringResolver));
+            Check.NotNull(reporter, nameof(reporter));
         }
 
         /// <summary>

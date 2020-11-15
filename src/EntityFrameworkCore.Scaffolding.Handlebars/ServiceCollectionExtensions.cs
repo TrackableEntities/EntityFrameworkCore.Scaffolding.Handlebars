@@ -107,11 +107,6 @@ namespace Microsoft.EntityFrameworkCore.Design
                 services.AddSingleton<ITemplateLanguageService, CSharpTemplateLanguageService>();
             }
 
-            if (scaffoldingOptions.EnablePluralization)
-            {
-                services.AddSingleton<IPluralizer, HumanizerPluralizer>();
-            }
-
             if (scaffoldingOptions.EmbeddedTemplatesAssembly != null)
             {
                 services.AddSingleton<ITemplateFileService>(new EmbeddedResourceTemplateFileService(

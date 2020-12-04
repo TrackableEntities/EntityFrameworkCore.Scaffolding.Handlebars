@@ -28,7 +28,7 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
     - The easiest is to use **LocalDb**, which is installed with Visual Studio.  
     Connect to: `(localdb)\MsSqlLocalDb`.
     - Create a new database named **NorthwindSlim**.
-    - Download the data file from <http://bit.ly/northwind-slim>.
+    - Download the `NorthwindSlim.sql` file from <https://github.com/TrackableEntities/northwind-slim>.
     - Unzip **NorthwindSlim.sql** and run the script to create tables and populate them with data.
 
 ## Usage

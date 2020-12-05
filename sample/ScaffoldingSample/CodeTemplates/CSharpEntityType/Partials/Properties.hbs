@@ -1,4 +1,10 @@
 ﻿{{#each properties}}
+{{#if property-comment}}
+
+        /// <summary>
+{{property-comment}}
+        /// </summary>
+{{/if}}
 {{#each property-annotations}}
         {{{property-annotation}}}
 {{/each}}

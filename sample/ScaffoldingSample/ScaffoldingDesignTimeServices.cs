@@ -21,7 +21,7 @@ namespace ScaffoldingSample
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
             // Uncomment to launch JIT debugger and hit breakpoints
-            //Debugger.Launch();
+            Debugger.Launch();
 
             // Add Handlebars scaffolding templates
             services.AddHandlebarsScaffolding(options =>
@@ -44,6 +44,9 @@ namespace ScaffoldingSample
                     { "models-namespace", "ScaffoldingSample.Models" },
                     { "base-class", "EntityBase" }
                 };
+
+                // Disable comments generation
+                options.GenerateComments = false;
             });
 
             // Register Handlebars helper

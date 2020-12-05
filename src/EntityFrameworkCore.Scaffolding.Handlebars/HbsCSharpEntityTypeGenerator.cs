@@ -12,6 +12,7 @@ using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
@@ -173,7 +174,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var transformedEntityName = EntityTypeTransformationService.TransformTypeEntityName(entityType.Name);
             
-            TemplateData.Add("comment", entityType.GetComment());
+            if (_options?.Value?.GenerateComments == true)
+                TemplateData.Add("comment", GenerateComment(entityType.GetComment(), 1));
             TemplateData.Add("class", transformedEntityName);
 
             GenerateConstructor(entityType);
@@ -241,7 +243,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-type", propertyType },
                     { "property-name", property.Name },
                     { "property-annotations",  PropertyAnnotationsData },
-                    { "property-comment",  property.GetComment() },
+                    { "property-comment", _options?.Value?.GenerateComments == true ? GenerateComment(property.GetComment(), 2) : null },
                     { "property-isnullable", property.IsNullable },
                     { "nullable-reference-types", _options?.Value?.EnableNullableReferenceTypes == true }
                 });
@@ -565,6 +567,23 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     });
                 }
             }
+        }
+
+        private string GenerateComment(string comment, int indents)
+        {
+            var sb = new IndentedStringBuilder();
+            if (!string.IsNullOrWhiteSpace(comment))
+            {
+                for (int i = 0; i < indents; i++)
+                    sb.IncrementIndent();
+                foreach (var line in comment.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None))
+                {
+                    sb.AppendLine($"/// {System.Security.SecurityElement.Escape(line)}");
+                }
+                for (int i = 0; i < indents; i++)
+                    sb.DecrementIndent();
+            }
+            return sb.ToString().Trim(Environment.NewLine.ToCharArray());
         }
 
         private class AttributeWriter

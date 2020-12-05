@@ -2,9 +2,14 @@
 
 namespace {{namespace}}
 { // Comment
-{{#if class-annotation}}
+    {{#if comment}}
+    /// <summary>
+{{comment}}
+    /// </summary>
+    {{/if}}
+    {{#each class-annotations}}
     {{{class-annotation}}}
-{{/if}}
+    {{/each}}
     public partial class {{class}} : {{base-class}} {{my-helper}}
     {
         {{{> constructor}}}

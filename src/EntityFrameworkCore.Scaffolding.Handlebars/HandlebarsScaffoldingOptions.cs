@@ -56,5 +56,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// https://docs.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
         /// </summary>
         public bool EnableNullableReferenceTypes { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether table and column descriptions generate XML comments.
+        /// </summary>
+        public bool GenerateComments { get; set; } = true;
     }
 }

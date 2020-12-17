@@ -23,13 +23,22 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var entityTypes = model.GetEntityTypes();
             if (options.ExcludedTables != null && options.ExcludedTables.Any())
             {
+                // Handle matching view or table name for excludes.
                 var excludedTables = options.ExcludedTables.Select(t => new TableAndSchema(t)).ToList();
-                entityTypes = entityTypes.Where(t =>
-                        !excludedTables.Any(e =>
-                            (string.IsNullOrEmpty(e.Schema) || 
-                             string.Equals(t.GetSchema(), e.Schema, StringComparison.OrdinalIgnoreCase))
-                            && string.Equals(t.GetTableName(), e.Table, StringComparison.OrdinalIgnoreCase)))
-                        .ToList();
+                entityTypes = (from type in entityTypes
+                                let name = type.GetTableName()
+                                let isTable = !string.IsNullOrEmpty(name)
+                                let table = isTable
+                                    ? type.GetTableName()
+                                    : type.GetViewName()
+                                let schema = isTable
+                                    ? type.GetSchema()
+                                    : type.GetViewSchema()
+                               where !excludedTables.Any(e =>
+                                    (string.IsNullOrEmpty(e.Schema) ||
+                                     string.Equals(schema, e.Schema, StringComparison.OrdinalIgnoreCase))
+                                    && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase))
+                                select type).ToList();
             }
 
             return entityTypes;

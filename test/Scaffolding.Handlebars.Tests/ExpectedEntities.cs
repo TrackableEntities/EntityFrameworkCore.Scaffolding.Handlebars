@@ -21,6 +21,7 @@ namespace FakeNamespace
         }
 
         public int CategoryId { get; set; }
+
         /// <summary>
         /// The name of a category
         /// </summary>
@@ -76,6 +77,7 @@ namespace FakeNamespace
 
         [Key]
         public int CategoryId { get; set; }
+
         /// <summary>
         /// The name of a category
         /// </summary>

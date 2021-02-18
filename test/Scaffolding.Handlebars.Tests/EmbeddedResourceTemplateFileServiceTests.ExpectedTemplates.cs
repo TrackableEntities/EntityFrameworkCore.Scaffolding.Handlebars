@@ -37,7 +37,7 @@ namespace {{namespace}}
 {
     {{#if comment}}
     /// <summary>
-    /// {{comment}}
+{{comment}}
     /// </summary>
     {{/if}}
     {{#each class-annotations}}

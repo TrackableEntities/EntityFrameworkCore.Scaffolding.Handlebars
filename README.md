@@ -4,6 +4,10 @@ _Scaffold EF Core models using Handlebars templates._
 
 - Uses [Handlebars.NET](https://github.com/rexm/Handlebars.Net) to compile [Handlebars](http://handlebarsjs.com) templates when generating models with the [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore) scaffolding tools.
  
+## EF Core Community Standup
+
+View the [EF Core Community Standup](https://youtu.be/6Ux7EpgiWXE) episode featuring this framework for scaffolding entities with Handlebars templates. The demos for the episode can be found on this GitHub [repo](https://github.com/TrackableEntities/ef-core-community-handlebars).
+
 ## Contributing
 
 Before creating a pull request, please refer to the [Contributing Guidelines](https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/blob/master/.github/CONTRIBUTING.md).

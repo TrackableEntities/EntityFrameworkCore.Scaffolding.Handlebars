@@ -74,5 +74,45 @@ namespace Scaffolding.Handlebars.Tests
             Assert.Contains(entityTypes, e => e.ClrType.Name == "Category");
             Assert.Contains(entityTypes, e => e.ClrType.Name == "Product");
         }
+
+        [Fact]
+        public void IModel_Extensions_Should_Filter_EntityTypes_From_Options_By_View_Name_Only()
+        {
+            var builder = new ModelBuilder(new ConventionSet());
+            builder.Entity<Category>()
+                .ToView("Category", "dbo");
+
+            builder.Entity<Product>()
+                .ToView("Product", "prd");
+
+            var options = new HandlebarsScaffoldingOptions
+            {
+                ExcludedTables = new List<string> { "Product" }
+            };
+
+            var entityTypes = builder.Model.GetScaffoldEntityTypes(options);
+            Assert.Contains(entityTypes, e => e.ClrType.Name == "Category");
+            Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Product");
+        }
+
+        [Fact]
+        public void IModel_Extensions_Should_Filter_EntityTypes_From_Options_By_View_Name_and_Schema()
+        {
+            var builder = new ModelBuilder(new ConventionSet());
+            builder.Entity<Category>()
+                .ToView("Category", "dbo");
+
+            builder.Entity<Product>()
+                .ToView("Product", "prd");
+
+            var options = new HandlebarsScaffoldingOptions
+            {
+                ExcludedTables = new List<string> { "dbo.Category", "dbo.Product" }
+            };
+
+            var entityTypes = builder.Model.GetScaffoldEntityTypes(options);
+            Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Category");
+            Assert.Contains(entityTypes, e => e.ClrType.Name == "Product");
+        }
     }
 }

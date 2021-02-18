@@ -164,14 +164,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     navProperty["nav-property-name"] as string);
                 var transformedProp = NavPropertyTransformer?.Invoke(propTypeInfo) ?? propTypeInfo;
 
-                transformedNavProperties.Add(new Dictionary<string, object>
-                {
-                    { "nav-property-collection", navProperty["nav-property-collection"] },
-                    { "nav-property-type", transformedProp.PropertyType },
-                    { "nav-property-name", transformedProp.PropertyName },
-                    { "nav-property-annotations", navProperty["nav-property-annotations"] },
-                    { "nullable-reference-types", navProperty["nullable-reference-types"] }
-                });
+                var newNavProperty = new Dictionary<string, object>(navProperty);
+                newNavProperty["nav-property-type"] = transformedProp.PropertyType;
+                newNavProperty["nav-property-name"] = transformedProp.PropertyName;
+
+                transformedNavProperties.Add(newNavProperty);
             }
 
             return transformedNavProperties;

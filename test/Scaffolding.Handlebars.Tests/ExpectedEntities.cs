@@ -122,5 +122,56 @@ namespace FakeNamespace
 }
 ";
         }
+
+        private static class ExpectedEntitiesWithNullableNavigation
+        {
+            public const string CategoryClass =
+@"using System;
+using System.Collections.Generic;
+
+namespace FakeNamespace
+{
+    /// <summary>
+    /// A category of products
+    /// </summary>
+    public partial class Category
+    {
+        public Category()
+        {
+            Products = new HashSet<Product>();
+        }
+
+        public int CategoryId { get; set; } = default!;
+
+        /// <summary>
+        /// The name of a category
+        /// </summary>
+        public string CategoryName { get; set; } = default!;
+
+        public virtual ICollection<Product> Products { get; set; } = default!;
+    }
+}
+";
+
+            public const string ProductClass =
+@"using System;
+using System.Collections.Generic;
+
+namespace FakeNamespace
+{
+    public partial class Product
+    {
+        public int ProductId { get; set; } = default!;
+        public string ProductName { get; set; } = default!;
+        public decimal? UnitPrice { get; set; }
+        public bool Discontinued { get; set; } = default!;
+        public byte[]? RowVersion { get; set; }
+        public int? CategoryId { get; set; }
+
+        public virtual Category? Category { get; set; }
+    }
+}
+";
+        }
     }
 }

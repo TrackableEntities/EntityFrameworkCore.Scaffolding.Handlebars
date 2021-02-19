@@ -307,12 +307,25 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         GenerateNavigationDataAnnotations(navigation);
                     }
 
+                    var propertyIsNullable = !navigation.IsCollection && (
+                        navigation.IsOnDependent
+                        ? !navigation.ForeignKey.IsRequired
+                        : !navigation.ForeignKey.IsRequiredDependent
+                    );
+                    var navPropertyType = navigation.TargetEntityType.Name;
+                    if (_options?.Value?.EnableNullableReferenceTypes == true &&
+                        !navPropertyType.EndsWith("?") &&
+                        propertyIsNullable) {
+                        navPropertyType += "?";
+                    }
+
                     navProperties.Add(new Dictionary<string, object>
                     {
                         { "nav-property-collection", navigation.IsCollection },
-                        { "nav-property-type", navigation.TargetEntityType.Name },
+                        { "nav-property-type", navPropertyType },
                         { "nav-property-name", navigation.Name },
                         { "nav-property-annotations", NavPropertyAnnotations },
+                        { "nav-property-isnullable", propertyIsNullable },
                         { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
                     });
                 }

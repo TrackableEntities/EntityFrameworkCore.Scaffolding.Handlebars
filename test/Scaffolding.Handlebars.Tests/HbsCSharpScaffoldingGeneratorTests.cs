@@ -200,6 +200,46 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         [Theory]
+        [InlineData("en-US")]
+        [InlineData("tr-TR")]
+        public void WriteCode_Should_Generate_Entities_With_Nullable_Navigation_When_Configured(string culture)
+        {
+            // Arrange
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
+            var revEngOptions = ReverseEngineerOptions.EntitiesOnly;
+            var scaffolder = CreateScaffolder(revEngOptions, options => {
+                options.EnableNullableReferenceTypes = true;
+            });
+
+            // Act
+            var model = scaffolder.ScaffoldModel(
+                connectionString: Constants.Connections.SqlServerConnection,
+                databaseOptions: new DatabaseModelFactoryOptions(),
+                modelOptions: new ModelReverseEngineerOptions(),
+                codeOptions: new ModelCodeGenerationOptions
+                {
+                    ContextNamespace = Constants.Parameters.RootNamespace,
+                    ModelNamespace = Constants.Parameters.RootNamespace,
+                    ContextName = Constants.Parameters.ContextName,
+                    ContextDir = Constants.Parameters.ProjectPath,
+                    UseDataAnnotations = false,
+                    Language = "C#",
+                });
+
+            // Assert
+            var files = GetGeneratedFiles(model, revEngOptions);
+            var category = files[Constants.Files.CSharpFiles.CategoryFile];
+            var product = files[Constants.Files.CSharpFiles.ProductFile];
+
+            object expectedCategory;
+            object expectedProduct;
+            expectedCategory = ExpectedEntitiesWithNullableNavigation.CategoryClass;
+            expectedProduct = ExpectedEntitiesWithNullableNavigation.ProductClass;
+            Assert.Equal(expectedCategory, category);
+            Assert.Equal(expectedProduct, product);
+        }
+
+        [Theory]
         [InlineData(false, "en-US")]
         [InlineData(true, "en-US")]
         [InlineData(false, "tr-TR")]
@@ -394,7 +434,12 @@ namespace Scaffolding.Handlebars.Tests
             }
         }
 
-        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options, string filenamePrefix = null)
+        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions, string filenamePrefix = null)
+        {
+            return CreateScaffolder(revEngOptions, _ => { }, filenamePrefix);
+        }
+
+        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions, Action<HandlebarsScaffoldingOptions> configureOptions, string filenamePrefix = null)
         {
             var fileService = new InMemoryTemplateFileService();
             fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate,
@@ -407,7 +452,10 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IEntityTypeTemplateService, FakeHbsEntityTypeTemplateService>()
                 .AddSingleton<ITemplateFileService>(fileService)
                 .AddSingleton<ITemplateLanguageService, FakeCSharpTemplateLanguageService>()
-                .AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>()
+                .AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
+
+#pragma warning disable EF1001 // Internal EF Core API usage.
+            services
                 .AddSingleton(provider =>
                 {
                     ICSharpDbContextGenerator contextGenerator = new HbsCSharpDbContextGenerator(
@@ -417,8 +465,8 @@ namespace Scaffolding.Handlebars.Tests
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
                         provider.GetRequiredService<ICSharpHelper>(),
                         provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());
-                    return options == ReverseEngineerOptions.DbContextOnly ||
-                           options == ReverseEngineerOptions.DbContextAndEntities
+                    return revEngOptions == ReverseEngineerOptions.DbContextOnly ||
+                           revEngOptions == ReverseEngineerOptions.DbContextAndEntities
                         ? contextGenerator
                         : new NullCSharpDbContextGenerator();
                 })
@@ -430,11 +478,14 @@ namespace Scaffolding.Handlebars.Tests
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
                         provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());
-                    return options == ReverseEngineerOptions.EntitiesOnly ||
-                           options == ReverseEngineerOptions.DbContextAndEntities
+                    return revEngOptions == ReverseEngineerOptions.EntitiesOnly ||
+                           revEngOptions == ReverseEngineerOptions.DbContextAndEntities
                         ? entityGenerator
                         : new NullCSharpEntityTypeGenerator();
-                })
+                });
+#pragma warning restore EF1001 // Internal EF Core API usage.
+
+            services
                 .AddSingleton<IHbsHelperService>(provider =>
                 new HbsHelperService(new Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>>
                 {
@@ -457,6 +508,8 @@ namespace Scaffolding.Handlebars.Tests
                     .AddSingleton<IContextTransformationService>(y => new HbsContextTransformationService(contextName => $"{filenamePrefix}{contextName}"))
                     .AddSingleton<IEntityTypeTransformationService>(y => new HbsEntityTypeTransformationService(entityFileNameTransformer: entityName => $"{filenamePrefix}{entityName}"));
             }
+
+            services.Configure(configureOptions);
 
 #pragma warning disable EF1001 // Internal EF Core API usage.
             new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);

@@ -16,7 +16,7 @@ namespace ScaffoldingSample.Models.dbo
         public string? City { get; set; }
         public Country Country { get; set; } = default!;
 
-        public virtual CustomerSetting CustomerSetting { get; set; } = default!;
+        public virtual CustomerSetting? CustomerSetting { get; set; }
         public virtual ICollection<Order> Orders { get; set; } = default!;
 
         // My Handlebars Block Helper: True

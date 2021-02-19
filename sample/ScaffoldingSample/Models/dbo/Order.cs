@@ -17,7 +17,7 @@ namespace ScaffoldingSample.Models.dbo
         public int? ShipVia { get; set; }
         public decimal? Freight { get; set; }
 
-        public virtual Customer Customer { get; set; } = default!;
+        public virtual Customer? Customer { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = default!;
 
         // My Handlebars Block Helper: True

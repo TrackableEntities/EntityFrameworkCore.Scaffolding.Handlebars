@@ -17,7 +17,7 @@ namespace ScaffoldingSample.Models.dbo
         public bool Discontinued { get; set; } = default!;
         public byte[]? RowVersion { get; set; }
 
-        public virtual Category Category { get; set; } = default!;
+        public virtual Category? Category { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = default!;
 
         // My Handlebars Block Helper: True

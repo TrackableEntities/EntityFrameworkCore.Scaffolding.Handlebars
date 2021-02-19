@@ -19,7 +19,7 @@
 {{#if nav-property-collection}}
         public virtual ICollection<{{nav-property-type}}> {{nav-property-name}} { get; set; }{{#if nullable-reference-types}} = default!;{{/if}}
 {{else}}
-        public virtual {{nav-property-type}} {{nav-property-name}} { get; set; }{{#if nullable-reference-types}} = default!;{{/if}}
+        public virtual {{nav-property-type}} {{nav-property-name}} { get; set; }{{#if nullable-reference-types}}{{#unless nav-property-isnullable}} = default!;{{/unless}}{{/if}}
 {{/if}}
 {{/each}}
 {{/if}}

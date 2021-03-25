@@ -26,7 +26,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// <summary>
     /// Generator for the DbContext class using Handlebars templates.
     /// </summary>
-    public class HbsCSharpDbContextGenerator : CSharpDbContextGenerator
+    public class HbsDbContextGenerator : CSharpDbContextGenerator
     {
         private const string EntityLambdaIdentifier = "entity";
         private const string Language = "CSharp";
@@ -74,7 +74,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="options">Handlebars scaffolding options.</param>
-        public HbsCSharpDbContextGenerator(
+        public HbsDbContextGenerator(
             [NotNull] IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator, 
             [NotNull] IAnnotationCodeGenerator annotationCodeGenerator,
             [NotNull] IDbContextTemplateService dbContextTemplateService,

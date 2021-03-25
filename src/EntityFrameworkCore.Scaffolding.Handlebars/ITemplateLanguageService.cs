@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore.Design;
+using System.Collections.Generic;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {

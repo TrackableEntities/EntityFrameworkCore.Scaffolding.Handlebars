@@ -52,7 +52,7 @@
             }
             public static class TypeScriptFiles
             {
-                public const string DbContextFile = Parameters.ContextName + ".cs";
+                public const string DbContextFile = Parameters.ContextName + ".ts";
                 public const string CategoryFile = "Category.ts";
                 public const string ProductFile = "Product.ts";
             }

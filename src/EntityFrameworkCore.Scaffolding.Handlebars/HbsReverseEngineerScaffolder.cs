@@ -25,7 +25,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     public class HbsReverseEngineerScaffolder : ReverseEngineerScaffolder
     {
         /// <summary>
-        /// Constructor for the HbsCSharpModelGenerator.
+        /// Constructor for the HbsModelGenerator.
         /// </summary>
         /// <param name="databaseModelFactory">Service to reverse engineer a database into a database model.</param>
         /// <param name="scaffoldingModelFactory">Factory to create a scaffolding model.</param>

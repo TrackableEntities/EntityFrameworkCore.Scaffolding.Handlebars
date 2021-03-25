@@ -1,13 +1,27 @@
 ﻿using System.Collections.Generic;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
+using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
     /// <summary>
     /// Provide services to obtain C# template file information.
     /// </summary>
-    public class TypeScriptTemplateLanguageService : ITemplateLanguageService
+    public class TemplateLanguageService : ITemplateLanguageService
     {
+        private readonly ILanguageOptions _languageOptions;
+
+        /// <summary>
+        /// Provide services to obtain C# template file information.
+        /// </summary>
+        /// <param name="languageOptions">Language Options</param>
+        public TemplateLanguageService(
+           [NotNull] ILanguageOptions languageOptions)
+        {
+            _languageOptions = languageOptions;
+        }
+
         /// <summary>
         /// Get DbContext template file information.
         /// </summary>
@@ -20,7 +34,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     Constants.DbContextTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.TypeScriptTemplateDirectories.DbContextDirectory,
+                        RelativeDirectory = _languageOptions.DbContextDirectory,
                         FileName = Constants.DbContextTemplate + Constants.TemplateExtension
                     }
                 },
@@ -28,7 +42,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     Constants.DbContextImportTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.TypeScriptTemplateDirectories.DbContextPartialsDirectory,
+                        RelativeDirectory = _languageOptions.DbContextPartialsDirectory,
                         FileName = Constants.DbContextImportTemplate + Constants.TemplateExtension
                     }
                 },
@@ -36,7 +50,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     Constants.DbContextCtorTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.TypeScriptTemplateDirectories.DbContextPartialsDirectory,
+                        RelativeDirectory = _languageOptions.DbContextPartialsDirectory,
                         FileName = Constants.DbContextCtorTemplate + Constants.TemplateExtension
                     }
                 },
@@ -44,7 +58,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     Constants.DbContextOnConfiguringTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.TypeScriptTemplateDirectories.DbContextPartialsDirectory,
+                        RelativeDirectory = _languageOptions.DbContextPartialsDirectory,
                         FileName = Constants.DbContextOnConfiguringTemplate + Constants.TemplateExtension
                     }
                 },
@@ -52,7 +66,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     Constants.DbContextDbSetsTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.TypeScriptTemplateDirectories.DbContextPartialsDirectory,
+                        RelativeDirectory = _languageOptions.DbContextPartialsDirectory,
                         FileName = Constants.DbContextDbSetsTemplate + Constants.TemplateExtension
                     }
                 },
@@ -72,7 +86,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     Constants.EntityTypeTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.TypeScriptTemplateDirectories.EntityTypeDirectory,
+                        RelativeDirectory = _languageOptions.EntityTypeDirectory,
                         FileName = Constants.EntityTypeTemplate + Constants.TemplateExtension
                     }
                 },
@@ -80,7 +94,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     Constants.EntityTypeImportTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.TypeScriptTemplateDirectories.EntityTypePartialsDirectory,
+                        RelativeDirectory = _languageOptions.EntityTypePartialsDirectory,
                         FileName = Constants.EntityTypeImportTemplate + Constants.TemplateExtension
                     }
                 },
@@ -88,7 +102,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     Constants.EntityTypeCtorTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.TypeScriptTemplateDirectories.EntityTypePartialsDirectory,
+                        RelativeDirectory = _languageOptions.EntityTypePartialsDirectory,
                         FileName = Constants.EntityTypeCtorTemplate + Constants.TemplateExtension
                     }
                 },
@@ -96,7 +110,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     Constants.EntityTypePropertyTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.TypeScriptTemplateDirectories.EntityTypePartialsDirectory,
+                        RelativeDirectory = _languageOptions.EntityTypePartialsDirectory,
                         FileName = Constants.EntityTypePropertyTemplate + Constants.TemplateExtension
                     }
                 },

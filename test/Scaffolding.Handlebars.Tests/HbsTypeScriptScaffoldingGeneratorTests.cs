@@ -367,15 +367,15 @@ namespace Scaffolding.Handlebars.Tests
 
             var services = new ServiceCollection()
                 .AddEntityFrameworkDesignTimeServices()
+                .AddSingleton<ILanguageOptions, LanguageOptions>(x => LanguageOptions.TypeScript)
                 .AddSingleton<IDbContextTemplateService, FakeHbsDbContextTemplateService>()
                 .AddSingleton<IEntityTypeTemplateService, FakeHbsEntityTypeTemplateService>()
-                .AddSingleton<ITypeScriptHelper, TypeScriptHelper>()
                 .AddSingleton<ITemplateFileService>(fileService)
                 .AddSingleton<ITemplateLanguageService, FakeTypeScriptTemplateLanguageService>()
-                .AddSingleton<IModelCodeGenerator, HbsTypeScriptModelGenerator>()
+                .AddSingleton<IModelCodeGenerator, HbsModelGenerator>()
                 .AddSingleton(provider =>
                 {
-                    ICSharpDbContextGenerator contextGenerator = new HbsCSharpDbContextGenerator(
+                    ICSharpDbContextGenerator contextGenerator = new HbsDbContextGenerator(
                         provider.GetRequiredService<IProviderConfigurationCodeGenerator>(),
                         provider.GetRequiredService<IAnnotationCodeGenerator>(),
                         provider.GetRequiredService<IDbContextTemplateService>(),
@@ -389,13 +389,13 @@ namespace Scaffolding.Handlebars.Tests
                 })
                 .AddSingleton(provider =>
                 {
-                    ICSharpEntityTypeGenerator entityGenerator = new HbsTypeScriptEntityTypeGenerator(
+                    ICSharpEntityTypeGenerator entityGenerator = new HbsEntityTypeGenerator(
                         provider.GetRequiredService<IAnnotationCodeGenerator>(),
+                         provider.GetRequiredService<ICSharpHelper>(),
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
-                        provider.GetRequiredService<ICSharpHelper>(),
-                        provider.GetRequiredService<ITypeScriptHelper>(),
-                        provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());
+                        provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>(),
+                        provider.GetRequiredService<ILanguageOptions>());
                     return options == ReverseEngineerOptions.EntitiesOnly ||
                            options == ReverseEngineerOptions.DbContextAndEntities
                         ? entityGenerator

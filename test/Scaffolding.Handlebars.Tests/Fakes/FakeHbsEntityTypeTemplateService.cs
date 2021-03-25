@@ -47,12 +47,19 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         }
 
         /// <summary>
+        /// Compile C# entity type template.
+        /// </summary>
+        /// <returns>Entity type template.</returns>
+        protected virtual Func<object, string> CompileEntityTypeTemplate()
+            => CompileEntityTypeTemplate(LanguageOptions.CSharp);
+
+        /// <summary>
         /// Compile entity type template.
         /// </summary>
         /// <param name="language">Language option.</param>
         /// <returns>Entity type template.</returns>
         protected virtual Func<object, string> CompileEntityTypeTemplate(
-            LanguageOptions language = LanguageOptions.CSharp)
+            LanguageOptions language)
         {
             EntitiesTemplateFiles.TryGetValue(Constants.EntityTypeTemplate, out TemplateFileInfo classFile);
             var entityTemplateFile = FileService.RetrieveTemplateFileContents(
@@ -62,12 +69,19 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         }
 
         /// <summary>
+        /// Get C# partial templates.
+        /// </summary>
+        /// <returns>Partial templates.</returns>
+        protected override IDictionary<string, string> GetPartialTemplates()
+            => GetPartialTemplates(LanguageOptions.CSharp);
+
+        /// <summary>
         /// Get partial templates.
         /// </summary>
         /// <param name="language">Language option.</param>
         /// <returns>Partial templates.</returns>
         protected override IDictionary<string, string> GetPartialTemplates(
-            LanguageOptions language = LanguageOptions.CSharp)
+            LanguageOptions language)
         {
             EntitiesTemplateFiles.TryGetValue(Constants.EntityTypeCtorTemplate, out TemplateFileInfo ctorFile);
             var ctorTemplateFile = FileService.RetrieveTemplateFileContents(

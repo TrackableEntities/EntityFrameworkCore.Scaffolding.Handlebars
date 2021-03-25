@@ -323,3 +323,35 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
     }
 }
 ```
+
+## Adding additional Template Driectories and customizing Generation for other languages
+
+To generate Custom entities/context files and use your own custom named template directories, just create your own LanguageOptions class 
+
+```csharp
+public class ScaffoldingDesignTimeServices : IDesignTimeServices
+{
+    public void ConfigureDesignTimeServices(IServiceCollection services)
+    {
+        // Generate both context and entities
+        options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities;
+
+        // Generate My files
+        var language = new LanguageOptions
+        {
+            FileExtension = ".my",
+            DbContextDirectory = Constants.CodeTemplatesDirectory + "/MyDbContext",
+            DbContextPartialsDirectory = Constants.CodeTemplatesDirectory + "/MyDbContext/Partials",
+            EntityTypeDirectory = Constants.CodeTemplatesDirectory + "/MyEntityType",
+            EntityTypePartialsDirectory = Constants.CodeTemplatesDirectory + "/MyEntityType/Partials",
+            AddTripleSlashToComments = false,
+            PropertyNameConversion =  LanguageOptions.TypeScript.PropertyNameConversion,
+            TypeNameConversion =  LanguageOptions.TypeScript.TypeNameConversion,
+            EntityTypeImportListGenerator = LanguageOptions.TypeScript.EntityTypeImportListGenerator
+        };
+
+        // Add Handlebars scaffolding templates
+        services.AddHandlebarsScaffolding(options, language);
+    }
+}
+```

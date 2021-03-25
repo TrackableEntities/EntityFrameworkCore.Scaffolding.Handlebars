@@ -7,6 +7,7 @@ using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
@@ -15,11 +16,12 @@ using Microsoft.Extensions.Options;
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
     /// <summary>
-    /// Scaffolding generator for TypeScript entity type classes using Handlebars templates.
+    /// Scaffolding generator for DbContext and entity type classes using Handlebars templates.
     /// </summary>
-    public class HbsTypeScriptModelGenerator : CSharpModelGenerator
+    public class HbsModelGenerator : CSharpModelGenerator
     {
-        private const string FileExtension = ".ts";
+        private readonly IOptions<HandlebarsScaffoldingOptions> _options;
+        private readonly ILanguageOptions _languageOptions;
 
         /// <summary>
         /// Handlebars helper service.
@@ -51,22 +53,27 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         protected IContextTransformationService ContextTransformationService { get; }
 
-        private readonly IOptions<HandlebarsScaffoldingOptions> _options;
+        /// <summary>
+        /// CSharp helper.
+        /// </summary>
+        public ICSharpHelper CSharpHelper { get; }
 
         /// <summary>
-        /// Constructor for the HbsTypeScriptModelGenerator.
+        /// Constructor for the HbsModelGenerator.
         /// </summary>
-        /// <param name="dependencies">Service dependencies parameter class for HbsCSharpModelGenerator.</param>
+        /// <param name="dependencies">Service dependencies parameter class for HbsModelGenerator.</param>
         /// <param name="cSharpDbContextGenerator">DbContext generator.</param>
         /// <param name="cSharpEntityTypeGenerator">Entity type generator.</param>
-        /// <param name="handlebarsHelperService"></param>
-        /// <param name="handlebarsBlockHelperService"></param>
-        /// <param name="dbContextTemplateService"></param>
-        /// <param name="entityTypeTemplateService"></param>
-        /// <param name="entityTypeTransformationService"></param>
+        /// <param name="handlebarsHelperService">Handlebars helper service.</param>
+        /// <param name="handlebarsBlockHelperService">Handlebars block helper service.</param>
+        /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
+        /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
+        /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="contextTransformationService">Service for transforming context definitions.</param>
-        /// <param name="options">Handlebar scaffolding options</param>
-        public HbsTypeScriptModelGenerator(
+        /// <param name="cSharpHelper">CSharp helper.</param>
+        /// <param name="options">Handlebar scaffolding options.</param>
+        /// <param name="languageOptions">Language Options.</param>
+        public HbsModelGenerator(
             [NotNull] ModelCodeGeneratorDependencies dependencies, 
             [NotNull] ICSharpDbContextGenerator cSharpDbContextGenerator, 
             [NotNull] ICSharpEntityTypeGenerator cSharpEntityTypeGenerator,
@@ -76,7 +83,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
             [NotNull] IContextTransformationService contextTransformationService,
-            [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
+            [NotNull] ICSharpHelper cSharpHelper,
+            [NotNull] IOptions<HandlebarsScaffoldingOptions> options,
+            [NotNull] ILanguageOptions languageOptions)
             : base(dependencies, cSharpDbContextGenerator, cSharpEntityTypeGenerator)
         {
             HandlebarsHelperService = handlebarsHelperService;
@@ -85,7 +94,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             EntityTypeTemplateService = entityTypeTemplateService;
             EntityTypeTransformationService = entityTypeTransformationService;
             ContextTransformationService = contextTransformationService;
+            CSharpHelper = cSharpHelper;
             _options = options;
+            _languageOptions = languageOptions;
         }
 
         /// <summary>
@@ -121,7 +132,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     options.SuppressConnectionStringWarning,
                     options.SuppressOnConfiguring);
 
-                var dbContextFileName = ContextTransformationService.TransformContextFileName(options.ContextName) + ".cs";
+                var dbContextFileName = ContextTransformationService.TransformContextFileName(options.ContextName) + _languageOptions.FileExtension;
                 resultingFiles.ContextFile = new ScaffoldedFile
                 {
                     Path = options.ContextDir != null
@@ -133,7 +144,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             if (!(CSharpEntityTypeGenerator is NullCSharpEntityTypeGenerator))
             {
-                foreach (var entityType in model.GetEntityTypes())
+                foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
                 {
                     generatedCode = CSharpEntityTypeGenerator.WriteCode(
                         entityType,
@@ -141,15 +152,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         options.UseDataAnnotations);
 
                     var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.DisplayName());
-                    var entityTypeFileName = transformedFileName + FileExtension;
-                    if (_options?.Value?.EnableSchemaFolders == true) {
-                        entityTypeFileName = entityType.GetSchema() + @"\" + entityTypeFileName;
-                    }
+                    var entityTypeFileName = _options?.Value?.EnableSchemaFolders == true
+                        ? Path.Combine(CSharpHelper.Namespace(entityType.GetSchema()), transformedFileName + _languageOptions.FileExtension)
+                        : transformedFileName + _languageOptions.FileExtension;
                     resultingFiles.AdditionalFiles.Add(
                         new ScaffoldedFile
                         {
-                            Path = entityTypeFileName,
-                            Code = generatedCode
+                            Path = entityTypeFileName, 
+                            Code = generatedCode 
                         });
                 }
             }

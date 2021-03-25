@@ -47,12 +47,19 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         }
 
         /// <summary>
+        /// Compile the C# DbContext template.
+        /// </summary>
+        /// <returns>DbContext template.</returns>
+        protected virtual Func<object, string> CompileDbContextTemplate()
+            => CompileDbContextTemplate(LanguageOptions.CSharp);
+
+        /// <summary>
         /// Compile the DbContext template.
         /// </summary>
         /// <param name="language">Language option.</param>
         /// <returns>DbContext template.</returns>
         protected virtual Func<object, string> CompileDbContextTemplate(
-            LanguageOptions language = LanguageOptions.CSharp)
+            LanguageOptions language)
         {
             DbContextTemplateFiles.TryGetValue(Constants.DbContextTemplate, out TemplateFileInfo contextFile);
             var contextTemplateFile = FileService.RetrieveTemplateFileContents(
@@ -62,12 +69,19 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         }
 
         /// <summary>
+        /// Get DbContext C# partial templates.
+        /// </summary>
+        /// <returns>Partial templates.</returns>
+        protected override IDictionary<string, string> GetPartialTemplates()
+            => GetPartialTemplates(LanguageOptions.CSharp);
+
+        /// <summary>
         /// Get DbContext partial templates.
         /// </summary>
         /// <param name="language">Language option.</param>
         /// <returns>Partial templates.</returns>
         protected override IDictionary<string, string> GetPartialTemplates(
-            LanguageOptions language = LanguageOptions.CSharp)
+            LanguageOptions language)
         {
             DbContextTemplateFiles.TryGetValue(Constants.DbContextImportTemplate, out TemplateFileInfo importFile);
             var importTemplateFile = FileService.RetrieveTemplateFileContents(

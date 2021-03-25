@@ -452,13 +452,15 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IEntityTypeTemplateService, FakeHbsEntityTypeTemplateService>()
                 .AddSingleton<ITemplateFileService>(fileService)
                 .AddSingleton<ITemplateLanguageService, FakeCSharpTemplateLanguageService>()
-                .AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
+                .AddSingleton<IModelCodeGenerator, HbsModelGenerator>()
+                .AddSingleton<ILanguageOptions, LanguageOptions>(x => LanguageOptions.CSharp)
+                ;
 
 #pragma warning disable EF1001 // Internal EF Core API usage.
             services
                 .AddSingleton(provider =>
                 {
-                    ICSharpDbContextGenerator contextGenerator = new HbsCSharpDbContextGenerator(
+                    ICSharpDbContextGenerator contextGenerator = new HbsDbContextGenerator(
                         provider.GetRequiredService<IProviderConfigurationCodeGenerator>(),
                         provider.GetRequiredService<IAnnotationCodeGenerator>(),
                         provider.GetRequiredService<IDbContextTemplateService>(),
@@ -472,12 +474,13 @@ namespace Scaffolding.Handlebars.Tests
                 })
                 .AddSingleton(provider =>
                 {
-                    ICSharpEntityTypeGenerator entityGenerator = new HbsCSharpEntityTypeGenerator(
+                    ICSharpEntityTypeGenerator entityGenerator = new HbsEntityTypeGenerator(
                         provider.GetRequiredService<IAnnotationCodeGenerator>(),
                         provider.GetRequiredService<ICSharpHelper>(),
                         provider.GetRequiredService<IEntityTypeTemplateService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
-                        provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());
+                        provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>(),
+                        provider.GetRequiredService<ILanguageOptions>());
                     return revEngOptions == ReverseEngineerOptions.EntitiesOnly ||
                            revEngOptions == ReverseEngineerOptions.DbContextAndEntities
                         ? entityGenerator

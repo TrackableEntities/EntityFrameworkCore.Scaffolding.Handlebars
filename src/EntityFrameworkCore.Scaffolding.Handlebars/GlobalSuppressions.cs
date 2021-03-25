@@ -5,13 +5,10 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "type", Target = "~T:EntityFrameworkCore.Scaffolding.Handlebars.HbsCSharpDbContextGenerator")]
-[assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "type", Target = "~T:EntityFrameworkCore.Scaffolding.Handlebars.HbsCSharpModelGenerator")]
-[assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "type", Target = "~T:EntityFrameworkCore.Scaffolding.Handlebars.HbsTypeScriptModelGenerator")]
-[assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "type", Target = "~T:EntityFrameworkCore.Scaffolding.Handlebars.HbsCSharpEntityTypeGenerator")]
+[assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "type", Target = "~T:EntityFrameworkCore.Scaffolding.Handlebars.HbsDbContextGenerator")]
+[assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "type", Target = "~T:EntityFrameworkCore.Scaffolding.Handlebars.HbsModelGenerator")]
+[assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "type", Target = "~T:EntityFrameworkCore.Scaffolding.Handlebars.HbsEntityTypeGenerator")]
 [assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "type", Target = "~T:EntityFrameworkCore.Scaffolding.Handlebars.HbsReverseEngineerScaffolder")]
-[assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "type", Target = "~T:EntityFrameworkCore.Scaffolding.Handlebars.HbsTypeScriptEntityTypeGenerator")]
-[assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "member", Target = "~M:EntityFrameworkCore.Scaffolding.Handlebars.HbsTypeScriptEntityTypeGenerator_Old.GenerateProperties(Microsoft.EntityFrameworkCore.Metadata.IEntityType)")]
 [assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "type", Target = "~T:EntityFrameworkCore.Scaffolding.Handlebars.NullCSharpDbContextGenerator")]
 [assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "member", Target = "~M:Microsoft.EntityFrameworkCore.Design.ServiceCollectionExtensions.AddHandlebarsScaffolding(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{EntityFrameworkCore.Scaffolding.Handlebars.HandlebarsScaffoldingOptions})~Microsoft.Extensions.DependencyInjection.IServiceCollection")]
 [assembly: SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "<Pending>", Scope = "type", Target = "~T:EntityFrameworkCore.Scaffolding.Handlebars.NullCSharpEntityTypeGenerator")]

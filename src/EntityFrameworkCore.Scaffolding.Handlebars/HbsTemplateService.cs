@@ -44,11 +44,17 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         }
 
         /// <summary>
+        /// Get C# partial templates.
+        /// </summary>
+        /// <returns>Partial templates.</returns>
+        protected abstract IDictionary<string, string> GetPartialTemplates();
+
+        /// <summary>
         /// Get partial templates.
         /// </summary>
         /// <param name="language">Language option.</param>
         /// <returns>Partial templates.</returns>
         protected abstract IDictionary<string, string> GetPartialTemplates(
-            LanguageOptions language = LanguageOptions.CSharp);
+            LanguageOptions language);
     }
 }

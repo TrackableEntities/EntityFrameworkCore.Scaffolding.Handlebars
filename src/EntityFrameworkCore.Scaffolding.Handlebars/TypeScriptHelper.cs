@@ -7,34 +7,34 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// <summary>
     /// TypeScript Helper
     /// </summary>
-    public class TypeScriptHelper : ITypeScriptHelper
+    public class TypeScriptHelper 
     {
         /// <summary>
         /// Convert CLR type to TypeScript type
         /// </summary>
         /// <param name="clrType">CLR type.</param>
         /// <returns>TypeScript type</returns>
-        public string TypeName(Type clrType)
+        public static string TypeName(string clrType)
         {
             var result = "any";
-            if (clrType == typeof(bool) || clrType == typeof(bool?))
+            if (clrType =="bool" || clrType == "bool?")
                 result = "boolean";
-            if (clrType == typeof(char) || clrType == typeof(char?)
-                || clrType == typeof(string))
+            if (clrType == "char" || clrType == "char?"
+                || clrType == "string")
                 result = "string";
-            if (clrType == typeof(DateTime) || clrType == typeof(DateTime?))
+            if (clrType == "DateTime" || clrType == "DateTime?")
                 result = "Date";
-            if (clrType == typeof(byte) || clrType == typeof(byte?)
-                || clrType == typeof(sbyte) || clrType == typeof(sbyte?)
-                || clrType == typeof(decimal) || clrType == typeof(decimal?)
-                || clrType == typeof(double) || clrType == typeof(double?)
-                || clrType == typeof(short) || clrType == typeof(short?)
-                || clrType == typeof(ushort) || clrType == typeof(ushort?)
-                || clrType == typeof(int) || clrType == typeof(int?)
-                || clrType == typeof(uint) || clrType == typeof(uint?)
-                || clrType == typeof(long) || clrType == typeof(long?)
-                || clrType == typeof(ulong) || clrType == typeof(ulong?)
-                || clrType == typeof(float) || clrType == typeof(float?))
+            if (clrType == "byte" || clrType == "byte?"
+                || clrType == "sbyte" || clrType == "sbyte?"
+                || clrType == "decimal" || clrType == "decimal?"
+                || clrType == "double" || clrType == "double?"
+                || clrType == "short" || clrType == "short?"
+                || clrType == "ushort" || clrType == "ushort?"
+                || clrType == "int" || clrType == "int?"
+                || clrType == "uint" || clrType == "uint?"
+                || clrType == "long" || clrType == "long?"
+                || clrType == "ulong" || clrType == "ulong?"
+                || clrType == "float" || clrType == "float?")
                 result = "number";
             return result;
         }
@@ -44,7 +44,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         /// <param name="s">Input string.</param>
         /// <returns>Input string in camel case.</returns>
-        public string ToCamelCase(string s)
+        public static string ToCamelCase(string s)
         {
             if (s == null || s.Length < 2)
                 return s;

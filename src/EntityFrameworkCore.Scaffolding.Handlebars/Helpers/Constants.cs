@@ -42,8 +42,11 @@
         public const string DbContextDbSetsTemplate = "DbSets";
 
         /// <summary>C# template folders.</summary>
-        public static class CSharpTemplateDirectories
+        public static class CSharpTemplate
         {
+            /// <summary>  File Extension </summary>
+            public const string FileExtension = ".cs";
+
             /// <summary>DbContext C# template folder.</summary>
             public const string DbContextDirectory = CodeTemplatesDirectory + "/CSharpDbContext";
 
@@ -58,8 +61,11 @@
         }
 
         /// <summary>TypeScript template folders.</summary>
-        public static class TypeScriptTemplateDirectories
+        public static class TypeScriptTemplate
         {
+            /// <summary> File Extension </summary>
+            public const string FileExtension = ".ts";
+
             /// <summary>DbContext TypeScript template folder.</summary>
             public const string DbContextDirectory = CodeTemplatesDirectory + "/TypeScriptDbContext";
 

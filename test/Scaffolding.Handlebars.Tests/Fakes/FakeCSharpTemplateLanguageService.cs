@@ -1,11 +1,20 @@
 ﻿using System.Collections.Generic;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
+using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Scaffolding.Handlebars.Tests.Fakes
 {
     public class FakeCSharpTemplateLanguageService : ITemplateLanguageService
     {
+        private readonly ILanguageOptions _languageOptions;
+
+        public FakeCSharpTemplateLanguageService(
+           [NotNull] ILanguageOptions languageOptions)
+        {
+            _languageOptions = languageOptions;
+        }
         public Dictionary<string, TemplateFileInfo> GetDbContextTemplateFileInfo()
         {
             var result = new Dictionary<string, TemplateFileInfo>
@@ -14,7 +23,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                     Constants.DbContextTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextDirectory,
+                        RelativeDirectory = _languageOptions.DbContextDirectory,
                         FileName = Constants.DbContextTemplate + Constants.TemplateExtension
                     }
                 },
@@ -22,7 +31,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                     Constants.DbContextImportTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextPartialsDirectory,
+                        RelativeDirectory = _languageOptions.DbContextPartialsDirectory,
                         FileName = Constants.DbContextImportTemplate + Constants.TemplateExtension
                     }
                 },
@@ -30,7 +39,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                     Constants.DbContextCtorTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextPartialsDirectory,
+                        RelativeDirectory = _languageOptions.DbContextPartialsDirectory,
                         FileName = Constants.DbContextCtorTemplate + Constants.TemplateExtension
                     }
                 },
@@ -38,7 +47,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                     Constants.DbContextOnConfiguringTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextPartialsDirectory,
+                        RelativeDirectory = _languageOptions.DbContextPartialsDirectory,
                         FileName = Constants.DbContextOnConfiguringTemplate + Constants.TemplateExtension
                     }
                 },
@@ -46,7 +55,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                     Constants.DbContextDbSetsTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.DbContextPartialsDirectory,
+                        RelativeDirectory = _languageOptions.DbContextPartialsDirectory,
                         FileName = Constants.DbContextDbSetsTemplate + Constants.TemplateExtension
                     }
                 },
@@ -62,7 +71,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                     Constants.EntityTypeTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypeDirectory,
+                        RelativeDirectory = _languageOptions.EntityTypeDirectory,
                         FileName = Constants.EntityTypeTemplate + Constants.TemplateExtension
                     }
                 },
@@ -70,7 +79,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                     Constants.EntityTypeImportTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
+                        RelativeDirectory = _languageOptions.EntityTypePartialsDirectory,
                         FileName = Constants.EntityTypeImportTemplate + Constants.TemplateExtension
                     }
                 },
@@ -78,7 +87,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                     Constants.EntityTypeCtorTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
+                        RelativeDirectory = _languageOptions.EntityTypePartialsDirectory,
                         FileName = Constants.EntityTypeCtorTemplate + Constants.TemplateExtension
                     }
                 },
@@ -86,7 +95,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
                     Constants.EntityTypePropertyTemplate,
                     new TemplateFileInfo
                     {
-                        RelativeDirectory = Constants.CSharpTemplateDirectories.EntityTypePartialsDirectory,
+                        RelativeDirectory = _languageOptions.EntityTypePartialsDirectory,
                         FileName = Constants.EntityTypePropertyTemplate + Constants.TemplateExtension
                     }
                 },

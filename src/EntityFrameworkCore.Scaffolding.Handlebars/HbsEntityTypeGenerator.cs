@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +24,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// <summary>
     /// Generator for entity type classes using Handlebars templates.
     /// </summary>
-    public class HbsCSharpEntityTypeGenerator : CSharpEntityTypeGenerator
+    public class HbsEntityTypeGenerator : CSharpEntityTypeGenerator
     {
         private readonly IOptions<HandlebarsScaffoldingOptions> _options;
+        private readonly ILanguageOptions _languageOption;
 
         /// <summary>
         /// Annotation code generator.
@@ -80,12 +82,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityTypeTemplateService">Template service for the entity types generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="options">Handlebar scaffolding options.</param>
-        public HbsCSharpEntityTypeGenerator(
+        /// <param name="languageOptions">Language Options.</param>
+        public HbsEntityTypeGenerator(
             [NotNull] IAnnotationCodeGenerator annotationCodeGenerator,
             [NotNull] ICSharpHelper cSharpHelper,
             [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
-            [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
+            [NotNull] IOptions<HandlebarsScaffoldingOptions> options,
+            [NotNull] ILanguageOptions languageOptions)
             : base(annotationCodeGenerator, cSharpHelper)
         {
             Check.NotNull(annotationCodeGenerator, nameof(annotationCodeGenerator));
@@ -96,6 +100,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             EntityTypeTemplateService = entityTypeTemplateService;
             EntityTypeTransformationService = entityTypeTransformationService;
             _options = options;
+            _languageOption = languageOptions;
         }
 
         /// <summary>
@@ -145,16 +150,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             Check.NotNull(entityType, nameof(entityType));
 
-            var imports = new List<Dictionary<string, object>>();
-
-            foreach (var ns in entityType.GetProperties()
-                .SelectMany(p => p.ClrType.GetNamespaces())
-                .Where(ns => ns != "System" && ns != "System.Collections.Generic")
-                .Distinct()
-                .OrderBy(x => x, new NamespaceComparer()))
-            {
-                imports.Add(new Dictionary<string, object> { { "import", ns } });
-            }
+            var imports = _languageOption.EntityTypeImportListGenerator(entityType);
 
             TemplateData.Add("imports", imports);
         }
@@ -240,8 +236,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 }
                 properties.Add(new Dictionary<string, object>
                 {
-                    { "property-type", propertyType },
-                    { "property-name", property.Name },
+                    { "property-type", _languageOption.TypeNameConversion( propertyType ) },
+                    { "property-name",  _languageOption.PropertyNameConversion( property.Name ) },
                     { "property-annotations",  PropertyAnnotationsData },
                     { "property-comment", _options?.Value?.GenerateComments == true ? GenerateComment(property.GetComment(), 2) : null },
                     { "property-isnullable", property.IsNullable },
@@ -323,7 +319,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     {
                         { "nav-property-collection", navigation.IsCollection },
                         { "nav-property-type", navPropertyType },
-                        { "nav-property-name", navigation.Name },
+                        { "nav-property-name", _languageOption.PropertyNameConversion( navigation.Name ) },
                         { "nav-property-annotations", NavPropertyAnnotations },
                         { "nav-property-isnullable", propertyIsNullable },
                         { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
@@ -584,6 +580,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         private string GenerateComment(string comment, int indents)
         {
+            if (!_languageOption.AddTripleSlashToComments)
+                return comment;
+
             var sb = new IndentedStringBuilder();
             if (!string.IsNullOrWhiteSpace(comment))
             {

@@ -75,7 +75,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="options">Handlebars scaffolding options.</param>
         public HbsCSharpDbContextGenerator(
-            [NotNull] IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator, 
+            [NotNull] IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator,
             [NotNull] IAnnotationCodeGenerator annotationCodeGenerator,
             [NotNull] IDbContextTemplateService dbContextTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
@@ -695,11 +695,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var lines = new List<string>
             {
                 $".{nameof(EntityTypeBuilder.HasOne)}("
-                + (foreignKey.DependentToPrincipal != null ? $"d => d.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.DependentToPrincipal?.Name, foreignKey.PrincipalToDependent?.DeclaringType.Name)}" : null)
+                + (foreignKey.DependentToPrincipal != null ? $"d => d.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.DependentToPrincipal?.Name, foreignKey.PrincipalToDependent?.DeclaringType.Name, foreignKey.DependentToPrincipal)}" : null)
                 + ")",
                 $".{(foreignKey.IsUnique ? nameof(ReferenceNavigationBuilder.WithOne) : nameof(ReferenceNavigationBuilder.WithMany))}"
                 + "("
-                + (foreignKey.PrincipalToDependent != null ? $"p => p.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.PrincipalToDependent?.Name, foreignKey.DependentToPrincipal?.DeclaringType.Name)}" : null)
+                + (foreignKey.PrincipalToDependent != null ? $"p => p.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.PrincipalToDependent?.Name, foreignKey.DependentToPrincipal?.DeclaringType.Name, foreignKey.PrincipalToDependent)}" : null)
                 + ")"
             };
 
@@ -709,7 +709,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 lines.Add(
                     $".{nameof(ReferenceReferenceBuilder.HasPrincipalKey)}"
                     + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformPropertyName(((ITypeBase)foreignKey.PrincipalEntityType).DisplayName(), "")}>" : "")
-                    + $"(p => {GenerateLambdaToKey(foreignKey.PrincipalKey.Properties, "p", EntityTypeTransformationService.TransformNavPropertyName)})");
+                    + $"(p => {GenerateLambdaToForeignKey(foreignKey.PrincipalKey.Properties, "p", EntityTypeTransformationService.TransformNavPropertyName, foreignKey.PrincipalToDependent)})");
             }
 
             lines.Add(
@@ -863,6 +863,19 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 : properties.Count == 1
                 ? $"{lambdaIdentifier}.{nameTransform(properties[0].Name, properties[0].DeclaringType.Name)}"
                 : $"new {{ {string.Join(", ", properties.Select(p => lambdaIdentifier + "." + nameTransform(p.Name, p.DeclaringType.Name)))} }}";
+        }
+
+        private static string GenerateLambdaToForeignKey(
+            IReadOnlyList<IProperty> properties,
+            string lambdaIdentifier,
+            Func<string, string, INavigation, string> nameTransform,
+            INavigation navigation)
+        {
+            return properties.Count <= 0
+                ? ""
+                : properties.Count == 1
+                ? $"{lambdaIdentifier}.{nameTransform(properties[0].Name, properties[0].DeclaringType.Name, navigation)}"
+                : $"new {{ {string.Join(", ", properties.Select(p => lambdaIdentifier + "." + nameTransform(p.Name, p.DeclaringType.Name, navigation)))} }}";
         }
 
         private static void RemoveAnnotation(ref List<IAnnotation> annotations, string annotationName)

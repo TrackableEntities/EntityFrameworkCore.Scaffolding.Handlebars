@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using System.Collections.Generic;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -34,8 +35,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         /// <param name="propertyName">Property name.</param>
         /// <param name="propertyType">Property type</param>
+        /// <param name="navigation">EF Core navigation</param>
         /// <returns>Transformed property name.</returns>
-        string TransformNavPropertyName(string propertyName, string propertyType);
+        string TransformNavPropertyName(string propertyName, string propertyType, INavigation navigation);
 
         /// <summary>
         /// Transform entity type constructor.

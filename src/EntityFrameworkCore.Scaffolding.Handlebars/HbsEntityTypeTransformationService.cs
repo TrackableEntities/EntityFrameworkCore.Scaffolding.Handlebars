@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using System;
 using System.Collections.Generic;
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -6,7 +7,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// Default service for transforming entity type definitions.
     /// </summary>
     public class HbsEntityTypeTransformationService : IEntityTypeTransformationService
-    {    
+    {
         /// <summary>
         /// Entity name transformer.
         /// </summary>
@@ -30,7 +31,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Navigation property name transformer.
         /// </summary>
-        public Func<EntityPropertyInfo, EntityPropertyInfo> NavPropertyTransformer { get; }
+        public Func<NavigationPropertyInfo, NavigationPropertyInfo> NavPropertyTransformer { get; }
 
         /// <summary>
         /// HbsEntityTypeTransformationService constructor.
@@ -45,7 +46,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             Func<string, string> entityFileNameTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
-            Func<EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null)
+            Func<NavigationPropertyInfo, NavigationPropertyInfo> navPropertyTransformer = null)
         {
             EntityTypeNameTransformer = entityTypeNameTransformer;
             EntityFileNameTransformer = entityFileNameTransformer;
@@ -87,10 +88,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         /// <param name="propertyName">Property name.</param>
         /// <param name="propertyType">Property type</param>
+        /// <param name="navigation">EF Core navigation</param>
         /// <returns>Transformed property name.</returns>
-        public string TransformNavPropertyName(string propertyName, string propertyType)
+        public string TransformNavPropertyName(string propertyName, string propertyType, INavigation navigation)
         {
-            var propTypeInfo = new EntityPropertyInfo { PropertyName = propertyName, PropertyType = propertyType };
+            var propTypeInfo = new NavigationPropertyInfo { PropertyName = propertyName, PropertyType = propertyType, NavigationDetails = navigation };
             return NavPropertyTransformer?.Invoke(propTypeInfo)?.PropertyName ?? propertyName;
         }
 
@@ -130,7 +132,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             foreach (var property in properties)
             {
-                var propTypeInfo = new EntityPropertyInfo(property["property-type"] as string, 
+                var propTypeInfo = new EntityPropertyInfo(property["property-type"] as string,
                     property["property-name"] as string,
                     (property["property-isnullable"] as bool?) == true);
                 var transformedProp = PropertyTransformer?.Invoke(propTypeInfo) ?? propTypeInfo;
@@ -160,8 +162,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             foreach (var navProperty in navProperties)
             {
-                var propTypeInfo = new EntityPropertyInfo(navProperty["nav-property-type"] as string,
-                    navProperty["nav-property-name"] as string);
+                var propTypeInfo = new NavigationPropertyInfo(
+                    navProperty["nav-property-type"] as string,
+                    navProperty["nav-property-name"] as string,
+                    (bool)navProperty["nav-property-isnullable"],
+                    navProperty["navigation"] as INavigation
+                );
+
                 var transformedProp = NavPropertyTransformer?.Invoke(propTypeInfo) ?? propTypeInfo;
 
                 var newNavProperty = new Dictionary<string, object>(navProperty);

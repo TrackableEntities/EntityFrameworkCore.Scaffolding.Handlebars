@@ -200,7 +200,7 @@ namespace Microsoft.EntityFrameworkCore.Design
             Func<string, string> entityFileNameTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
-            Func<EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null,
+            Func<NavigationPropertyInfo, NavigationPropertyInfo> navPropertyTransformer = null,
             Func<string, string> contextFileNameTransformer = null)
         {
             services.AddSingleton<IEntityTypeTransformationService>(provider =>

@@ -43,12 +43,9 @@ namespace ScaffoldingSample.Contexts
             {
                 entity.ToTable("Category");
 
-                entity.HasComment("Hello table Customer\r\n(Currently not used.)");
-
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
-                    .HasMaxLength(15)
-                    .HasComment("Hello CompanyName\r\n(Currently not used.)");
+                    .HasMaxLength(15);
             });
 
             modelBuilder.Entity<dbo.Customer>(entity =>

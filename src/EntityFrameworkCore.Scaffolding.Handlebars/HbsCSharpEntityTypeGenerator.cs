@@ -123,11 +123,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             TemplateData.Add("use-data-annotations", UseDataAnnotations);
 
-            GenerateImports(entityType);
+            GenerateImports(entityType, @namespace);
 
             // TODO: _sb.AppendLine("#nullable disable");
             @namespace = _options?.Value?.EnableSchemaFolders == true
-                ? $"{@namespace}.{CSharpHelper.Namespace(entityType.GetSchema())}" : @namespace;
+                ? GetNamespaceForEntity(entityType, @namespace) : @namespace;
 
             TemplateData.Add("namespace", @namespace);
 
@@ -137,19 +137,27 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return output;
         }
 
+        private string GetNamespaceForEntity(IEntityType entityType, string defaultNamespace)
+        {
+            return $"{defaultNamespace}.{CSharpHelper.Namespace(entityType.GetSchema())}";
+        }
+
         /// <summary>
         /// Generate entity type imports.
         /// </summary>
         /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
-        protected virtual void GenerateImports(IEntityType entityType)
+        /// <param name="defaultNamespace">The namespace containing all other entity model namespaces.</param>
+        protected virtual void GenerateImports(IEntityType entityType, string defaultNamespace)
         {
             Check.NotNull(entityType, nameof(entityType));
 
             var imports = new List<Dictionary<string, object>>();
 
-            foreach (var ns in entityType.GetProperties()
-                .SelectMany(p => p.ClrType.GetNamespaces())
-                .Where(ns => ns != "System" && ns != "System.Collections.Generic")
+            var simpleNamespaces = entityType.GetProperties().SelectMany(p => p.ClrType.GetNamespaces());
+            var navigationNamespaces = entityType.GetNavigations().Select(x => GetNamespaceForEntity(x.TargetEntityType, defaultNamespace));
+            var allNamespaces = simpleNamespaces.Concat(navigationNamespaces);
+            foreach (var ns in allNamespaces
+                .Where(ns => ns != "System" && ns != "System.Collections.Generic" && ns != GetNamespaceForEntity(entityType, defaultNamespace))
                 .Distinct()
                 .OrderBy(x => x, new NamespaceComparer()))
             {

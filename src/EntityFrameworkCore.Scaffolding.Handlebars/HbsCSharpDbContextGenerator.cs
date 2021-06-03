@@ -284,7 +284,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 dbSets.Add(new Dictionary<string, object>
                 {
                     { "set-property-type", transformedEntityTypeName },
-                    { "set-property-name", entityType.GetDbSetName() },
+                    { "set-property-name", !string.IsNullOrEmpty(entityType.GetTableName()) ? entityType.GetTableName() : entityType.GetViewName() },
                     { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
                 });
             }
@@ -343,8 +343,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         private string GetEntityTypeName(IEntityType entityType, string entityTypeName)
         {
+            var schema = !string.IsNullOrEmpty(entityType.GetTableName())
+                ? entityType.GetSchema()
+                : entityType.GetViewSchema();
+            
             return _options?.Value?.EnableSchemaFolders == true
-                ? $"{entityType.GetSchema()}.{entityTypeName}" : entityTypeName;
+                ? $"{schema}.{entityTypeName}" : entityTypeName;
         }
 
         private void GenerateEntityType(IEntityType entityType, bool useDataAnnotations, IndentedStringBuilder sb)

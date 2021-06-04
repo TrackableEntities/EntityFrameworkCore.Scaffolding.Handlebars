@@ -284,7 +284,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 dbSets.Add(new Dictionary<string, object>
                 {
                     { "set-property-type", transformedEntityTypeName },
-                    { "set-property-name", !string.IsNullOrEmpty(entityType.GetTableName()) ? entityType.GetTableName() : entityType.GetViewName() },
+                    { "set-property-name", entityType.GetDbSetName() },
                     { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
                 });
             }

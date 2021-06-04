@@ -126,8 +126,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             GenerateImports(entityType);
 
             // TODO: _sb.AppendLine("#nullable disable");
+            var schema = !string.IsNullOrEmpty(entityType.GetTableName())
+                ? entityType.GetSchema()
+                : entityType.GetViewSchema();
             @namespace = _options?.Value?.EnableSchemaFolders == true
-                ? $"{@namespace}.{CSharpHelper.Namespace(entityType.GetSchema())}" : @namespace;
+                ? $"{@namespace}.{CSharpHelper.Namespace(schema)}" : @namespace;
 
             TemplateData.Add("namespace", @namespace);
 

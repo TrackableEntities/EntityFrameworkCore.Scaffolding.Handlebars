@@ -343,8 +343,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         private string GetEntityTypeName(IEntityType entityType, string entityTypeName)
         {
+            var schema = !string.IsNullOrEmpty(entityType.GetTableName())
+                ? entityType.GetSchema()
+                : entityType.GetViewSchema();
+            
             return _options?.Value?.EnableSchemaFolders == true
-                ? $"{entityType.GetSchema()}.{entityTypeName}" : entityTypeName;
+                ? $"{schema}.{entityTypeName}" : entityTypeName;
         }
 
         private void GenerateEntityType(IEntityType entityType, bool useDataAnnotations, IndentedStringBuilder sb)

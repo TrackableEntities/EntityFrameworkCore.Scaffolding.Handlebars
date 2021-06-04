@@ -149,8 +149,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         options.UseDataAnnotations);
 
                     var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.DisplayName());
+                    var schema = !string.IsNullOrEmpty(entityType.GetTableName())
+                        ? entityType.GetSchema()
+                        : entityType.GetViewSchema();
                     var entityTypeFileName = _options?.Value?.EnableSchemaFolders == true
-                        ? Path.Combine(CSharpHelper.Namespace(entityType.GetSchema()), transformedFileName + FileExtension)
+                        ? Path.Combine(CSharpHelper.Namespace(schema), transformedFileName + FileExtension)
                         : transformedFileName + FileExtension;
                     resultingFiles.AdditionalFiles.Add(
                         new ScaffoldedFile

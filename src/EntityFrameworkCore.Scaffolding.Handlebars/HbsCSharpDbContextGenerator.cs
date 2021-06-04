@@ -714,7 +714,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             lines.Add(
                 $".{nameof(ReferenceReferenceBuilder.HasForeignKey)}"
-                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(foreignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(((ITypeBase)foreignKey.DeclaringEntityType).DisplayName()))}>" : "")
+                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(foreignKey.DeclaringEntityType, EntityTypeTransformationService.TransformTypeEntityName(((ITypeBase)foreignKey.DeclaringEntityType).DisplayName()))}>" : "")
                 + $"(d => {GenerateLambdaToKey(foreignKey.Properties, "d", EntityTypeTransformationService.TransformPropertyName)})");
 
             var defaultOnDeleteAction = foreignKey.IsRequired

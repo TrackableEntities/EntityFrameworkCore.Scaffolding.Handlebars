@@ -61,18 +61,25 @@ namespace ScaffoldingSample
 
             // Add Handlebars transformer for Country property
             services.AddHandlebarsTransformers(
-                propertyTransformer: e =>
-                    e.PropertyName == "Country"
-                        ? new EntityPropertyInfo("Country", e.PropertyName, false)
-                        : new EntityPropertyInfo(e.PropertyType, e.PropertyName, e.PropertyIsNullable));
+                propertyTransformer: (e, p) =>
+                    p.PropertyName == "Country"
+                        ? new EntityPropertyInfo("Country", p.PropertyName, false)
+                        : new EntityPropertyInfo(p.PropertyType, p.PropertyName, p.PropertyIsNullable));
+
+            // Add Handlebars transformer for Id property
+            //services.AddHandlebarsTransformers(
+            //    propertyTransformer: (e, p) =>
+            //        $"{e.Name}Id" == p.PropertyName
+            //            ? new EntityPropertyInfo(p.PropertyType, "Id", false)
+            //            : new EntityPropertyInfo(p.PropertyType, p.PropertyName, p.PropertyIsNullable));
 
             // Add optional Handlebars transformers
             //services.AddHandlebarsTransformers(
             //    entityNameTransformer: n => n + "Foo",
             //    entityFileNameTransformer: n => n + "Foo",
-            //    constructorTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"),
-            //    propertyTransformer: e => new EntityPropertyInfo(e.PropertyType, e.PropertyName + "Foo"),
-            //    navPropertyTransformer: e => new EntityPropertyInfo(e.PropertyType + "Foo", e.PropertyName + "Foo"));
+            //    constructorTransformer: (e, p) => new EntityPropertyInfo(p.PropertyType + "Foo", p.PropertyName + "Foo"),
+            //    propertyTransformer: (e, p) => new EntityPropertyInfo(p.PropertyType, p.PropertyName + "Foo"),
+            //    navPropertyTransformer: (e, p) => new EntityPropertyInfo(p.PropertyType + "Foo", p.PropertyName + "Foo"));
         }
 
         // Sample Handlebars helper

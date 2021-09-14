@@ -1,4 +1,4 @@
-﻿using System;
+﻿using HandlebarsDotNet;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Entity type template.
         /// </summary>
-        Func<object, string> EntityTypeTemplate { get; }
+        HandlebarsTemplate<object, object> EntityTypeTemplate { get; }
 
         /// <summary>
         /// Generate entity type class.

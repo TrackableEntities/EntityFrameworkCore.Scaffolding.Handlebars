@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
@@ -123,7 +122,7 @@ namespace Microsoft.EntityFrameworkCore.Design
             services.AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>();
             services.AddSingleton<IHbsHelperService, HbsHelperService>(provider =>
             {
-                var helpers = new Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>>
+                var helpers = new Dictionary<string, Action<EncodedTextWriter, Context, Arguments>>
                 {
                     {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
                 };
@@ -131,7 +130,7 @@ namespace Microsoft.EntityFrameworkCore.Design
             });
             services.AddSingleton<IHbsBlockHelperService, HbsBlockHelperService>(provider =>
             {
-                var helpers = new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>();
+                var helpers = new Dictionary<string, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>>();
                 return new HbsBlockHelperService(helpers);
             });
             return services;
@@ -147,11 +146,11 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="handlebarsHelpers">Handlebars helpers.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsHelpers(this IServiceCollection services,
-            params (string helperName, Action<TextWriter, Dictionary<string, object>, object[]> helperFunction)[] handlebarsHelpers)
+            params (string helperName, Action<EncodedTextWriter, Context, Arguments> helperFunction)[] handlebarsHelpers)
         {
             services.AddSingleton<IHbsHelperService>(provider =>
             {
-                var helpers = new Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>>
+                var helpers = new Dictionary<string, Action<EncodedTextWriter, Context, Arguments>>
                 {
                     {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
                 };
@@ -170,11 +169,11 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="handlebarsBlockHelpers">Handlebars block helpers.</param>
         /// <returns></returns>
         public static IServiceCollection AddHandlebarsBlockHelpers(this IServiceCollection services,
-            params (string helperName, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]> helperFunction)[] handlebarsBlockHelpers)
+            params (string helperName, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments> helperFunction)[] handlebarsBlockHelpers)
         {
             services.AddSingleton<IHbsBlockHelperService>(provider =>
             {
-                var helpers = new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>();
+                var helpers = new Dictionary<string, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>>();
                 handlebarsBlockHelpers.ToList().ForEach(h => helpers.Add(h.helperName, h.helperFunction));
                 return new HbsBlockHelperService(helpers);
             });

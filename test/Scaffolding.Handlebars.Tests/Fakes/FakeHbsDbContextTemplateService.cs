@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
+using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Design;
 using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
@@ -18,7 +18,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         /// <summary>
         /// DbContext template.
         /// </summary>
-        public Func<object, string> DbContextTemplate { get; private set; }
+        public HandlebarsTemplate<object, object> DbContextTemplate { get; private set; }
 
         /// <summary>
         /// Constructor for the DbContext template service.
@@ -51,7 +51,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         /// </summary>
         /// <param name="language">Language option.</param>
         /// <returns>DbContext template.</returns>
-        protected virtual Func<object, string> CompileDbContextTemplate(
+        protected virtual HandlebarsTemplate<object, object> CompileDbContextTemplate(
             LanguageOptions language = LanguageOptions.CSharp)
         {
             DbContextTemplateFiles.TryGetValue(Constants.DbContextTemplate, out TemplateFileInfo contextFile);

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using HandlebarsDotNet;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// DbContext template.
         /// </summary>
-        Func<object, string> DbContextTemplate { get; }
+        HandlebarsTemplate<object, object> DbContextTemplate { get; }
 
         /// <summary>
         /// Generate DbContext class.

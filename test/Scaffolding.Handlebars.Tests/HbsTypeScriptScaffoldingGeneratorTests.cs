@@ -48,7 +48,7 @@ namespace Scaffolding.Handlebars.Tests
             var entityTemplatesVirtualPath =
                 $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.TypeScriptTemplateDirectories.EntityTypeFolder}";
             var entityPartialsVirtualPath = entityTemplatesVirtualPath + $"/{Constants.Templates.PartialsFolder}";
-            var entityTemplatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder, 
+            var entityTemplatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder,
                 Constants.Templates.CodeTemplatesFolder, Constants.Templates.TypeScriptTemplateDirectories.EntityTypeFolder);
             var entityPartialTemplatesPath = Path.Combine(entityTemplatesPath, Constants.Templates.PartialsFolder);
 
@@ -216,146 +216,138 @@ namespace Scaffolding.Handlebars.Tests
         [Fact]
         public void Save_Should_Write_Context_File()
         {
-            using (var directory = new TempDirectory())
-            {
-                // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextOnly);
-                var model = scaffolder.ScaffoldModel(
-                    connectionString: Constants.Connections.SqlServerConnection,
-                    databaseOptions: new DatabaseModelFactoryOptions(),
-                    modelOptions: new ModelReverseEngineerOptions(),
-                    codeOptions: new ModelCodeGenerationOptions
-                    {
-                        ContextNamespace = Constants.Parameters.RootNamespace,
-                        ModelNamespace = Constants.Parameters.RootNamespace,
-                        ContextName = Constants.Parameters.ContextName,
-                        ContextDir = Path.Combine(directory.Path, "Contexts"),
-                        UseDataAnnotations = false,
-                        Language = "C#",
-                    });
+            using var directory = new TempDirectory();
+            // Arrange
+            var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextOnly);
+            var model = scaffolder.ScaffoldModel(
+                connectionString: Constants.Connections.SqlServerConnection,
+                databaseOptions: new DatabaseModelFactoryOptions(),
+                modelOptions: new ModelReverseEngineerOptions(),
+                codeOptions: new ModelCodeGenerationOptions
+                {
+                    ContextNamespace = Constants.Parameters.RootNamespace,
+                    ModelNamespace = Constants.Parameters.RootNamespace,
+                    ContextName = Constants.Parameters.ContextName,
+                    ContextDir = Path.Combine(directory.Path, "Contexts"),
+                    UseDataAnnotations = false,
+                    Language = "C#",
+                });
 
-                // Act
-                var result = scaffolder.Save(model,
-                    Path.Combine(directory.Path, "Models"),
-                    overwriteFiles: false);
+            // Act
+            var result = scaffolder.Save(model,
+                Path.Combine(directory.Path, "Models"),
+                overwriteFiles: false);
 
-                // Assert
-                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.TypeScriptFiles.DbContextFile);
-                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.CategoryFile);
-                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.ProductFile);
-                Assert.Equal(expectedContextPath, result.ContextFile);
-                Assert.False(File.Exists(expectedCategoryPath));
-                Assert.False(File.Exists(expectedProductPath));
-            }
+            // Assert
+            var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.TypeScriptFiles.DbContextFile);
+            var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.CategoryFile);
+            var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.ProductFile);
+            Assert.Equal(expectedContextPath, result.ContextFile);
+            Assert.False(File.Exists(expectedCategoryPath));
+            Assert.False(File.Exists(expectedProductPath));
         }
 
         [Fact]
         public void Save_Should_Write_Entity_Files()
         {
-            using (var directory = new TempDirectory())
-            {
-                // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.EntitiesOnly);
-                var model = scaffolder.ScaffoldModel(
-                    connectionString: Constants.Connections.SqlServerConnection,
-                    databaseOptions: new DatabaseModelFactoryOptions(),
-                    modelOptions: new ModelReverseEngineerOptions(),
-                    codeOptions: new ModelCodeGenerationOptions
-                    {
-                        ContextNamespace = Constants.Parameters.RootNamespace,
-                        ModelNamespace = Constants.Parameters.RootNamespace,
-                        ContextName = Constants.Parameters.ContextName,
-                        ContextDir = Path.Combine(directory.Path, "Contexts"),
-                        UseDataAnnotations = false,
-                        Language = "C#",
-                    });
+            using var directory = new TempDirectory();
+            // Arrange
+            var scaffolder = CreateScaffolder(ReverseEngineerOptions.EntitiesOnly);
+            var model = scaffolder.ScaffoldModel(
+                connectionString: Constants.Connections.SqlServerConnection,
+                databaseOptions: new DatabaseModelFactoryOptions(),
+                modelOptions: new ModelReverseEngineerOptions(),
+                codeOptions: new ModelCodeGenerationOptions
+                {
+                    ContextNamespace = Constants.Parameters.RootNamespace,
+                    ModelNamespace = Constants.Parameters.RootNamespace,
+                    ContextName = Constants.Parameters.ContextName,
+                    ContextDir = Path.Combine(directory.Path, "Contexts"),
+                    UseDataAnnotations = false,
+                    Language = "C#",
+                });
 
-                // Act
-                var result = scaffolder.Save(model,
-                    Path.Combine(directory.Path, "Models"),
-                    overwriteFiles: false);
+            // Act
+            var result = scaffolder.Save(model,
+                Path.Combine(directory.Path, "Models"),
+                overwriteFiles: false);
 
-                // Assert
-                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.TypeScriptFiles.DbContextFile);
-                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.CategoryFile);
-                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.ProductFile);
-                Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
-                Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
-                Assert.False(File.Exists(expectedContextPath));
-            }
+            // Assert
+            var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.TypeScriptFiles.DbContextFile);
+            var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.CategoryFile);
+            var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.ProductFile);
+            Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
+            Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
+            Assert.False(File.Exists(expectedContextPath));
         }
 
         [Fact]
         public void Save_Should_Write_Context_and_Entity_Files_With_Prefix()
         {
-            using (var directory = new TempDirectory())
-            {
-                // Arrange
-                var filenamePrefix = "prefix.";
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities, filenamePrefix);
-                var model = scaffolder.ScaffoldModel(
-                    connectionString: Constants.Connections.SqlServerConnection,
-                    databaseOptions: new DatabaseModelFactoryOptions(),
-                    modelOptions: new ModelReverseEngineerOptions(),
-                    codeOptions: new ModelCodeGenerationOptions
-                    {
-                        ContextNamespace = Constants.Parameters.RootNamespace,
-                        ModelNamespace = Constants.Parameters.RootNamespace,
-                        ContextName = Constants.Parameters.ContextName,
-                        ContextDir = Path.Combine(directory.Path, "Contexts"),
-                        UseDataAnnotations = false,
-                        Language = "C#",
-                    });
+            using var directory = new TempDirectory();
+            // Arrange
+            var filenamePrefix = "prefix.";
+            var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities, filenamePrefix);
+            var model = scaffolder.ScaffoldModel(
+                connectionString: Constants.Connections.SqlServerConnection,
+                databaseOptions: new DatabaseModelFactoryOptions(),
+                modelOptions: new ModelReverseEngineerOptions(),
+                codeOptions: new ModelCodeGenerationOptions
+                {
+                    ContextNamespace = Constants.Parameters.RootNamespace,
+                    ModelNamespace = Constants.Parameters.RootNamespace,
+                    ContextName = Constants.Parameters.ContextName,
+                    ContextDir = Path.Combine(directory.Path, "Contexts"),
+                    UseDataAnnotations = false,
+                    Language = "C#",
+                });
 
-                // Act
-                var result = scaffolder.Save(model,
-                    Path.Combine(directory.Path, "Models"),
-                    overwriteFiles: false);
+            // Act
+            var result = scaffolder.Save(model,
+                Path.Combine(directory.Path, "Models"),
+                overwriteFiles: false);
 
-                // Assert
-                var expectedContextPath = Path.Combine(directory.Path, "Contexts", $"{filenamePrefix}{Constants.Files.TypeScriptFiles.DbContextFile}");
-                var expectedCategoryPath = Path.Combine(directory.Path, "Models", $"{filenamePrefix}{Constants.Files.TypeScriptFiles.CategoryFile}");
-                var expectedProductPath = Path.Combine(directory.Path, "Models", $"{filenamePrefix}{ Constants.Files.TypeScriptFiles.ProductFile}");
-                Assert.Equal(expectedContextPath, result.ContextFile);
-                Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
-                Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
-            }
+            // Assert
+            var expectedContextPath = Path.Combine(directory.Path, "Contexts", $"{filenamePrefix}{Constants.Files.TypeScriptFiles.DbContextFile}");
+            var expectedCategoryPath = Path.Combine(directory.Path, "Models", $"{filenamePrefix}{Constants.Files.TypeScriptFiles.CategoryFile}");
+            var expectedProductPath = Path.Combine(directory.Path, "Models", $"{filenamePrefix}{ Constants.Files.TypeScriptFiles.ProductFile}");
+            Assert.Equal(expectedContextPath, result.ContextFile);
+            Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
+            Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
         }
 
         [Fact]
         public void Save_Should_Write_Context_and_Entity_Files()
         {
-            using (var directory = new TempDirectory())
-            {
-                // Arrange
-                var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities);
-                var model = scaffolder.ScaffoldModel(
-                    connectionString: Constants.Connections.SqlServerConnection,
-                    databaseOptions: new DatabaseModelFactoryOptions(),
-                    modelOptions: new ModelReverseEngineerOptions(),
-                    codeOptions: new ModelCodeGenerationOptions
-                    {
-                        ContextNamespace = Constants.Parameters.RootNamespace,
-                        ModelNamespace = Constants.Parameters.RootNamespace,
-                        ContextName = Constants.Parameters.ContextName,
-                        ContextDir = Path.Combine(directory.Path, "Contexts"),
-                        UseDataAnnotations = false,
-                        Language = "C#",
-                    });
+            using var directory = new TempDirectory();
+            // Arrange
+            var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities);
+            var model = scaffolder.ScaffoldModel(
+                connectionString: Constants.Connections.SqlServerConnection,
+                databaseOptions: new DatabaseModelFactoryOptions(),
+                modelOptions: new ModelReverseEngineerOptions(),
+                codeOptions: new ModelCodeGenerationOptions
+                {
+                    ContextNamespace = Constants.Parameters.RootNamespace,
+                    ModelNamespace = Constants.Parameters.RootNamespace,
+                    ContextName = Constants.Parameters.ContextName,
+                    ContextDir = Path.Combine(directory.Path, "Contexts"),
+                    UseDataAnnotations = false,
+                    Language = "C#",
+                });
 
-                // Act
-                var result = scaffolder.Save(model,
-                    Path.Combine(directory.Path, "Models"),
-                    overwriteFiles: false);
+            // Act
+            var result = scaffolder.Save(model,
+                Path.Combine(directory.Path, "Models"),
+                overwriteFiles: false);
 
-                // Assert
-                var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.TypeScriptFiles.DbContextFile);
-                var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.CategoryFile);
-                var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.ProductFile);
-                Assert.Equal(expectedContextPath, result.ContextFile);
-                Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
-                Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
-            }
+            // Assert
+            var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.TypeScriptFiles.DbContextFile);
+            var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.CategoryFile);
+            var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.TypeScriptFiles.ProductFile);
+            Assert.Equal(expectedContextPath, result.ContextFile);
+            Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
+            Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
         }
 
         private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions options, string filenamePrefix = null)
@@ -402,12 +394,12 @@ namespace Scaffolding.Handlebars.Tests
                         : new NullCSharpEntityTypeGenerator();
                 })
                 .AddSingleton<IHbsHelperService>(provider =>
-                    new HbsHelperService(new Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>>
+                    new HbsHelperService(new Dictionary<string, Action<EncodedTextWriter, Context, Arguments>>
                     {
                         {EntityFrameworkCore.Scaffolding.Handlebars.Helpers.Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
                     }))
                 .AddSingleton<IHbsBlockHelperService>(provider =>
-                    new HbsBlockHelperService(new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>()))
+                    new HbsBlockHelperService(new Dictionary<string, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>>()))
                 .AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
 
 

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
+using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Design;
 using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
@@ -17,7 +17,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Entity type template.
         /// </summary>
-        public Func<object, string> EntityTypeTemplate { get; private set; }
+        public HandlebarsTemplate<object, object> EntityTypeTemplate { get; private set; }
 
         /// <summary>
         /// Constructor for entity type template service.
@@ -50,7 +50,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         /// <param name="language">Language option.</param>
         /// <returns>Entity type template.</returns>
-        protected virtual Func<object, string> CompileEntityTypeTemplate(
+        protected virtual HandlebarsTemplate<object, object> CompileEntityTypeTemplate(
             LanguageOptions language = LanguageOptions.CSharp)
         {
             EntitiesTemplateFiles.TryGetValue(Constants.EntityTypeTemplate, out TemplateFileInfo classFile);

@@ -625,7 +625,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 if (attributeName == null) throw new ArgumentNullException(nameof(attributeName));
                 return attributeName.EndsWith("Attribute", StringComparison.Ordinal)
-                    ? attributeName.Substring(0, attributeName.Length - 9)
+                    ? attributeName[0..^9]
                     : attributeName;
             }
         }

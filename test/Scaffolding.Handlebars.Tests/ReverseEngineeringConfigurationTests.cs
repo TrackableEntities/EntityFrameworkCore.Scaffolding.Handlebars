@@ -5,8 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using HandlebarsDotNet;
@@ -51,12 +49,12 @@ namespace Scaffolding.Handlebars.Tests
                 .AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>()
                 .AddSingleton<IContextTransformationService, HbsContextTransformationService>()
                 .AddSingleton<IHbsHelperService>(provider => new HbsHelperService(
-                    new Dictionary<string, Action<TextWriter, Dictionary<string, object>, object[]>>
+                    new Dictionary<string, Action<EncodedTextWriter, Context, Arguments>>
                     {
                         {Constants.SpacesHelper, HandlebarsHelpers.SpacesHelper}
                     }))
                 .AddSingleton<IHbsBlockHelperService>(provider =>
-                    new HbsBlockHelperService(new Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>>()))
+                    new HbsBlockHelperService(new Dictionary<string, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>>()))
                 .BuildServiceProvider()
                 .GetRequiredService<IReverseEngineerScaffolder>();
 

@@ -30,10 +30,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             string resourceLocation = $"{_namespace}.{relativeDirectory.Replace('/', '.')}.{fileName}";
             using (var stream = _assembly.GetManifestResourceStream(resourceLocation))
             {
-                using (var reader = new StreamReader(stream))
-                {
-                    content = reader.ReadToEnd();
-                }
+                using var reader = new StreamReader(stream);
+                content = reader.ReadToEnd();
             }
 
             return content;

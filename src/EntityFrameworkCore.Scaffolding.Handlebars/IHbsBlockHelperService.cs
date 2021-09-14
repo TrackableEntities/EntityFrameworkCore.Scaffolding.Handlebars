@@ -1,7 +1,6 @@
-﻿using HandlebarsDotNet;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using HandlebarsDotNet;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
@@ -13,7 +12,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Handlebars block helpers.
         /// </summary>
-        Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>> Helpers { get; }
+        Dictionary<string, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>> Helpers { get; }
 
         /// <summary>
         /// Register Handlebars block helpers.

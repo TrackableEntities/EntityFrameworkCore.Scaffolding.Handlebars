@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using HandlebarsDotNet;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -13,14 +12,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Handlebars block helpers.
         /// </summary>
-        public Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>> Helpers { get; }
+        public Dictionary<string, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>> Helpers { get; }
 
         /// <summary>
         /// Constructor for the Handlebars block helper service.
         /// </summary>
         /// <param name="helpers">Dictionary of Handlebars helpers.</param>
-        public HbsBlockHelperService(
-            Dictionary<string, Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>> helpers)
+        public HbsBlockHelperService(Dictionary<string, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>> helpers)
         {
             Helpers = helpers;
         }

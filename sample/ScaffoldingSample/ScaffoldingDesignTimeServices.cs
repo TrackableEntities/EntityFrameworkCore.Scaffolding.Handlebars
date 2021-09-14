@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Design;
@@ -50,10 +48,10 @@ namespace ScaffoldingSample
             });
 
             // Register Handlebars helper
-            var myHelper = (helperName: "my-helper", helperFunction: (Action<TextWriter, Dictionary<string, object>, object[]>)MyHbsHelper);
+            var myHelper = (helperName: "my-helper", helperFunction: (Action<EncodedTextWriter, Context, Arguments>)MyHbsHelper);
 
             // Register Handlebars block helper
-            var ifCondHelper = (helperName: "ifCond", helperFunction: (Action<TextWriter, HelperOptions, Dictionary<string, object>, object[]>)MyHbsBlockHelper);
+            var ifCondHelper = (helperName: "ifCond", helperFunction: (Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>)MyHbsBlockHelper);
 
             // Add optional Handlebars helpers
             services.AddHandlebarsHelpers(myHelper);
@@ -76,17 +74,17 @@ namespace ScaffoldingSample
         }
 
         // Sample Handlebars helper
-        void MyHbsHelper(TextWriter writer, Dictionary<string, object> context, object[] parameters)
+        void MyHbsHelper(EncodedTextWriter writer, Context context, Arguments parameters)
         {
             writer.Write("// My Handlebars Helper");
         }
 
         // Sample Handlebars block helper
-        void MyHbsBlockHelper(TextWriter writer, HelperOptions options, Dictionary<string, object> context, object[] args)
+        void MyHbsBlockHelper(EncodedTextWriter writer, BlockHelperOptions options, Context context, Arguments args)
         {
-            var val0str = args?[0]?.ToString();
-            var val1str = args?[1]?.ToString();
-            var val2str = args?[2]?.ToString();
+            var val0str = args[0]?.ToString();
+            var val1str = args[1]?.ToString();
+            var val2str = args[2]?.ToString();
             var val1 = float.Parse(val0str ?? "0");
             var val2 = float.Parse(val2str ?? "0");
 

@@ -323,3 +323,58 @@ public class ScaffoldingDesignTimeServices : IDesignTimeServices
     }
 }
 ```
+
+## Taking Full Control by Extending Handlebars Generators
+
+> For an example of this approach, see `MyHbsCSharpEntityTypeGenerator` in the [ef-core-community-handlebars](https://github.com/TrackableEntities/ef-core-community-handlebars/blob/master/ScaffoldingHandlebars.Tooling/MyHbsCSharpEntityTypeGenerator.cs) repo.
+
+To take full control of context and entity generation, you can extend `HbsCSharpDbContextGenerator` and `HbsCSharpEntityTypeGenerator`, overriding select virtual methods. Then register your custom generators in `ScaffoldingDesignTimeServices.ConfigureDesignTimeServices`.
+
+For example, you may want to add `property-isprimarykey` to the template data in order to insert some code or a comment.
+
+1. Add a `MyHbsCSharpEntityTypeGenerator` to the **.Tooling** project.
+   - Extend `HbsCSharpEntityTypeGenerator`.
+   - Override `GenerateProperties`.
+   - Copy code from the base `GenerateProperties` method.
+   - Add code that inserts `property-isprimarykey` into the template data.
+   ```csharp
+   protected override void GenerateProperties(IEntityType entityType)
+   {
+      var properties = new List<Dictionary<string, object>>();
+      foreach (var property in entityType.GetProperties().OrderBy(p => p.GetColumnOrdinal()))
+      {
+         // Code elided for clarity
+         properties.Add(new Dictionary<string, object>
+         {
+               { "property-type", propertyType },
+               { "property-name", property.Name },
+               { "property-annotations",  PropertyAnnotationsData },
+               { "property-comment", property.GetComment() },
+               { "property-isnullable", property.IsNullable },
+               { "nullable-reference-types", _options?.Value?.EnableNullableReferenceTypes == true },
+
+               // Add new item to template data
+               { "property-isprimarykey", property.IsPrimaryKey() }
+         });
+      }
+
+      var transformedProperties = EntityTypeTransformationService.TransformProperties(properties);
+
+      // Add to transformed properties
+      for (int i = 0; i < transformedProperties.Count ; i++)
+      {
+         transformedProperties[i].Add("property-isprimarykey", properties[i]["property-isprimarykey"]);
+      }
+
+      TemplateData.Add("properties", transformedProperties);
+   }
+   ```
+2. Register `MyHbsCSharpEntityTypeGenerator` in `ScaffoldingDesignTimeServices.ConfigureDesignTimeServices`.
+   ```csharp
+   services.AddSingleton<ICSharpEntityTypeGenerator, MyHbsCSharpEntityTypeGenerator>();
+   ```
+3. Update **CSharpEntityType/Partials/Properties.hbs** to add `property-isprimarykey`.
+   ```handlebars
+   {{#if property-isprimarykey}} // Primary Key{{/if}}
+   ```
+4. Run the `dotnet ef dbcontext scaffold` command from above.

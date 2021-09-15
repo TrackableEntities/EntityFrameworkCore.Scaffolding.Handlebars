@@ -139,7 +139,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         private string GetNamespaceForEntity(IEntityType entityType, string defaultNamespace)
         {
-            return $"{defaultNamespace}.{CSharpHelper.Namespace(entityType.GetSchema())}";
+            var schema = !string.IsNullOrEmpty(entityType.GetTableName())
+                ? entityType.GetSchema()
+                : entityType.GetViewSchema();
+            return $"{defaultNamespace}.{CSharpHelper.Namespace(schema)}";
         }
 
         /// <summary>

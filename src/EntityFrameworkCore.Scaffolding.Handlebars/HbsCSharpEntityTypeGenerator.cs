@@ -123,11 +123,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             TemplateData.Add("use-data-annotations", UseDataAnnotations);
 
-            GenerateImports(entityType, @namespace);
+            bool enableSchemaFolders = (_options?.Value?.EnableSchemaFolders).GetValueOrDefault();
+            GenerateImports(entityType, @namespace, enableSchemaFolders);
 
             // TODO: _sb.AppendLine("#nullable disable");
-            @namespace = _options?.Value?.EnableSchemaFolders == true
-                ? GetNamespaceForEntity(entityType, @namespace) : @namespace;
+            @namespace = GetNamespaceForEntity(entityType, @namespace, enableSchemaFolders);
 
             TemplateData.Add("namespace", @namespace);
 
@@ -137,12 +137,15 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             return output;
         }
 
-        private string GetNamespaceForEntity(IEntityType entityType, string defaultNamespace)
+        private string GetNamespaceForEntity(IEntityType entityType, string defaultNamespace, bool enableSchemaFolders)
         {
             var schema = !string.IsNullOrEmpty(entityType.GetTableName())
                 ? entityType.GetSchema()
                 : entityType.GetViewSchema();
-            return $"{defaultNamespace}.{CSharpHelper.Namespace(schema)}";
+            var @namespace = enableSchemaFolders
+                ? $"{defaultNamespace}.{CSharpHelper.Namespace(schema)}"
+                : defaultNamespace;
+            return @namespace;
         }
 
         /// <summary>
@@ -150,17 +153,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
         /// <param name="defaultNamespace">The namespace containing all other entity model namespaces.</param>
-        protected virtual void GenerateImports(IEntityType entityType, string defaultNamespace)
+        /// <param name="enableSchemaFolders">Enable schema folders.</param>
+        protected virtual void GenerateImports(IEntityType entityType, string defaultNamespace, bool enableSchemaFolders)
         {
             Check.NotNull(entityType, nameof(entityType));
 
             var imports = new List<Dictionary<string, object>>();
 
             var simpleNamespaces = entityType.GetProperties().SelectMany(p => p.ClrType.GetNamespaces());
-            var navigationNamespaces = entityType.GetNavigations().Select(x => GetNamespaceForEntity(x.TargetEntityType, defaultNamespace));
+            var navigationNamespaces = entityType.GetNavigations()
+                .Select(x => GetNamespaceForEntity(x.TargetEntityType, defaultNamespace, enableSchemaFolders));
             var allNamespaces = simpleNamespaces.Concat(navigationNamespaces);
             foreach (var ns in allNamespaces
-                .Where(ns => ns != "System" && ns != "System.Collections.Generic" && ns != GetNamespaceForEntity(entityType, defaultNamespace))
+                .Where(ns => ns != "System" && ns != "System.Collections.Generic"
+                    && ns != GetNamespaceForEntity(entityType, defaultNamespace, enableSchemaFolders))
                 .Distinct()
                 .OrderBy(x => x, new NamespaceComparer()))
             {

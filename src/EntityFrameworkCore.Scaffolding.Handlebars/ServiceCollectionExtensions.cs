@@ -7,6 +7,7 @@ using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using HandlebarsLib = HandlebarsDotNet.Handlebars;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.EntityFrameworkCore.Design
@@ -61,6 +62,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         public static IServiceCollection AddHandlebarsScaffolding(this IServiceCollection services,
             Action<HandlebarsScaffoldingOptions> configureOptions)
         {
+            HandlebarsLib.Configuration.NoEscape = true;
             var scaffoldingOptions = new HandlebarsScaffoldingOptions();
             if (configureOptions == null)
                 configureOptions = options => options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities;

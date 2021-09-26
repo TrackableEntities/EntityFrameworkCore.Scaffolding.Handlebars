@@ -38,9 +38,20 @@ using System.Collections.Generic;
 
 namespace FakeNamespace
 {
+    /// <summary>
+    /// 产品
+    /// </summary>
     public partial class Product
     {
+
+        /// <summary>
+        /// 编号
+        /// </summary>
         public int ProductId { get; set; }
+
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string ProductName { get; set; }
         public decimal? UnitPrice { get; set; }
         public bool Discontinued { get; set; }
@@ -100,12 +111,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FakeNamespace
 {
+    /// <summary>
+    /// 产品
+    /// </summary>
     [Table(""Product"")]
     [Index(nameof(CategoryId), Name = ""IX_Product_CategoryId"")]
     public partial class Product
     {
+
+        /// <summary>
+        /// 编号
+        /// </summary>
         [Key]
         public int ProductId { get; set; }
+
+        /// <summary>
+        /// 名称
+        /// </summary>
         [Required]
         [StringLength(40)]
         public string ProductName { get; set; }
@@ -159,9 +181,20 @@ using System.Collections.Generic;
 
 namespace FakeNamespace
 {
+    /// <summary>
+    /// 产品
+    /// </summary>
     public partial class Product
     {
+
+        /// <summary>
+        /// 编号
+        /// </summary>
         public int ProductId { get; set; } = default!;
+
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string ProductName { get; set; } = default!;
         public decimal? UnitPrice { get; set; }
         public bool Discontinued { get; set; } = default!;

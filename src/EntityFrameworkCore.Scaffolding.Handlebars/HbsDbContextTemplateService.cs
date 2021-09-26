@@ -56,6 +56,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             DbContextTemplateFiles.TryGetValue(Constants.DbContextTemplate, out TemplateFileInfo contextFile);
             var contextTemplateFile = FileService.RetrieveTemplateFileContents(
                 contextFile.RelativeDirectory, contextFile.FileName);
+            HandlebarsLib.Configuration.NoEscape = true;
             var contextTemplate = HandlebarsLib.Compile(contextTemplateFile);
             return contextTemplate;
         }

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
-using Microsoft.EntityFrameworkCore.SqlServer.Design.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Scaffolding.Handlebars.Tests.Fakes;
@@ -20,9 +20,8 @@ using Constants = Scaffolding.Handlebars.Tests.Helpers.Constants;
 namespace Scaffolding.Handlebars.Tests
 {
     [Collection("NorthwindDbContext")]
-    public partial class HbsCSharpScaffoldingGeneratorTests
+    public class HbsCSharpScaffoldingGeneratorTests : HbsScaffoldingGeneratorTests
     {
-        private NorthwindDbContextFixture Fixture { get; }
         private InputFile ContextClassTemplate { get; }
         private InputFile ContextImportsTemplate { get; }
         private InputFile ContextCtorTemplate { get; }
@@ -33,11 +32,8 @@ namespace Scaffolding.Handlebars.Tests
         private InputFile EntityCtorTemplate { get; }
         private InputFile EntityPropertiesTemplate { get; }
 
-        public HbsCSharpScaffoldingGeneratorTests(NorthwindDbContextFixture fixture)
+        public HbsCSharpScaffoldingGeneratorTests(NorthwindDbContextFixture fixture) : base(fixture, "ReferenceCSharpFiles")
         {
-            Fixture = fixture;
-            Fixture.Initialize(useInMemory: false);
-
             var projectRootDir = Path.Combine("..", "..", "..", "..", "..");
 
             var contextTemplatesVirtualPath =
@@ -117,7 +113,7 @@ namespace Scaffolding.Handlebars.Tests
         [InlineData(true, "en-US", false)]
         [InlineData(false, "tr-TR", false)]
         [InlineData(true, "tr-TR", false)]
-        public void WriteCode_Should_Generate_Context_File(bool useDataAnnotations, string culture, bool suppressOnConfiguring)
+        public async Task WriteCode_Should_Generate_Context_File(bool useDataAnnotations, string culture, bool suppressOnConfiguring)
         {
             // Arrange
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
@@ -126,7 +122,7 @@ namespace Scaffolding.Handlebars.Tests
 
             // Act
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -142,17 +138,10 @@ namespace Scaffolding.Handlebars.Tests
 
             // Assert
             var files = GetGeneratedFiles(model, options);
-            object expectedContext;
-            expectedContext = useDataAnnotations
-                ? ExpectedContextsWithAnnotations.ContextClass
-                : ExpectedContexts.ContextClass;
-            if (suppressOnConfiguring)
-            {
-                expectedContext = ExpectedContextsSupressOnConfiguring.ContextClass;
-            }
+            Assert.Single(files);
             var context = files[Constants.Files.CSharpFiles.DbContextFile];
 
-            Assert.Equal(expectedContext, context);
+            await VerifyContext(context, useDataAnnotations, suppressOnConfiguring);
         }
 
         [Theory]
@@ -160,7 +149,7 @@ namespace Scaffolding.Handlebars.Tests
         [InlineData(true, "en-US")]
         [InlineData(false, "tr-TR")]
         [InlineData(true, "tr-TR")]
-        public void WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations, string culture)
+        public async Task WriteCode_Should_Generate_Entity_Files(bool useDataAnnotations, string culture)
         {
             // Arrange
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
@@ -169,7 +158,7 @@ namespace Scaffolding.Handlebars.Tests
 
             // Act
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -184,25 +173,18 @@ namespace Scaffolding.Handlebars.Tests
 
             // Assert
             var files = GetGeneratedFiles(model, options);
+            Assert.Equal(2, files.Count);
             var category = files[Constants.Files.CSharpFiles.CategoryFile];
             var product = files[Constants.Files.CSharpFiles.ProductFile];
 
-            object expectedCategory;
-            object expectedProduct;
-            expectedCategory = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.CategoryClass
-                : ExpectedEntities.CategoryClass;
-            expectedProduct = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.ProductClass
-                : ExpectedEntities.ProductClass;
-            Assert.Equal(expectedCategory, category);
-            Assert.Equal(expectedProduct, product);
+            await VerifyCategory(category, useDataAnnotations);
+            await VerifyProduct(product, useDataAnnotations);
         }
 
         [Theory]
         [InlineData("en-US")]
         [InlineData("tr-TR")]
-        public void WriteCode_Should_Generate_Entities_With_Nullable_Navigation_When_Configured(string culture)
+        public async Task WriteCode_Should_Generate_Entities_With_Nullable_Navigation_When_Configured(string culture)
         {
             // Arrange
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
@@ -214,7 +196,7 @@ namespace Scaffolding.Handlebars.Tests
 
             // Act
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -229,15 +211,12 @@ namespace Scaffolding.Handlebars.Tests
 
             // Assert
             var files = GetGeneratedFiles(model, revEngOptions);
+            Assert.Equal(2, files.Count);
             var category = files[Constants.Files.CSharpFiles.CategoryFile];
             var product = files[Constants.Files.CSharpFiles.ProductFile];
 
-            object expectedCategory;
-            object expectedProduct;
-            expectedCategory = ExpectedEntitiesWithNullableNavigation.CategoryClass;
-            expectedProduct = ExpectedEntitiesWithNullableNavigation.ProductClass;
-            Assert.Equal(expectedCategory, category);
-            Assert.Equal(expectedProduct, product);
+            await VerifyCategory(category, useDataAnnotations: false, nullableReferenceTypes: true);
+            await VerifyProduct(product, useDataAnnotations: false, nullableReferenceTypes: true);
         }
 
         [Theory]
@@ -245,7 +224,7 @@ namespace Scaffolding.Handlebars.Tests
         [InlineData(true, "en-US")]
         [InlineData(false, "tr-TR")]
         [InlineData(true, "tr-TR")]
-        public void WriteCode_Should_Generate_Context_and_Entity_Files(bool useDataAnnotations, string culture)
+        public async Task WriteCode_Should_Generate_Context_and_Entity_Files(bool useDataAnnotations, string culture)
         {
             // Arrange
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
@@ -254,7 +233,7 @@ namespace Scaffolding.Handlebars.Tests
 
             // Act
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -269,25 +248,14 @@ namespace Scaffolding.Handlebars.Tests
 
             // Assert
             var files = GetGeneratedFiles(model, options);
-            object expectedContext;
-            object expectedCategory;
-            object expectedProduct;
-            expectedContext = useDataAnnotations
-                ? ExpectedContextsWithAnnotations.ContextClass
-                : ExpectedContexts.ContextClass;
-            expectedCategory = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.CategoryClass
-                : ExpectedEntities.CategoryClass;
-            expectedProduct = useDataAnnotations
-                ? ExpectedEntitiesWithAnnotations.ProductClass
-                : ExpectedEntities.ProductClass;
+            Assert.Equal(3, files.Count);
             var context = files[Constants.Files.CSharpFiles.DbContextFile];
             var category = files[Constants.Files.CSharpFiles.CategoryFile];
             var product = files[Constants.Files.CSharpFiles.ProductFile];
 
-            Assert.Equal(expectedContext, context);
-            Assert.Equal(expectedCategory, category);
-            Assert.Equal(expectedProduct, product);
+            await VerifyContext(context, useDataAnnotations);
+            await VerifyCategory(category, useDataAnnotations);
+            await VerifyProduct(product, useDataAnnotations);
         }
 
         [Fact]
@@ -297,7 +265,7 @@ namespace Scaffolding.Handlebars.Tests
             // Arrange
             var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextOnly);
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -331,7 +299,7 @@ namespace Scaffolding.Handlebars.Tests
             // Arrange
             var scaffolder = CreateScaffolder(ReverseEngineerOptions.EntitiesOnly);
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -366,7 +334,7 @@ namespace Scaffolding.Handlebars.Tests
             var filenamePrefix = "prefix.";
             var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities, filenamePrefix);
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -400,7 +368,7 @@ namespace Scaffolding.Handlebars.Tests
             // Arrange
             var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities);
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -504,9 +472,7 @@ namespace Scaffolding.Handlebars.Tests
 
             services.Configure(configureOptions);
 
-#pragma warning disable EF1001 // Internal EF Core API usage.
-            new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);
-#pragma warning restore EF1001 // Internal EF Core API usage.
+            Fixture.ConfigureDesignTimeServices(services);
             var scaffolder = services
                 .BuildServiceProvider()
                 .GetRequiredService<IReverseEngineerScaffolder>();

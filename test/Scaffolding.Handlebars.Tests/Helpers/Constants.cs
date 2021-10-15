@@ -4,7 +4,7 @@
     {
         public static class Connections
         {
-            public const string SqLiteConnection = "DataSource=:memory:";
+            public const string SqLiteConnection = "DataSource=NorthwindTestDb.sqlite3";
             public const string SqlServerConnection = @"Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindTestDb; Integrated Security=True";
         }
 

@@ -1,0 +1,11 @@
+﻿import { Category } from './Category';
+
+export interface Product {
+    productId: number;
+    productName: string;
+    unitPrice: any;
+    discontinued: number;
+    rowVersion: any;
+    categoryId: number;
+    category: Category;
+}

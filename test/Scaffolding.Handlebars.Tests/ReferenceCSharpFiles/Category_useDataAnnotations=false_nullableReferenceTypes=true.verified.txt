@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace FakeNamespace
+{
+    public partial class Category
+    {
+        public Category()
+        {
+            Products = new HashSet<Product>();
+        }
+
+        public long CategoryId { get; set; } = default!;
+        public string CategoryName { get; set; } = default!;
+
+        public virtual ICollection<Product> Products { get; set; } = default!;
+    }
+}

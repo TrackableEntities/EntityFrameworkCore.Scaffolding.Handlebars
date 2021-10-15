@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace FakeNamespace
+{
+    public partial class Product
+    {
+        public long ProductId { get; set; } = default!;
+        public string ProductName { get; set; } = default!;
+        public byte[]? UnitPrice { get; set; }
+        public long Discontinued { get; set; } = default!;
+        public byte[]? RowVersion { get; set; }
+        public long? CategoryId { get; set; }
+
+        public virtual Category? Category { get; set; }
+    }
+}

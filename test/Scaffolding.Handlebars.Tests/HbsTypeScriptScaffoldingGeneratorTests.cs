@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
-using Microsoft.EntityFrameworkCore.SqlServer.Design.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Scaffolding.Handlebars.Tests.Fakes;
@@ -18,9 +18,8 @@ using Constants = Scaffolding.Handlebars.Tests.Helpers.Constants;
 namespace Scaffolding.Handlebars.Tests
 {
     [Collection("NorthwindDbContext")]
-    public partial class HbsTypeScriptScaffoldingGeneratorTests
+    public class HbsTypeScriptScaffoldingGeneratorTests : HbsScaffoldingGeneratorTests
     {
-        private NorthwindDbContextFixture Fixture { get; }
         private InputFile ContextClassTemplate { get; }
         private InputFile ContextImportsTemplate { get; }
         private InputFile ContextCtorTemplate { get; }
@@ -31,11 +30,8 @@ namespace Scaffolding.Handlebars.Tests
         private InputFile EntityCtorTemplate { get; }
         private InputFile EntityPropertiesTemplate { get; }
 
-        public HbsTypeScriptScaffoldingGeneratorTests(NorthwindDbContextFixture fixture)
+        public HbsTypeScriptScaffoldingGeneratorTests(NorthwindDbContextFixture fixture) : base(fixture, "ReferenceTypeScriptFiles")
         {
-            Fixture = fixture;
-            Fixture.Initialize(useInMemory: false);
-
             var projectRootDir = Path.Combine("..", "..", "..", "..", "..");
 
             var contextTemplatesVirtualPath =
@@ -110,7 +106,7 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         [Fact]
-        public void WriteCode_Should_Generate_Context_File()
+        public async Task WriteCode_Should_Generate_Context_File()
         {
             // Arrange
             var options = ReverseEngineerOptions.DbContextOnly;
@@ -118,7 +114,7 @@ namespace Scaffolding.Handlebars.Tests
 
             // Act
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -133,15 +129,15 @@ namespace Scaffolding.Handlebars.Tests
 
             // Assert
             var files = GetGeneratedFiles(model, options);
-            object expectedContext = ExpectedContexts.ContextClass;
+            Assert.Single(files);
 
             var context = files[Constants.Files.TypeScriptFiles.DbContextFile];
 
-            Assert.Equal(expectedContext, context);
+            await VerifyContext(context, useDataAnnotations: false);
         }
 
         [Fact]
-        public void WriteCode_Should_Generate_Entity_Files()
+        public async Task WriteCode_Should_Generate_Entity_Files()
         {
             // Arrange
             var options = ReverseEngineerOptions.EntitiesOnly;
@@ -149,7 +145,7 @@ namespace Scaffolding.Handlebars.Tests
 
             // Act
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -164,18 +160,16 @@ namespace Scaffolding.Handlebars.Tests
 
             // Assert
             var files = GetGeneratedFiles(model, options);
+            Assert.Equal(2, files.Count);
             var category = files[Constants.Files.TypeScriptFiles.CategoryFile];
             var product = files[Constants.Files.TypeScriptFiles.ProductFile];
 
-            object expectedCategory = ExpectedEntities.CategoryClass;
-            object expectedProduct = ExpectedEntities.ProductClass;
-
-            Assert.Equal(expectedCategory, category);
-            Assert.Equal(expectedProduct, product);
+            await VerifyCategory(category, useDataAnnotations: false);
+            await VerifyProduct(product, useDataAnnotations: false);
         }
 
         [Fact]
-        public void WriteCode_Should_Generate_Context_and_Entity_Files()
+        public async Task WriteCode_Should_Generate_Context_and_Entity_Files()
         {
             // Arrange
             var options = ReverseEngineerOptions.DbContextAndEntities;
@@ -183,7 +177,7 @@ namespace Scaffolding.Handlebars.Tests
 
             // Act
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -196,21 +190,16 @@ namespace Scaffolding.Handlebars.Tests
                     Language = "C#",
                 });
 
-            // Act
-            Dictionary<string, string> files = GetGeneratedFiles(model, options);
-
             // Assert
-            object expectedContext = ExpectedContexts.ContextClass;
-            object expectedCategory = ExpectedEntities.CategoryClass;
-            object expectedProduct = ExpectedEntities.ProductClass;
-
+            Dictionary<string, string> files = GetGeneratedFiles(model, options);
+            Assert.Equal(3, files.Count);
             var context = files[Constants.Files.TypeScriptFiles.DbContextFile];
             var category = files[Constants.Files.TypeScriptFiles.CategoryFile];
             var product = files[Constants.Files.TypeScriptFiles.ProductFile];
 
-            Assert.Equal(expectedContext, context);
-            Assert.Equal(expectedCategory, category);
-            Assert.Equal(expectedProduct, product);
+            await VerifyContext(context, useDataAnnotations: false);
+            await VerifyCategory(category, useDataAnnotations: false);
+            await VerifyProduct(product, useDataAnnotations: false);
         }
 
         [Fact]
@@ -220,7 +209,7 @@ namespace Scaffolding.Handlebars.Tests
             // Arrange
             var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextOnly);
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -254,7 +243,7 @@ namespace Scaffolding.Handlebars.Tests
             // Arrange
             var scaffolder = CreateScaffolder(ReverseEngineerOptions.EntitiesOnly);
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -289,7 +278,7 @@ namespace Scaffolding.Handlebars.Tests
             var filenamePrefix = "prefix.";
             var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities, filenamePrefix);
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -323,7 +312,7 @@ namespace Scaffolding.Handlebars.Tests
             // Arrange
             var scaffolder = CreateScaffolder(ReverseEngineerOptions.DbContextAndEntities);
             var model = scaffolder.ScaffoldModel(
-                connectionString: Constants.Connections.SqlServerConnection,
+                connectionString: Fixture.ConnectionString,
                 databaseOptions: new DatabaseModelFactoryOptions(),
                 modelOptions: new ModelReverseEngineerOptions(),
                 codeOptions: new ModelCodeGenerationOptions
@@ -416,7 +405,7 @@ namespace Scaffolding.Handlebars.Tests
                     .AddSingleton<IEntityTypeTransformationService>(y => new HbsEntityTypeTransformationService(entityFileNameTransformer: entityName => $"{filenamePrefix}{entityName}"));
             }
 
-            new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);
+            Fixture.ConfigureDesignTimeServices(services);
             var scaffolder = services
                 .BuildServiceProvider()
                 .GetRequiredService<IReverseEngineerScaffolder>();

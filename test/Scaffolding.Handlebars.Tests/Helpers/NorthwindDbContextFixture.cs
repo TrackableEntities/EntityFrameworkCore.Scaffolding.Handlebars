@@ -1,51 +1,55 @@
 ﻿using System;
-using System.Data;
-using System.Data.Common;
-using Microsoft.Data.Sqlite;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Sqlite.Design.Internal;
+using Microsoft.EntityFrameworkCore.SqlServer.Design.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Scaffolding.Handlebars.Tests.Contexts;
 
 namespace Scaffolding.Handlebars.Tests.Helpers
 {
-    public class NorthwindDbContextFixture : IDisposable
+    public class NorthwindDbContextFixture
     {
-        private NorthwindDbContext _context;
-        private DbConnection _connection;
-        private DbContextOptions<NorthwindDbContext> _options;
-
-        public void Initialize(bool useInMemory = true, Action seedData = null)
+        public NorthwindDbContextFixture()
         {
-            if (useInMemory)
+            var userSqlServerString = Environment.GetEnvironmentVariable("Scaffolding.Handlebars.Tests.SqlServer");
+            var useSqlServer = userSqlServerString != null && bool.TryParse(userSqlServerString, out var result) && result;
+
+            var dbContextOptionsBuilder = new DbContextOptionsBuilder<NorthwindDbContext>();
+            if (useSqlServer)
             {
-                // In-memory database only exists while the connection is open
-                _connection = new SqliteConnection(Constants.Connections.SqLiteConnection);
-                _connection.Open();
-                _options = new DbContextOptionsBuilder<NorthwindDbContext>()
-                    .UseSqlite(_connection)
-                    .Options;
+                dbContextOptionsBuilder.UseSqlServer(Constants.Connections.SqlServerConnection);
             }
             else
             {
-                _options = new DbContextOptionsBuilder<NorthwindDbContext>()
-                    .UseSqlServer(Constants.Connections.SqlServerConnection)
-                    .Options;
+                dbContextOptionsBuilder.UseSqlite(Constants.Connections.SqLiteConnection);
             }
-            _context = new NorthwindDbContext(_options);
-            _context.Database.EnsureCreated(); // If login error, manually create NorthwindTest database
-            seedData?.Invoke();
+
+            Context = new NorthwindDbContext(dbContextOptionsBuilder.Options);
+            Context.Database.EnsureCreated(); // If login error, manually create NorthwindTest database
         }
 
-        public NorthwindDbContext GetContext()
-        {
-            if (_context == null)
-                throw new InvalidOperationException("You must first call Initialize before getting the context.");
-            return _context;
-        }
+        public NorthwindDbContext Context { get; }
 
-        public void Dispose()
+        public string ConnectionString => Context.Database.GetConnectionString();
+
+        public string ProviderName => Context.Database.ProviderName;
+
+        [SuppressMessage("", "EF1001:internal API that supports the Entity Framework Core infrastructure")]
+        public void ConfigureDesignTimeServices(IServiceCollection services)
         {
-            if (_connection != null && _connection.State != ConnectionState.Closed)
-                _connection.Close();
+            if (Context.Database.IsSqlServer())
+            {
+                new SqlServerDesignTimeServices().ConfigureDesignTimeServices(services);
+            }
+            else if (Context.Database.IsSqlite())
+            {
+                new SqliteDesignTimeServices().ConfigureDesignTimeServices(services);
+            }
+            else
+            {
+                throw new NotSupportedException("Only SqlServer and Sqlite are currently supported.");
+            }
         }
     }
 }

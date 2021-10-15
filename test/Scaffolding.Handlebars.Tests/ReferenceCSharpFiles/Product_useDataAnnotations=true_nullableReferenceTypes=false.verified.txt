@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
+namespace FakeNamespace
+{
+    [Table("Product")]
+    [Index(nameof(CategoryId), Name = "IX_Product_CategoryId")]
+    public partial class Product
+    {
+        [Key]
+        public long ProductId { get; set; }
+        [Required]
+        public string ProductName { get; set; }
+        [Column(TypeName = "money")]
+        public byte[] UnitPrice { get; set; }
+        public long Discontinued { get; set; }
+        [Column(TypeName = "timestamp")]
+        public byte[] RowVersion { get; set; }
+        public long? CategoryId { get; set; }
+
+        [ForeignKey(nameof(CategoryId))]
+        [InverseProperty("Products")]
+        public virtual Category Category { get; set; }
+    }
+}

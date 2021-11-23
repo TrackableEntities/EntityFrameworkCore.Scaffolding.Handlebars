@@ -637,17 +637,19 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     $".{nameof(PropertyBuilder.IsUnicode)}({(property.IsUnicode() == false ? "false" : "")})");
             }
 
-            var defaultValue = property.GetDefaultValue();
-            if (defaultValue == DBNull.Value)
+            if (property.TryGetDefaultValue(out var defaultValue))
             {
-                lines.Add($".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}()");
-                annotations.Remove(RelationalAnnotationNames.DefaultValue);
-            }
-            else if (defaultValue != null)
-            {
-                lines.Add(
-                    $".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}({CSharpHelper.UnknownLiteral(defaultValue)})");
-                annotations.Remove(RelationalAnnotationNames.DefaultValue);
+                if (defaultValue == DBNull.Value)
+                {
+                    lines.Add($".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}()");
+                    annotations.Remove(RelationalAnnotationNames.DefaultValue);
+                }
+                else if (defaultValue != null)
+                {
+                    lines.Add(
+                        $".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}({CSharpHelper.UnknownLiteral(defaultValue)})");
+                    annotations.Remove(RelationalAnnotationNames.DefaultValue);
+                }
             }
 
             var valueGenerated = property.ValueGenerated;

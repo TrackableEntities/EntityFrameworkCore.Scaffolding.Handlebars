@@ -38,8 +38,6 @@ namespace FakeNamespace
 
                 entity.HasComment(""A category of products"");
 
-                entity.Property(e => e.CategoryId).HasDefaultValue(0);
-
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
                     .HasMaxLength(15)
@@ -51,10 +49,6 @@ namespace FakeNamespace
                 entity.ToTable(""Product"");
 
                 entity.HasIndex(e => e.CategoryId);
-
-                entity.Property(e => e.ProductId).HasDefaultValue(0);
-
-                entity.Property(e => e.Discontinued).HasDefaultValue(false);
 
                 entity.Property(e => e.ProductName)
                     .IsRequired()
@@ -106,8 +100,6 @@ namespace FakeNamespace
 
                 entity.HasComment(""A category of products"");
 
-                entity.Property(e => e.CategoryId).HasDefaultValue(0);
-
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
                     .HasMaxLength(15)
@@ -119,10 +111,6 @@ namespace FakeNamespace
                 entity.ToTable(""Product"");
 
                 entity.HasIndex(e => e.CategoryId);
-
-                entity.Property(e => e.ProductId).HasDefaultValue(0);
-
-                entity.Property(e => e.Discontinued).HasDefaultValue(false);
 
                 entity.Property(e => e.ProductName)
                     .IsRequired()
@@ -181,17 +169,11 @@ namespace FakeNamespace
             {
                 entity.HasComment(""A category of products"");
 
-                entity.Property(e => e.CategoryId).HasDefaultValue(0);
-
                 entity.Property(e => e.CategoryName).HasComment(""The name of a category"");
             });
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.Property(e => e.ProductId).HasDefaultValue(0);
-
-                entity.Property(e => e.Discontinued).HasDefaultValue(false);
-
                 entity.Property(e => e.RowVersion)
                     .IsRowVersion()
                     .IsConcurrencyToken();

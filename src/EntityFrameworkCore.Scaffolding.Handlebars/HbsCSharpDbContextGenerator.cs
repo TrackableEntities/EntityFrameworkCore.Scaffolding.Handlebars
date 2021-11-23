@@ -63,8 +63,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         protected Dictionary<string, object> TemplateData { get; set; }
 
+        /// <summary>
+        /// Indicates if data annotations should be used.
+        /// </summary>
         protected bool UseDataAnnotations { get; set; }
 
+        /// <summary>
+        /// Indicates if nullable reference types should be used.
+        /// </summary>
         protected bool UseNullableReferenceTypes { get; set; }
 
         private bool _entityTypeBuilderInitialized;
@@ -79,7 +85,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="options">Handlebars scaffolding options.</param>
         public HbsCSharpDbContextGenerator(
-            [NotNull] IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator, 
+            [NotNull] IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator,
             [NotNull] IAnnotationCodeGenerator annotationCodeGenerator,
             [NotNull] IDbContextTemplateService dbContextTemplateService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
@@ -290,7 +296,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     { "set-property-type", transformedEntityTypeName },
                     { "set-property-name", entityType.GetDbSetName() },
-                    { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
+                    { "nullable-reference-types", UseNullableReferenceTypes }
                 });
             }
 
@@ -351,7 +357,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var schema = !string.IsNullOrEmpty(entityType.GetTableName())
                 ? entityType.GetSchema()
                 : entityType.GetViewSchema();
-            
+
             return _options?.Value?.EnableSchemaFolders == true
                 ? $"{schema}.{entityTypeName}" : entityTypeName;
         }

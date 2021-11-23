@@ -74,8 +74,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="cSharpHelper">CSharp helper.</param>
         /// <param name="options">Handlebar scaffolding options.</param>
         public HbsCSharpModelGenerator(
-            [NotNull] ModelCodeGeneratorDependencies dependencies, 
-            [NotNull] ICSharpDbContextGenerator cSharpDbContextGenerator, 
+            [NotNull] ModelCodeGeneratorDependencies dependencies,
+            [NotNull] ICSharpDbContextGenerator cSharpDbContextGenerator,
             [NotNull] ICSharpEntityTypeGenerator cSharpEntityTypeGenerator,
             [NotNull] IHbsHelperService handlebarsHelperService,
             [NotNull] IHbsBlockHelperService handlebarsBlockHelperService,
@@ -118,9 +118,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             string generatedCode;
 
-            var useNullableReferenceTypes = options.UseNullableReferenceTypes
-                || _options?.Value?.EnableNullableReferenceTypes == true;
-
             if (!(CSharpDbContextGenerator is NullCSharpDbContextGenerator))
             {
                 generatedCode = CSharpDbContextGenerator.WriteCode(
@@ -130,7 +127,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     options.ContextNamespace,
                     options.ModelNamespace,
                     options.UseDataAnnotations,
-                    useNullableReferenceTypes,
+                    options.UseNullableReferenceTypes,
                     options.SuppressConnectionStringWarning,
                     options.SuppressOnConfiguring);
 
@@ -156,7 +153,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         entityType,
                         options.ModelNamespace,
                         options.UseDataAnnotations,
-                        useNullableReferenceTypes);
+                        options.UseNullableReferenceTypes);
 
                     var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.Name);
                     var schema = !string.IsNullOrEmpty(entityType.GetTableName())
@@ -168,8 +165,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     resultingFiles.AdditionalFiles.Add(
                         new ScaffoldedFile
                         {
-                            Path = entityTypeFileName, 
-                            Code = generatedCode 
+                            Path = entityTypeFileName,
+                            Code = generatedCode
                         });
                 }
             }

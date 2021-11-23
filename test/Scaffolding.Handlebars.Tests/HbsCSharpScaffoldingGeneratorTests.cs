@@ -207,10 +207,7 @@ namespace Scaffolding.Handlebars.Tests
             // Arrange
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
             var revEngOptions = ReverseEngineerOptions.EntitiesOnly;
-            var scaffolder = CreateScaffolder(revEngOptions, options =>
-            {
-                options.EnableNullableReferenceTypes = true;
-            });
+            var scaffolder = CreateScaffolder(revEngOptions);
 
             // Act
             var model = scaffolder.ScaffoldModel(
@@ -224,6 +221,7 @@ namespace Scaffolding.Handlebars.Tests
                     ContextName = Constants.Parameters.ContextName,
                     ContextDir = Constants.Parameters.ProjectPath,
                     UseDataAnnotations = false,
+                    UseNullableReferenceTypes = true,
                     Language = "C#",
                 });
 

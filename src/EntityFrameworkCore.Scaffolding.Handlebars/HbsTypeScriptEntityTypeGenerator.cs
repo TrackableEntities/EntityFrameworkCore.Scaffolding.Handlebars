@@ -49,6 +49,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         protected virtual IEntityTypeTransformationService EntityTypeTransformationService { get; }
 
         /// <summary>
+        /// Indicates if nullable reference types should be used.
+        /// </summary>
+        protected bool UseNullableReferenceTypes { get; private set; }
+
+        /// <summary>
         /// Constructor for the Handlebars entity types generator.
         /// </summary>
         /// <param name="annotationCodeGenerator">Annotation code generator.</param>
@@ -79,12 +84,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
         /// <param name="namespace">Entity type namespace.</param>
         /// <param name="useDataAnnotations">If true use data annotations.</param>
+        /// <param name="useNullableReferenceTypes">If true use nullable reference types.</param>
         /// <returns>Generated entity type.</returns>
         public override string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations, bool useNullableReferenceTypes)
         {
             Check.NotNull(entityType, nameof(entityType));
             Check.NotNull(@namespace, nameof(@namespace));
 
+            UseNullableReferenceTypes = useNullableReferenceTypes;
             TemplateData = new Dictionary<string, object>();
             GenerateImports(entityType);
             GenerateClass(entityType);
@@ -183,7 +190,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-annotations",  new List<Dictionary<string, object>>() },
                     { "property-comment", property.GetComment() },
                     { "property-isnullable", property.IsNullable },
-                    { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
+                    { "nullable-reference-types", UseNullableReferenceTypes }
                 });
             }
 
@@ -216,7 +223,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         { "nav-property-type", navigation.TargetEntityType.Name },
                         { "nav-property-name", TypeScriptHelper.ToCamelCase(navigation.Name) },
                         { "nav-property-annotations", new List<Dictionary<string, object>>() },
-                        { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
+                        { "nullable-reference-types",  UseNullableReferenceTypes }
                     });
                 }
 

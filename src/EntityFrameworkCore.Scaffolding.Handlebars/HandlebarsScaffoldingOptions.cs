@@ -26,7 +26,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public LanguageOptions LanguageOptions { get; set; }
 
         /// <summary>
-        /// Gets or sets tables that should be excluded from; can include schema. 
+        /// Gets or sets tables that should be excluded from; can include schema.
         /// </summary>
         public List<string> ExcludedTables { get; set; }
 
@@ -37,7 +37,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         /// <summary>
         /// Gets or sets an assembly to read embedded templates from (optional).
-        /// </summary>  
+        /// </summary>
         public Assembly EmbeddedTemplatesAssembly { get; set; }
 
         /// <summary>
@@ -49,13 +49,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Gets or sets if schema folders are created for table entity classes as per db schema naming.
         /// </summary>
         public bool EnableSchemaFolders { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether entity properties are declared and instantiated in the C# 8.0+ nullable reference types style (optional).
-        /// https://docs.microsoft.com/en-us/dotnet/csharp/nullable-references
-        /// https://docs.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
-        /// </summary>
-        public bool EnableNullableReferenceTypes { get; set; }
 
         /// <summary>
         /// Gets or sets whether table and column descriptions generate XML comments.

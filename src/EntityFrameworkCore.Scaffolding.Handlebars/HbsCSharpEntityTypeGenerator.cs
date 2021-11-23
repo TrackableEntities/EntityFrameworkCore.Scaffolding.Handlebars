@@ -112,7 +112,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="useDataAnnotations">If true use data annotations.</param>
         /// <param name="useNullableReferenceTypes">If true use nullable reference types.</param>
         /// <returns>Generated entity type.</returns>
-        public override string WriteCode(IEntityType entityType, string? @namespace, bool useDataAnnotations, bool useNullableReferenceTypes)
+        public override string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations, bool useNullableReferenceTypes)
         {
             Check.NotNull(entityType, nameof(entityType));
 
@@ -198,7 +198,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
 
             var transformedEntityName = EntityTypeTransformationService.TransformTypeEntityName(entityType.Name);
-            
+
             if (_options?.Value?.GenerateComments == true)
                 TemplateData.Add("comment", GenerateComment(entityType.GetComment(), 1));
             TemplateData.Add("class", transformedEntityName);
@@ -257,9 +257,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     GeneratePropertyDataAnnotations(property);
                 }
-                
+
                 var propertyType = CSharpHelper.Reference(property.ClrType);
-                if (UseNullableReferenceTypes 
+                if (UseNullableReferenceTypes
                     && property.IsNullable
                     && !propertyType.EndsWith("?")) {
                         propertyType += "?";
@@ -642,7 +642,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     inversePropertyAttribute.AddParameter(
                         !navigation.DeclaringEntityType.GetPropertiesAndNavigations().Any(
                                 m => m.Name == inverseNavigation.DeclaringEntityType.Name ||
-                                    EntityTypeTransformationService.TransformNavPropertyName(m.Name, navigation.TargetEntityType.Name) 
+                                    EntityTypeTransformationService.TransformNavPropertyName(m.Name, navigation.TargetEntityType.Name)
                                         == EntityTypeTransformationService.TransformNavPropertyName(inverseNavigation.DeclaringEntityType.Name, navigation.TargetEntityType.Name))
                             ? $"nameof({EntityTypeTransformationService.TransformTypeEntityName(inverseNavigation.DeclaringType.Name)}.{propertyName})"
                             : CSharpHelper.Literal(propertyName));
@@ -704,7 +704,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         //            inversePropertyAttribute.AddParameter(
         //                !navigation.DeclaringEntityType.GetPropertiesAndNavigations().Any(
         //                        m => m.Name == inverseNavigation.DeclaringEntityType.Name ||
-        //                            EntityTypeTransformationService.TransformNavPropertyName(m.Name, navigation.TargetEntityType.Name) 
+        //                            EntityTypeTransformationService.TransformNavPropertyName(m.Name, navigation.TargetEntityType.Name)
         //                                == EntityTypeTransformationService.TransformNavPropertyName(inverseNavigation.DeclaringEntityType.Name, navigation.TargetEntityType.Name))
         //                    ? $"nameof({EntityTypeTransformationService.TransformTypeEntityName(inverseNavigation.DeclaringType.Name)}.{propertyName})"
         //                    : CSharpHelper.Literal(propertyName));

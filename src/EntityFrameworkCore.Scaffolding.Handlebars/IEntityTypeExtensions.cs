@@ -26,12 +26,34 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 var excludedTables = options.ExcludedTables.Select(t => new TableAndSchema(t)).ToList();
                 navigations = navigations.Where(n =>
                         !excludedTables.Any(e =>
-                            (string.IsNullOrEmpty(e.Schema) || 
+                            (string.IsNullOrEmpty(e.Schema) ||
                              string.Equals(n.ForeignKey.GetRelatedEntityType(n.DeclaringEntityType).GetSchema(), e.Schema, StringComparison.OrdinalIgnoreCase))
                             && string.Equals(n.ForeignKey.GetRelatedEntityType(n.DeclaringEntityType).GetTableName(), e.Table, StringComparison.OrdinalIgnoreCase)))
                         .ToList();
             }
 
+            return navigations;
+        }
+
+        /// <summary>
+        /// Gets all entity type skip navigations that are to be used in scaffolding.
+        /// </summary>
+        /// <param name="entityType">Represents an entity type in an IModel.</param>
+        /// <param name="options">Scaffolding options to use in determining entity types.</param>
+        /// <returns>Filtered set of navigations for scaffolding.</returns>
+        public static IEnumerable<ISkipNavigation> GetScaffoldSkipNavigations(this IEntityType entityType, HandlebarsScaffoldingOptions options)
+        {
+            var navigations = entityType.GetSkipNavigations();
+            if (options.ExcludedTables != null && options.ExcludedTables.Any())
+            {
+                var excludedTables = options.ExcludedTables.Select(t => new TableAndSchema(t)).ToList();
+                navigations = navigations.Where(n =>
+                    !excludedTables.Any(e =>
+                        (string.IsNullOrEmpty(e.Schema) ||
+                         string.Equals(n.ForeignKey.GetRelatedEntityType(n.DeclaringEntityType).GetSchema(), e.Schema, StringComparison.OrdinalIgnoreCase))
+                         && string.Equals(n.ForeignKey.GetRelatedEntityType(n.DeclaringEntityType).GetTableName(), e.Table, StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+            }
             return navigations;
         }
 

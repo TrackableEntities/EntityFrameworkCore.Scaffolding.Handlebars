@@ -206,7 +206,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             GenerateConstructor(entityType);
             GenerateProperties(entityType);
             GenerateNavigationProperties(entityType);
-            //GenerateSkipNavigationProperties(entityType);
+            GenerateSkipNavigationProperties(entityType);
         }
 
         /// <summary>
@@ -218,6 +218,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             Check.NotNull(entityType, nameof(entityType));
 
             var collectionNavigations = entityType.GetScaffoldNavigations(_options.Value)
+                .Cast<INavigationBase>()
+                .Concat(entityType.GetScaffoldSkipNavigations(_options.Value))
                 .Where(n => n.IsCollection).ToList();
 
             if (collectionNavigations.Count > 0)
@@ -364,6 +366,55 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(navProperties);
 
                 TemplateData.Add("nav-properties", transformedNavProperties);
+            }
+        }
+
+        /// <summary>
+        /// Generate entity type skip navigation properties.
+        /// </summary>
+        /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
+        protected override void GenerateSkipNavigationProperties(IEntityType entityType)
+        {
+            Check.NotNull(entityType, nameof(entityType));
+
+            var skipNavigations = entityType.GetScaffoldSkipNavigations(_options.Value).ToList();
+
+            if (skipNavigations.Count > 0)
+            {
+                var navProperties = new List<Dictionary<string, object>>();
+                foreach (var navigation in skipNavigations)
+                {
+                    NavPropertyAnnotations = new List<Dictionary<string, object>>();
+
+                    if (UseDataAnnotations)
+                    {
+                        GenerateNavigationDataAnnotations(navigation);
+                    }
+
+                    var propertyIsNullable = !navigation.IsCollection && (
+                        navigation.IsOnDependent
+                        ? !navigation.ForeignKey.IsRequired
+                        : !navigation.ForeignKey.IsRequiredDependent
+                    );
+                    var navPropertyType = navigation.TargetEntityType.Name;
+                    if (UseNullableReferenceTypes &&
+                        !navPropertyType.EndsWith("?") &&
+                        propertyIsNullable) {
+                        navPropertyType += "?";
+                    }
+                    navProperties.Add(new Dictionary<string, object>
+                    {
+                        { "nav-property-collection", navigation.IsCollection },
+                        { "nav-property-type", navPropertyType },
+                        { "nav-property-name", navigation.Name },
+                        { "nav-property-annotations", NavPropertyAnnotations },
+                        { "nav-property-isnullable", propertyIsNullable },
+                        { "nullable-reference-types", UseNullableReferenceTypes }
+                    });
+                }
+
+                var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(navProperties);
+                TemplateData.Add("skip-nav-properties", transformedNavProperties);
             }
         }
 
@@ -658,67 +709,67 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
-        //private void GenerateNavigationDataAnnotations(ISkipNavigation navigation)
-        //{
-        //    if (navigation == null) throw new ArgumentNullException(nameof(navigation));
+        private void GenerateNavigationDataAnnotations(ISkipNavigation navigation)
+        {
+            if (navigation == null) throw new ArgumentNullException(nameof(navigation));
 
-        //    GenerateForeignKeyAttribute(navigation);
-        //    GenerateInversePropertyAttribute(navigation);
-        //}
+            GenerateForeignKeyAttribute(navigation);
+            GenerateInversePropertyAttribute(navigation);
+        }
 
-        //private void GenerateForeignKeyAttribute(ISkipNavigation navigation)
-        //{
-        //    if (navigation.IsOnDependent)
-        //    {
-        //        if (navigation.ForeignKey.PrincipalKey.IsPrimaryKey())
-        //        {
-        //            var foreignKeyAttribute = new AttributeWriter(nameof(ForeignKeyAttribute));
+        private void GenerateForeignKeyAttribute(ISkipNavigation navigation)
+        {
+            if (navigation.IsOnDependent)
+            {
+                if (navigation.ForeignKey.PrincipalKey.IsPrimaryKey())
+                {
+                    var foreignKeyAttribute = new AttributeWriter(nameof(ForeignKeyAttribute));
 
-        //            if (navigation.ForeignKey.Properties.Count > 1)
-        //            {
-        //                foreignKeyAttribute.AddParameter(
-        //                        CSharpHelper.Literal(
-        //                            string.Join(",", navigation.ForeignKey.Properties.Select(p => EntityTypeTransformationService.TransformNavPropertyName(p.Name, p.ClrType.Name)))));
-        //            }
-        //            else
-        //            {
-        //                foreignKeyAttribute.AddParameter($"nameof({EntityTypeTransformationService.TransformNavPropertyName(navigation.ForeignKey.Properties.First().Name, navigation.ForeignKey.Properties.First().ClrType.Name)})");
-        //            }
+                    if (navigation.ForeignKey.Properties.Count > 1)
+                    {
+                        foreignKeyAttribute.AddParameter(
+                                CSharpHelper.Literal(
+                                    string.Join(",", navigation.ForeignKey.Properties.Select(p => EntityTypeTransformationService.TransformNavPropertyName(p.Name, p.ClrType.Name)))));
+                    }
+                    else
+                    {
+                        foreignKeyAttribute.AddParameter($"nameof({EntityTypeTransformationService.TransformNavPropertyName(navigation.ForeignKey.Properties.First().Name, navigation.ForeignKey.Properties.First().ClrType.Name)})");
+                    }
 
-        //            NavPropertyAnnotations.Add(new Dictionary<string, object>
-        //            {
-        //                { "nav-property-annotation", foreignKeyAttribute }
-        //            });
-        //        }
-        //    }
-        //}
+                    NavPropertyAnnotations.Add(new Dictionary<string, object>
+                    {
+                        { "nav-property-annotation", foreignKeyAttribute }
+                    });
+                }
+            }
+        }
 
-        //private void GenerateInversePropertyAttribute(ISkipNavigation navigation)
-        //{
-        //    if (navigation.ForeignKey.PrincipalKey.IsPrimaryKey())
-        //    {
-        //        var inverseNavigation = navigation.Inverse;
+        private void GenerateInversePropertyAttribute(ISkipNavigation navigation)
+        {
+            if (navigation.ForeignKey.PrincipalKey.IsPrimaryKey())
+            {
+                var inverseNavigation = navigation.Inverse;
 
-        //        if (inverseNavigation != null)
-        //        {
-        //            var inversePropertyAttribute = new AttributeWriter(nameof(InversePropertyAttribute));
+                if (inverseNavigation != null)
+                {
+                    var inversePropertyAttribute = new AttributeWriter(nameof(InversePropertyAttribute));
 
-        //            var propertyName = EntityTypeTransformationService.TransformNavPropertyName(inverseNavigation.Name, navigation.DeclaringType.Name);
-        //            inversePropertyAttribute.AddParameter(
-        //                !navigation.DeclaringEntityType.GetPropertiesAndNavigations().Any(
-        //                        m => m.Name == inverseNavigation.DeclaringEntityType.Name ||
-        //                            EntityTypeTransformationService.TransformNavPropertyName(m.Name, navigation.TargetEntityType.Name)
-        //                                == EntityTypeTransformationService.TransformNavPropertyName(inverseNavigation.DeclaringEntityType.Name, navigation.TargetEntityType.Name))
-        //                    ? $"nameof({EntityTypeTransformationService.TransformTypeEntityName(inverseNavigation.DeclaringType.Name)}.{propertyName})"
-        //                    : CSharpHelper.Literal(propertyName));
+                    var propertyName = EntityTypeTransformationService.TransformNavPropertyName(inverseNavigation.Name, navigation.DeclaringType.Name);
+                    inversePropertyAttribute.AddParameter(
+                        !navigation.DeclaringEntityType.GetPropertiesAndNavigations().Any(
+                                m => m.Name == inverseNavigation.DeclaringEntityType.Name ||
+                                    EntityTypeTransformationService.TransformNavPropertyName(m.Name, navigation.TargetEntityType.Name)
+                                        == EntityTypeTransformationService.TransformNavPropertyName(inverseNavigation.DeclaringEntityType.Name, navigation.TargetEntityType.Name))
+                            ? $"nameof({EntityTypeTransformationService.TransformTypeEntityName(inverseNavigation.DeclaringType.Name)}.{propertyName})"
+                            : CSharpHelper.Literal(propertyName));
 
-        //            NavPropertyAnnotations.Add(new Dictionary<string, object>
-        //            {
-        //                { "nav-property-annotation", inversePropertyAttribute }
-        //            });
-        //        }
-        //    }
-        //}
+                    NavPropertyAnnotations.Add(new Dictionary<string, object>
+                    {
+                        { "nav-property-annotation", inversePropertyAttribute }
+                    });
+                }
+            }
+        }
 
         private string GenerateComment(string comment, int indents)
         {

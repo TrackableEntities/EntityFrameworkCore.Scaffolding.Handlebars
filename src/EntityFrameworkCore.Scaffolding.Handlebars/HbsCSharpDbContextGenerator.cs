@@ -254,6 +254,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                     foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
                     {
+                        if (IsManyToManyJoinEntityType(entityType))
+                        {
+                            continue;
+                        }
+
                         _entityTypeBuilderInitialized = false;
 
                         GenerateEntityType(entityType, sb);
@@ -290,6 +295,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
             {
+                if (IsManyToManyJoinEntityType(entityType))
+                {
+                    continue;
+                }
+
                 var transformedEntityTypeName = GetEntityTypeName(
                     entityType, EntityTypeTransformationService.TransformTypeEntityName(entityType.Name));
                 dbSets.Add(new Dictionary<string, object>
@@ -419,6 +429,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             foreach (var foreignKey in entityType.GetScaffoldForeignKeys(_options.Value))
             {
                 GenerateRelationship(foreignKey, sb);
+            }
+
+            foreach (var skipNavigation in entityType.GetSkipNavigations())
+            {
+                if (skipNavigation.JoinEntityType.FindPrimaryKey()!.Properties[0].GetContainingForeignKeys().Single().PrincipalEntityType == entityType)
+                {
+                    GenerateManyToMany(skipNavigation, sb);
+                }
             }
         }
 
@@ -762,6 +780,269 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
+        private void GenerateManyToMany(ISkipNavigation skipNavigation, IndentedStringBuilder sb)
+        {
+            if (!_entityTypeBuilderInitialized)
+            {
+                InitializeEntityTypeBuilder(skipNavigation.DeclaringEntityType, sb);
+            }
+
+            sb.AppendLine();
+
+            var inverse = skipNavigation.Inverse;
+            var joinEntityType = skipNavigation.JoinEntityType;
+            using (sb.Indent())
+            {
+                sb.AppendLine($"{EntityLambdaIdentifier}.{nameof(EntityTypeBuilder.HasMany)}(d => d.{skipNavigation.Name})");
+                using (sb.Indent())
+                {
+                    sb.AppendLine($".{nameof(CollectionNavigationBuilder.WithMany)}(p => p.{inverse.Name})");
+                    sb.AppendLine(
+                        $".{nameof(CollectionCollectionBuilder.UsingEntity)}<{CSharpHelper.Reference(Model.DefaultPropertyBagType)}>(");
+                    using (sb.Indent())
+                    {
+                        sb.AppendLine($"{CSharpHelper.Literal(joinEntityType.Name)},");
+                        var lines = new List<string>();
+
+                        GenerateForeignKeyConfigurationLines(inverse.ForeignKey, inverse.ForeignKey.PrincipalEntityType.Name, "l");
+                        GenerateForeignKeyConfigurationLines(
+                            skipNavigation.ForeignKey, skipNavigation.ForeignKey.PrincipalEntityType.Name, "r");
+                        sb.AppendLine("j =>");
+                        sb.AppendLine("{");
+
+                        using (sb.Indent())
+                        {
+                            var key = joinEntityType.FindPrimaryKey()!;
+                            var keyAnnotations = AnnotationCodeGenerator
+                                .FilterIgnoredAnnotations(key.GetAnnotations())
+                                .ToDictionary(a => a.Name, a => a);
+                            AnnotationCodeGenerator.RemoveAnnotationsHandledByConventions(key, keyAnnotations);
+
+                            var explicitName = key.GetName() != key.GetDefaultName();
+                            keyAnnotations.Remove(RelationalAnnotationNames.Name);
+
+                            lines.Add(
+                                $"j.{nameof(EntityTypeBuilder.HasKey)}({string.Join(", ", key.Properties.Select(e => CSharpHelper.Literal(e.Name)))})");
+                            if (explicitName)
+                            {
+                                lines.Add($".{nameof(RelationalKeyBuilderExtensions.HasName)}({CSharpHelper.Literal(key.GetName()!)})");
+                            }
+
+                            GenerateAnnotations(keyAnnotations.Values);
+                            WriteLines(";");
+
+                            var annotations = AnnotationCodeGenerator
+                                .FilterIgnoredAnnotations(joinEntityType.GetAnnotations())
+                                .ToDictionary(a => a.Name, a => a);
+                            AnnotationCodeGenerator.RemoveAnnotationsHandledByConventions(joinEntityType, annotations);
+
+                            annotations.Remove(RelationalAnnotationNames.TableName);
+                            annotations.Remove(RelationalAnnotationNames.Schema);
+                            annotations.Remove(RelationalAnnotationNames.ViewName);
+                            annotations.Remove(RelationalAnnotationNames.ViewSchema);
+                            annotations.Remove(ScaffoldingAnnotationNames.DbSetName);
+                            annotations.Remove(RelationalAnnotationNames.ViewDefinitionSql);
+
+                            var tableName = joinEntityType.GetTableName();
+                            var schema = joinEntityType.GetSchema();
+                            var defaultSchema = joinEntityType.Model.GetDefaultSchema();
+
+                            var explicitSchema = schema != null && schema != defaultSchema;
+                            var parameterString = CSharpHelper.Literal(tableName!);
+                            if (explicitSchema)
+                            {
+                                parameterString += ", " + CSharpHelper.Literal(schema!);
+                            }
+
+                            lines.Add($"j.{nameof(RelationalEntityTypeBuilderExtensions.ToTable)}({parameterString})");
+
+                            GenerateAnnotations(annotations.Values);
+
+                            sb.AppendLine();
+                            WriteLines(";");
+
+                            foreach (var index in joinEntityType.GetIndexes())
+                            {
+                                // If there are annotations that cannot be represented using an IndexAttribute then use fluent API even
+                                // if useDataAnnotations is true.
+                                var indexAnnotations = AnnotationCodeGenerator
+                                    .FilterIgnoredAnnotations(index.GetAnnotations())
+                                    .ToDictionary(a => a.Name, a => a);
+                                AnnotationCodeGenerator.RemoveAnnotationsHandledByConventions(index, indexAnnotations);
+
+                                lines.Add(
+                                    $"j.{nameof(EntityTypeBuilder.HasIndex)}({CSharpHelper.Literal(index.Properties.Select(e => e.Name).ToArray())}, {CSharpHelper.Literal(index.GetDatabaseName())})");
+                                indexAnnotations.Remove(RelationalAnnotationNames.Name);
+
+                                if (index.IsUnique)
+                                {
+                                    lines.Add($".{nameof(IndexBuilder.IsUnique)}()");
+                                }
+
+                                GenerateAnnotations(indexAnnotations.Values);
+
+                                sb.AppendLine();
+                                WriteLines(";");
+                            }
+
+                            foreach (var property in joinEntityType.GetProperties())
+                            {
+                                lines.Add(
+                                    $"j.{nameof(EntityTypeBuilder.IndexerProperty)}<{CSharpHelper.Reference(property.ClrType)}>({CSharpHelper.Literal(property.Name)})");
+
+                                var propertyAnnotations = AnnotationCodeGenerator
+                                    .FilterIgnoredAnnotations(property.GetAnnotations())
+                                    .ToDictionary(a => a.Name, a => a);
+                                AnnotationCodeGenerator.RemoveAnnotationsHandledByConventions(property, propertyAnnotations);
+                                propertyAnnotations.Remove(RelationalAnnotationNames.ColumnOrder);
+
+                                if ((!UseNullableReferenceTypes || property.ClrType.IsValueType)
+                                    && !property.IsNullable
+                                    && property.ClrType.IsNullableType()
+                                    && !property.IsPrimaryKey())
+                                {
+                                    lines.Add($".{nameof(PropertyBuilder.IsRequired)}()");
+                                }
+
+                                var columnType = property.GetConfiguredColumnType();
+                                if (columnType != null)
+                                {
+                                    lines.Add(
+                                        $".{nameof(RelationalPropertyBuilderExtensions.HasColumnType)}({CSharpHelper.Literal(columnType)})");
+                                    propertyAnnotations.Remove(RelationalAnnotationNames.ColumnType);
+                                }
+
+                                var maxLength = property.GetMaxLength();
+                                if (maxLength.HasValue)
+                                {
+                                    lines.Add(
+                                        $".{nameof(PropertyBuilder.HasMaxLength)}({CSharpHelper.Literal(maxLength.Value)})");
+                                }
+
+                                var precision = property.GetPrecision();
+                                var scale = property.GetScale();
+                                if (precision != null && scale != null && scale != 0)
+                                {
+                                    lines.Add(
+                                        $".{nameof(PropertyBuilder.HasPrecision)}({CSharpHelper.Literal(precision.Value)}, {CSharpHelper.Literal(scale.Value)})");
+                                }
+                                else if (precision != null)
+                                {
+                                    lines.Add(
+                                        $".{nameof(PropertyBuilder.HasPrecision)}({CSharpHelper.Literal(precision.Value)})");
+                                }
+
+                                if (property.IsUnicode() != null)
+                                {
+                                    lines.Add(
+                                        $".{nameof(PropertyBuilder.IsUnicode)}({(property.IsUnicode() == false ? "false" : "")})");
+                                }
+
+                                if (property.TryGetDefaultValue(out var defaultValue))
+                                {
+                                    if (defaultValue == DBNull.Value)
+                                    {
+                                        lines.Add($".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}()");
+                                        propertyAnnotations.Remove(RelationalAnnotationNames.DefaultValue);
+                                    }
+                                    else if (defaultValue != null)
+                                    {
+                                        lines.Add(
+                                            $".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}({CSharpHelper.UnknownLiteral(defaultValue)})");
+                                        propertyAnnotations.Remove(RelationalAnnotationNames.DefaultValue);
+                                    }
+                                }
+
+                                var valueGenerated = property.ValueGenerated;
+                                var isRowVersion = false;
+                                if (((IConventionProperty)property).GetValueGeneratedConfigurationSource() is ConfigurationSource
+                                    valueGeneratedConfigurationSource
+                                    && valueGeneratedConfigurationSource != ConfigurationSource.Convention
+                                    && ValueGenerationConvention.GetValueGenerated(property) != valueGenerated)
+                                {
+                                    var methodName = valueGenerated switch
+                                    {
+                                        ValueGenerated.OnAdd => nameof(PropertyBuilder.ValueGeneratedOnAdd),
+                                        ValueGenerated.OnAddOrUpdate => property.IsConcurrencyToken
+                                            ? nameof(PropertyBuilder.IsRowVersion)
+                                            : nameof(PropertyBuilder.ValueGeneratedOnAddOrUpdate),
+                                        ValueGenerated.OnUpdate => nameof(PropertyBuilder.ValueGeneratedOnUpdate),
+                                        ValueGenerated.Never => nameof(PropertyBuilder.ValueGeneratedNever),
+                                        _ => throw new InvalidOperationException(
+                                            DesignStrings.UnhandledEnumValue($"{nameof(ValueGenerated)}.{valueGenerated}"))
+                                    };
+
+                                    lines.Add($".{methodName}()");
+                                }
+
+                                if (property.IsConcurrencyToken
+                                    && !isRowVersion)
+                                {
+                                    lines.Add($".{nameof(PropertyBuilder.IsConcurrencyToken)}()");
+                                }
+
+                                GenerateAnnotations(propertyAnnotations.Values);
+
+                                if (lines.Count > 1)
+                                {
+                                    sb.AppendLine();
+                                    WriteLines(";");
+                                }
+                                else
+                                {
+                                    lines.Clear();
+                                }
+                            }
+                        }
+
+                        sb.AppendLine("});");
+
+                        void GenerateForeignKeyConfigurationLines(IForeignKey foreignKey, string targetType, string identifier)
+                        {
+                            var annotations = AnnotationCodeGenerator
+                                .FilterIgnoredAnnotations(foreignKey.GetAnnotations())
+                                .ToDictionary(a => a.Name, a => a);
+                            AnnotationCodeGenerator.RemoveAnnotationsHandledByConventions(foreignKey, annotations);
+                            lines.Add(
+                                $"{identifier} => {identifier}.{nameof(EntityTypeBuilder.HasOne)}<{targetType}>().{nameof(ReferenceNavigationBuilder.WithMany)}()");
+
+                            if (!foreignKey.PrincipalKey.IsPrimaryKey())
+                            {
+                                lines.Add(
+                                    $".{nameof(ReferenceReferenceBuilder.HasPrincipalKey)}({string.Join(", ", foreignKey.PrincipalKey.Properties.Select(e => CSharpHelper.Literal(e.Name)))})");
+                            }
+
+                            lines.Add(
+                                $".{nameof(ReferenceReferenceBuilder.HasForeignKey)}({string.Join(", ", foreignKey.Properties.Select(e => CSharpHelper.Literal(e.Name)))})");
+
+                            var defaultOnDeleteAction = foreignKey.IsRequired
+                                ? DeleteBehavior.Cascade
+                                : DeleteBehavior.ClientSetNull;
+
+                            if (foreignKey.DeleteBehavior != defaultOnDeleteAction)
+                            {
+                                lines.Add($".{nameof(ReferenceReferenceBuilder.OnDelete)}({CSharpHelper.Literal(foreignKey.DeleteBehavior)})");
+                            }
+
+                            GenerateAnnotations(annotations.Values);
+                            WriteLines(",");
+                        }
+
+                        void WriteLines(string terminator)
+                        {
+                            foreach (var line in lines)
+                            {
+                                sb.Append(line);
+                            }
+
+                            sb.AppendLine(terminator);
+                            lines.Clear();
+                        }
+                    }
+                }
+            }
+        }
+
         private void GenerateSequence(ISequence sequence, IndentedStringBuilder sb)
         {
             var methodName = nameof(RelationalModelBuilderExtensions.HasSequence);
@@ -892,5 +1173,31 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         private string GenerateAnnotation(IAnnotation annotation)
             => $".HasAnnotation({CSharpHelper.Literal(annotation.Name)}, " +
                $"{CSharpHelper.UnknownLiteral(annotation.Value)})";
+
+        private static bool IsManyToManyJoinEntityType(IEntityType entityType)
+        {
+            if (!entityType.GetNavigations().Any()
+                && !entityType.GetSkipNavigations().Any())
+            {
+                var primaryKey = entityType.FindPrimaryKey();
+                var properties = entityType.GetProperties().ToList();
+                var foreignKeys = entityType.GetForeignKeys().ToList();
+                if (primaryKey != null
+                    && primaryKey.Properties.Count > 1
+                    && foreignKeys.Count == 2
+                    && primaryKey.Properties.Count == properties.Count
+                    && foreignKeys[0].Properties.Count + foreignKeys[1].Properties.Count == properties.Count
+                    && !foreignKeys[0].Properties.Intersect(foreignKeys[1].Properties).Any()
+                    && foreignKeys[0].IsRequired
+                    && foreignKeys[1].IsRequired
+                    && !foreignKeys[0].IsUnique
+                    && !foreignKeys[1].IsUnique)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

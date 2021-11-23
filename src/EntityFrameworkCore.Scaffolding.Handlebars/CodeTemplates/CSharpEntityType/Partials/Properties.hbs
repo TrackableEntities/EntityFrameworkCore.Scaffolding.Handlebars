@@ -23,3 +23,16 @@
 {{/if}}
 {{/each}}
 {{/if}}
+{{#if skip-nav-properties}}
+
+{{#each skip-nav-properties}}
+{{#each nav-property-annotations}}
+        {{{nav-property-annotation}}}
+{{/each}}
+{{#if nav-property-collection}}
+        public virtual ICollection<{{nav-property-type}}> {{nav-property-name}} { get; set; }
+{{else}}
+        public virtual {{nav-property-type}} {{nav-property-name}} { get; set; }{{#if nullable-reference-types}}{{#unless nav-property-isnullable}} = null!;{{/unless}}{{/if}}
+{{/if}}
+{{/each}}
+{{/if}}

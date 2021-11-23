@@ -48,7 +48,7 @@ namespace FakeNamespace
             {
                 entity.ToTable(""Product"");
 
-                entity.HasIndex(e => e.CategoryId);
+                entity.HasIndex(e => e.CategoryId, ""IX_Product_CategoryId"");
 
                 entity.Property(e => e.ProductName)
                     .IsRequired()

@@ -8,7 +8,7 @@
 {{#each property-annotations}}
         {{{property-annotation}}}
 {{/each}}
-        public {{property-type}} {{property-name}} { get; set; }{{#if nullable-reference-types }}{{#unless property-isnullable}} = default!;{{/unless}}{{/if}}
+        public {{property-type}} {{property-name}} { get; set; }{{#if nullable-reference-types }}{{#unless property-isnullable}} = null!;{{/unless}}{{/if}}
 {{/each}}
 {{#if nav-properties}}
 
@@ -17,9 +17,9 @@
         {{{nav-property-annotation}}}
 {{/each}}
 {{#if nav-property-collection}}
-        public virtual ICollection<{{nav-property-type}}> {{nav-property-name}} { get; set; }{{#if nullable-reference-types}} = default!;{{/if}}
+        public virtual ICollection<{{nav-property-type}}> {{nav-property-name}} { get; set; }
 {{else}}
-        public virtual {{nav-property-type}} {{nav-property-name}} { get; set; }{{#if nullable-reference-types}}{{#unless nav-property-isnullable}} = default!;{{/unless}}{{/if}}
+        public virtual {{nav-property-type}} {{nav-property-name}} { get; set; }{{#if nullable-reference-types}}{{#unless nav-property-isnullable}} = null!;{{/unless}}{{/if}}
 {{/if}}
 {{/each}}
 {{/if}}

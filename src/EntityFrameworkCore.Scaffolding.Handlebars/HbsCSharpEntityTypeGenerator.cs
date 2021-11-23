@@ -264,13 +264,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     && !propertyType.EndsWith("?")) {
                         propertyType += "?";
                 }
+                var propertyIsNullable = property.ClrType.IsValueType
+                    || (UseNullableReferenceTypes
+                     && property.IsNullable);
                 properties.Add(new Dictionary<string, object>
                 {
                     { "property-type", propertyType },
                     { "property-name", property.Name },
                     { "property-annotations",  PropertyAnnotationsData },
                     { "property-comment", _options?.Value?.GenerateComments == true ? GenerateComment(property.GetComment(), 2) : null },
-                    { "property-isnullable", property.IsNullable },
+                    { "property-isnullable", propertyIsNullable },
                     { "nullable-reference-types", UseNullableReferenceTypes }
                 });
             }

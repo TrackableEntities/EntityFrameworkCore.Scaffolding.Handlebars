@@ -601,7 +601,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
             else
             {
-                if (!property.IsNullable
+                if ((!UseNullableReferenceTypes || property.ClrType.IsValueType)
+                    && !property.IsNullable
                     && property.ClrType.IsNullableType()
                     && !property.IsPrimaryKey())
                 {

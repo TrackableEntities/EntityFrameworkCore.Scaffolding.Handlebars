@@ -80,7 +80,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="namespace">Entity type namespace.</param>
         /// <param name="useDataAnnotations">If true use data annotations.</param>
         /// <returns>Generated entity type.</returns>
-        public override string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations)
+        public override string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations, bool useNullableReferenceTypes)
         {
             Check.NotNull(entityType, nameof(entityType));
             Check.NotNull(@namespace, nameof(@namespace));
@@ -174,7 +174,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var properties = new List<Dictionary<string, object>>();
 
-            foreach (var property in entityType.GetProperties().OrderBy(p => p.GetColumnOrdinal()))
+            foreach (var property in entityType.GetProperties().OrderBy(p => p.GetColumnOrder()))
             {
                 properties.Add(new Dictionary<string, object>
                 {

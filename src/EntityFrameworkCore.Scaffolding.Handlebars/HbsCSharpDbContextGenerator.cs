@@ -63,6 +63,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         protected Dictionary<string, object> TemplateData { get; set; }
 
+        protected bool UseDataAnnotations { get; set; }
+
+        protected bool UseNullableReferenceTypes { get; set; }
+
         private bool _entityTypeBuilderInitialized;
 
         /// <summary>
@@ -100,17 +104,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="contextNamespace">Context namespace.</param>
         /// <param name="modelNamespace">Model namespace.</param>
         /// <param name="useDataAnnotations">If false use fluent modeling API.</param>
+        /// <param name="useNullableReferenceTypes"></param>
         /// <param name="suppressConnectionStringWarning">Suppress connection string warning.</param>
         /// <param name="suppressOnConfiguring">Suppress OnConfiguring method.</param>
         /// <returns>DbContext class.</returns>
         public override string WriteCode(IModel model, string contextName, string connectionString, string contextNamespace,
-            string modelNamespace, bool useDataAnnotations, bool suppressConnectionStringWarning, bool suppressOnConfiguring)
+            string modelNamespace, bool useDataAnnotations, bool useNullableReferenceTypes, bool suppressConnectionStringWarning, bool suppressOnConfiguring)
         {
             Check.NotNull(model, nameof(model));
 
             if (!string.IsNullOrEmpty(modelNamespace) && string.CompareOrdinal(contextNamespace, modelNamespace) != 0)
                 _modelNamespace = modelNamespace;
 
+            UseDataAnnotations = useDataAnnotations;
+            UseNullableReferenceTypes = useNullableReferenceTypes;
             TemplateData = new Dictionary<string, object>();
 
             if (_options.Value.TemplateData != null)
@@ -123,7 +130,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             TemplateData.Add("namespace", contextNamespace);
 
-            GenerateClass(model, contextName, connectionString, useDataAnnotations, suppressConnectionStringWarning, suppressOnConfiguring);
+            GenerateClass(model, contextName, connectionString, suppressConnectionStringWarning, suppressOnConfiguring);
 
             string output = DbContextTemplateService.GenerateDbContext(TemplateData);
             return output;
@@ -135,11 +142,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="model">Metadata about the shape of entities, the relationships between them, and how they map to the database.</param>
         /// <param name="contextName">Name of DbContext class.</param>
         /// <param name="connectionString">Database connection string.</param>
-        /// <param name="useDataAnnotations">Use fluent modeling API if false.</param>
         /// <param name="suppressConnectionStringWarning">Suppress connection string warning.</param>
         /// <param name="suppressOnConfiguring">Suppress OnConfiguring method.</param>
         protected override void GenerateClass([NotNull] IModel model, [NotNull] string contextName, [NotNull] string connectionString,
-            bool useDataAnnotations, bool suppressConnectionStringWarning, bool suppressOnConfiguring)
+            bool suppressConnectionStringWarning, bool suppressOnConfiguring)
         {
             Check.NotNull(model, nameof(model));
             Check.NotNull(contextName, nameof(contextName));
@@ -156,7 +162,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 TemplateData.Add("suppress-on-configuring", true);
             else
                 GenerateOnConfiguring(connectionString, suppressConnectionStringWarning);
-            GenerateOnModelCreating(model, useDataAnnotations);
+            GenerateOnModelCreating(model);
         }
 
         /// <summary>
@@ -189,8 +195,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Generate OnModelBuilding method.
         /// </summary>
         /// <param name="model">Metadata about the shape of entities, the relationships between them, and how they map to the database.</param>
-        /// <param name="useDataAnnotations">Use fluent modeling API if false.</param>
-        protected override void GenerateOnModelCreating([NotNull] IModel model, bool useDataAnnotations)
+        protected override void GenerateOnModelCreating([NotNull] IModel model)
         {
             Check.NotNull(model, nameof(model));
 
@@ -245,7 +250,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     {
                         _entityTypeBuilderInitialized = false;
 
-                        GenerateEntityType(entityType, useDataAnnotations, sb);
+                        GenerateEntityType(entityType, sb);
 
                         if (_entityTypeBuilderInitialized)
                         {
@@ -351,9 +356,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 ? $"{schema}.{entityTypeName}" : entityTypeName;
         }
 
-        private void GenerateEntityType(IEntityType entityType, bool useDataAnnotations, IndentedStringBuilder sb)
+        private void GenerateEntityType(IEntityType entityType, IndentedStringBuilder sb)
         {
-            GenerateKey(entityType.FindPrimaryKey(), entityType, useDataAnnotations, sb);
+            GenerateKey(entityType.FindPrimaryKey(), entityType, sb);
 
             var annotations = AnnotationCodeGenerator
                 .FilterIgnoredAnnotations(entityType.GetAnnotations())
@@ -367,14 +372,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             annotations.Remove(ScaffoldingAnnotationNames.DbSetName);
             annotations.Remove(RelationalAnnotationNames.ViewDefinitionSql);
 
-            if (useDataAnnotations)
+            if (UseDataAnnotations)
             {
                 // Strip out any annotations handled as attributes - these are already handled when generating
                 // the entity's properties
                 _ = AnnotationCodeGenerator.GenerateDataAnnotationAttributes(entityType, annotations);
             }
 
-            if (!useDataAnnotations || entityType.GetViewName() != null)
+            if (!UseDataAnnotations || entityType.GetViewName() != null)
             {
                 GenerateTableName(entityType, sb);
             }
@@ -394,7 +399,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     .ToDictionary(a => a.Name, a => a);
                 AnnotationCodeGenerator.RemoveAnnotationsHandledByConventions(index, indexAnnotations);
 
-                if (!useDataAnnotations || indexAnnotations.Count > 0)
+                if (!UseDataAnnotations || indexAnnotations.Count > 0)
                 {
                     GenerateIndex(index, sb);
                 }
@@ -402,12 +407,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             foreach (var property in entityType.GetProperties())
             {
-                GenerateProperty(property, useDataAnnotations, sb);
+                GenerateProperty(property, sb);
             }
 
             foreach (var foreignKey in entityType.GetScaffoldForeignKeys(_options.Value))
             {
-                GenerateRelationship(foreignKey, useDataAnnotations, sb);
+                GenerateRelationship(foreignKey, sb);
             }
         }
 
@@ -439,11 +444,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
-        private void GenerateKey(IKey key, IEntityType entityType, bool useDataAnnotations, IndentedStringBuilder sb)
+        private void GenerateKey(IKey key, IEntityType entityType, IndentedStringBuilder sb)
         {
             if (key == null)
             {
-                if (!useDataAnnotations)
+                if (!UseDataAnnotations)
                 {
                     var line = new List<string> { $".{nameof(EntityTypeBuilder.HasNoKey)}()" };
 
@@ -464,8 +469,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (key.Properties.Count == 1
                 && annotations.Count == 0)
             {
-                if (key is Key concreteKey
-                    && key.Properties.SequenceEqual(
+                if (key is IConventionKey concreteKey
+                    && concreteKey.Properties.SequenceEqual(
                         KeyDiscoveryConvention.DiscoverKeyProperties(
                             concreteKey.DeclaringEntityType,
                             concreteKey.DeclaringEntityType.GetProperties())))
@@ -474,7 +479,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 }
 
                 if (!explicitName
-                    && useDataAnnotations)
+                    && UseDataAnnotations)
                 {
                     return;
                 }
@@ -565,7 +570,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             AppendMultiLineFluentApi(index.DeclaringEntityType, lines, sb);
         }
 
-        private void GenerateProperty(IProperty property, bool useDataAnnotations, IndentedStringBuilder sb)
+        private void GenerateProperty(IProperty property, IndentedStringBuilder sb)
         {
             var lines = new List<string>
             {
@@ -576,9 +581,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 .FilterIgnoredAnnotations(property.GetAnnotations())
                 .ToDictionary(a => a.Name, a => a);
             AnnotationCodeGenerator.RemoveAnnotationsHandledByConventions(property, annotations);
-            annotations.Remove(ScaffoldingAnnotationNames.ColumnOrdinal);
+            annotations.Remove(RelationalAnnotationNames.ColumnOrder);
 
-            if (useDataAnnotations)
+            if (UseDataAnnotations)
             {
                 // Strip out any annotations handled as attributes - these are already handled when generating
                 // the entity's properties
@@ -688,7 +693,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             AppendMultiLineFluentApi(property.DeclaringEntityType, lines, sb);
         }
 
-        private void GenerateRelationship(IForeignKey foreignKey, bool useDataAnnotations, IndentedStringBuilder sb)
+        private void GenerateRelationship(IForeignKey foreignKey, IndentedStringBuilder sb)
         {
             var canUseDataAnnotations = true;
             var annotations = AnnotationCodeGenerator
@@ -741,7 +746,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 AnnotationCodeGenerator.GenerateFluentApiCalls(foreignKey, annotations).Select(m => CSharpHelper.Fragment(m))
                     .Concat(GenerateAnnotations(annotations.Values)));
 
-            if (!useDataAnnotations
+            if (!UseDataAnnotations
                 || !canUseDataAnnotations)
             {
                 AppendMultiLineFluentApi(foreignKey.DeclaringEntityType, lines, sb);

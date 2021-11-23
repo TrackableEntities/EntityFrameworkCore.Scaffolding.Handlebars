@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
-using JetBrains.Annotations;
+using System.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -41,6 +41,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Use data annotations.
         /// </summary>
         protected bool UseDataAnnotations { get; set; }
+
+
+        /// <summary>
+        /// Use nullable reference types
+        /// </summary>
+        protected bool UseNullableReferenceTypes { get; set; }
 
         /// <summary>
         /// Handlebars template data.
@@ -81,11 +87,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="options">Handlebar scaffolding options.</param>
         public HbsCSharpEntityTypeGenerator(
-            [NotNull] IAnnotationCodeGenerator annotationCodeGenerator,
-            [NotNull] ICSharpHelper cSharpHelper,
-            [NotNull] IEntityTypeTemplateService entityTypeTemplateService,
-            [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
-            [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
+            IAnnotationCodeGenerator annotationCodeGenerator,
+            ICSharpHelper cSharpHelper,
+            IEntityTypeTemplateService entityTypeTemplateService,
+            IEntityTypeTransformationService entityTypeTransformationService,
+            IOptions<HandlebarsScaffoldingOptions> options)
             : base(annotationCodeGenerator, cSharpHelper)
         {
             Check.NotNull(annotationCodeGenerator, nameof(annotationCodeGenerator));
@@ -104,13 +110,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
         /// <param name="namespace">Entity type namespace.</param>
         /// <param name="useDataAnnotations">If true use data annotations.</param>
+        /// <param name="useNullableReferenceTypes">If true use nullable reference types.</param>
         /// <returns>Generated entity type.</returns>
-        public override string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations)
+        public override string WriteCode(IEntityType entityType, string? @namespace, bool useDataAnnotations, bool useNullableReferenceTypes)
         {
             Check.NotNull(entityType, nameof(entityType));
-            Check.NotNull(@namespace, nameof(@namespace));
 
             UseDataAnnotations = useDataAnnotations;
+            UseNullableReferenceTypes = useNullableReferenceTypes;
             TemplateData = new Dictionary<string, object>();
 
             if (_options.Value.TemplateData != null)
@@ -122,6 +129,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
 
             TemplateData.Add("use-data-annotations", UseDataAnnotations);
+            TemplateData.Add("nullable-reference-types", UseNullableReferenceTypes);
 
             bool enableSchemaFolders = (_options?.Value?.EnableSchemaFolders).GetValueOrDefault();
             GenerateImports(entityType, @namespace, enableSchemaFolders);
@@ -198,6 +206,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             GenerateConstructor(entityType);
             GenerateProperties(entityType);
             GenerateNavigationProperties(entityType);
+            //GenerateSkipNavigationProperties(entityType);
         }
 
         /// <summary>
@@ -240,7 +249,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var properties = new List<Dictionary<string, object>>();
 
-            foreach (var property in entityType.GetProperties().OrderBy(p => p.GetColumnOrdinal()))
+            foreach (var property in entityType.GetProperties().OrderBy(p => p.GetColumnOrder() ?? -1))
             {
                 PropertyAnnotationsData = new List<Dictionary<string, object>>();
 
@@ -250,7 +259,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 }
                 
                 var propertyType = CSharpHelper.Reference(property.ClrType);
-                if (_options?.Value?.EnableNullableReferenceTypes == true 
+                if (UseNullableReferenceTypes 
                     && property.IsNullable
                     && !propertyType.EndsWith("?")) {
                         propertyType += "?";
@@ -262,7 +271,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-annotations",  PropertyAnnotationsData },
                     { "property-comment", _options?.Value?.GenerateComments == true ? GenerateComment(property.GetComment(), 2) : null },
                     { "property-isnullable", property.IsNullable },
-                    { "nullable-reference-types", _options?.Value?.EnableNullableReferenceTypes == true }
+                    { "nullable-reference-types", UseNullableReferenceTypes }
                 });
             }
 
@@ -283,6 +292,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             GenerateRequiredAttribute(property);
             GenerateColumnAttribute(property);
             GenerateMaxLengthAttribute(property);
+            GenerateUnicodeAttribute(property);
+            GeneratePrecisionAttribute(property);
 
             var annotations = AnnotationCodeGenerator
                 .FilterIgnoredAnnotations(property.GetAnnotations())
@@ -330,7 +341,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         : !navigation.ForeignKey.IsRequiredDependent
                     );
                     var navPropertyType = navigation.TargetEntityType.Name;
-                    if (_options?.Value?.EnableNullableReferenceTypes == true &&
+                    if (UseNullableReferenceTypes &&
                         !navPropertyType.EndsWith("?") &&
                         propertyIsNullable) {
                         navPropertyType += "?";
@@ -343,7 +354,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         { "nav-property-name", navigation.Name },
                         { "nav-property-annotations", NavPropertyAnnotations },
                         { "nav-property-isnullable", propertyIsNullable },
-                        { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
+                        { "nullable-reference-types", UseNullableReferenceTypes }
                     });
                 }
 
@@ -524,9 +535,54 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
+        private void GenerateUnicodeAttribute(IProperty property)
+        {
+            if (property.ClrType != typeof(string))
+            {
+                return;
+            }
+
+            var unicode = property.IsUnicode();
+            if (unicode.HasValue)
+            {
+                var unicodeAttribute = new AttributeWriter(nameof(UnicodeAttribute));
+                if (!unicode.Value)
+                {
+                    unicodeAttribute.AddParameter(CSharpHelper.Literal(false));
+                }
+
+                PropertyAnnotationsData.Add(new Dictionary<string, object>
+                {
+                    { "property-annotation", unicodeAttribute.ToString() }
+                });
+            }
+        }
+
+        private void GeneratePrecisionAttribute(IProperty property)
+        {
+            var precision = property.GetPrecision();
+            if (precision.HasValue)
+            {
+                var precisionAttribute = new AttributeWriter(nameof(PrecisionAttribute));
+                precisionAttribute.AddParameter(CSharpHelper.Literal(precision.Value));
+
+                var scale = property.GetScale();
+                if (scale.HasValue)
+                {
+                    precisionAttribute.AddParameter(CSharpHelper.Literal(scale.Value));
+                }
+
+                PropertyAnnotationsData.Add(new Dictionary<string, object>
+                {
+                    { "property-annotation", precisionAttribute.ToString() }
+                });
+            }
+        }
+
         private void GenerateRequiredAttribute(IProperty property)
         {
-            if (!property.IsNullable
+            if ((!UseNullableReferenceTypes || property.ClrType.IsValueType)
+                && !property.IsNullable
                 && property.ClrType.IsNullableType()
                 && !property.IsPrimaryKey())
             {
@@ -598,6 +654,68 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 }
             }
         }
+
+        //private void GenerateNavigationDataAnnotations(ISkipNavigation navigation)
+        //{
+        //    if (navigation == null) throw new ArgumentNullException(nameof(navigation));
+
+        //    GenerateForeignKeyAttribute(navigation);
+        //    GenerateInversePropertyAttribute(navigation);
+        //}
+
+        //private void GenerateForeignKeyAttribute(ISkipNavigation navigation)
+        //{
+        //    if (navigation.IsOnDependent)
+        //    {
+        //        if (navigation.ForeignKey.PrincipalKey.IsPrimaryKey())
+        //        {
+        //            var foreignKeyAttribute = new AttributeWriter(nameof(ForeignKeyAttribute));
+
+        //            if (navigation.ForeignKey.Properties.Count > 1)
+        //            {
+        //                foreignKeyAttribute.AddParameter(
+        //                        CSharpHelper.Literal(
+        //                            string.Join(",", navigation.ForeignKey.Properties.Select(p => EntityTypeTransformationService.TransformNavPropertyName(p.Name, p.ClrType.Name)))));
+        //            }
+        //            else
+        //            {
+        //                foreignKeyAttribute.AddParameter($"nameof({EntityTypeTransformationService.TransformNavPropertyName(navigation.ForeignKey.Properties.First().Name, navigation.ForeignKey.Properties.First().ClrType.Name)})");
+        //            }
+
+        //            NavPropertyAnnotations.Add(new Dictionary<string, object>
+        //            {
+        //                { "nav-property-annotation", foreignKeyAttribute }
+        //            });
+        //        }
+        //    }
+        //}
+
+        //private void GenerateInversePropertyAttribute(ISkipNavigation navigation)
+        //{
+        //    if (navigation.ForeignKey.PrincipalKey.IsPrimaryKey())
+        //    {
+        //        var inverseNavigation = navigation.Inverse;
+
+        //        if (inverseNavigation != null)
+        //        {
+        //            var inversePropertyAttribute = new AttributeWriter(nameof(InversePropertyAttribute));
+
+        //            var propertyName = EntityTypeTransformationService.TransformNavPropertyName(inverseNavigation.Name, navigation.DeclaringType.Name);
+        //            inversePropertyAttribute.AddParameter(
+        //                !navigation.DeclaringEntityType.GetPropertiesAndNavigations().Any(
+        //                        m => m.Name == inverseNavigation.DeclaringEntityType.Name ||
+        //                            EntityTypeTransformationService.TransformNavPropertyName(m.Name, navigation.TargetEntityType.Name) 
+        //                                == EntityTypeTransformationService.TransformNavPropertyName(inverseNavigation.DeclaringEntityType.Name, navigation.TargetEntityType.Name))
+        //                    ? $"nameof({EntityTypeTransformationService.TransformTypeEntityName(inverseNavigation.DeclaringType.Name)}.{propertyName})"
+        //                    : CSharpHelper.Literal(propertyName));
+
+        //            NavPropertyAnnotations.Add(new Dictionary<string, object>
+        //            {
+        //                { "nav-property-annotation", inversePropertyAttribute }
+        //            });
+        //        }
+        //    }
+        //}
 
         private string GenerateComment(string comment, int indents)
         {

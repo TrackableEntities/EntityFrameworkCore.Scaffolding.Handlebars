@@ -35,13 +35,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="connectionStringResolver">Connection string resolver.</param>
         /// <param name="reporter">Operation reporter.</param>
         public HbsReverseEngineerScaffolder(
-            [NotNull] IDatabaseModelFactory databaseModelFactory,
-            [NotNull] IScaffoldingModelFactory scaffoldingModelFactory,
-            [NotNull] IModelCodeGeneratorSelector modelCodeGeneratorSelector,
-            [NotNull] ICSharpUtilities cSharpUtilities,
-            [NotNull] ICSharpHelper cSharpHelper,
-            [NotNull] INamedConnectionStringResolver connectionStringResolver,
-            [NotNull] IOperationReporter reporter)
+            IDatabaseModelFactory databaseModelFactory,
+            IScaffoldingModelFactory scaffoldingModelFactory,
+            IModelCodeGeneratorSelector modelCodeGeneratorSelector,
+            ICSharpUtilities cSharpUtilities,
+            ICSharpHelper cSharpHelper,
+            IDesignTimeConnectionStringResolver connectionStringResolver,
+            IOperationReporter reporter)
             : base(databaseModelFactory, scaffoldingModelFactory, modelCodeGeneratorSelector, cSharpUtilities, cSharpHelper, connectionStringResolver, reporter)
         {
             Check.NotNull(databaseModelFactory, nameof(databaseModelFactory));

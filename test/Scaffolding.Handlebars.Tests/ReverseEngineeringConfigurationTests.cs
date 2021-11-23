@@ -9,12 +9,15 @@ using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Design.Internal;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Scaffolding.Handlebars.Tests.Fakes;
 using Scaffolding.Handlebars.Tests.Helpers;
 using Xunit;
@@ -22,6 +25,29 @@ using Constants = EntityFrameworkCore.Scaffolding.Handlebars.Helpers.Constants;
 
 namespace Scaffolding.Handlebars.Tests
 {
+    public class TestOperationReporter : IOperationReporter
+    {
+        private readonly List<(LogLevel, string)> _messages = new();
+
+        public IReadOnlyList<(LogLevel Level, string Message)> Messages
+            => _messages;
+
+        public void Clear()
+            => _messages.Clear();
+
+        public void WriteInformation(string message)
+            => _messages.Add((LogLevel.Information, message));
+
+        public void WriteVerbose(string message)
+            => _messages.Add((LogLevel.Debug, message));
+
+        public void WriteWarning(string message)
+            => _messages.Add((LogLevel.Warning, message));
+
+        public void WriteError(string message)
+            => _messages.Add((LogLevel.Error, message));
+    }
+
     public class ReverseEngineeringConfigurationTests
     {
         [Theory]
@@ -30,8 +56,12 @@ namespace Scaffolding.Handlebars.Tests
         [InlineData("volatile")]
         public void ValidateContextNameInReverseEngineerGenerator(string contextName)
         {
-            var reverseEngineer = new ServiceCollection()
-                .AddEntityFrameworkDesignTimeServices()
+            var reverseEngineer = new DesignTimeServicesBuilder(
+                typeof(ReverseEngineeringConfigurationTests).Assembly,
+                typeof(ReverseEngineeringConfigurationTests).Assembly,
+                new TestOperationReporter(),
+                new string[0])
+                .CreateServiceCollection("Microsoft.EntityFrameworkCore.SqlServer")
                 .AddSingleton<LoggingDefinitions, TestRelationalLoggingDefinitions>()
                 .AddSingleton<IRelationalTypeMappingSource, TestRelationalTypeMappingSource>()
                 .AddSingleton<IAnnotationCodeGenerator, AnnotationCodeGenerator>()
@@ -55,8 +85,11 @@ namespace Scaffolding.Handlebars.Tests
                     }))
                 .AddSingleton<IHbsBlockHelperService>(provider =>
                     new HbsBlockHelperService(new Dictionary<string, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>>()))
-                .BuildServiceProvider()
+                .BuildServiceProvider(validateScopes: true)
+                .CreateScope()
+                .ServiceProvider
                 .GetRequiredService<IReverseEngineerScaffolder>();
+
 
             Assert.Equal(DesignStrings.ContextClassNotValidCSharpIdentifier(contextName),
                 Assert.Throws<ArgumentException>(

@@ -32,13 +32,13 @@ namespace FakeNamespace
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation(""Relational:Collation"", ""SQL_Latin1_General_CP1_CI_AS"");
-
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.ToTable(""Category"");
 
                 entity.HasComment(""A category of products"");
+
+                entity.Property(e => e.CategoryId).HasDefaultValue(0);
 
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
@@ -51,6 +51,10 @@ namespace FakeNamespace
                 entity.ToTable(""Product"");
 
                 entity.HasIndex(e => e.CategoryId);
+
+                entity.Property(e => e.ProductId).HasDefaultValue(0);
+
+                entity.Property(e => e.Discontinued).HasDefaultValue(false);
 
                 entity.Property(e => e.ProductName)
                     .IsRequired()

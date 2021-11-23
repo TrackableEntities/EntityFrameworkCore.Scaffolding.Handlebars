@@ -30,7 +30,7 @@ namespace Scaffolding.Handlebars.Tests
                 ExcludedTables = new List<string> {"Product"}
             };
 
-            var entityTypes = builder.Model.GetScaffoldEntityTypes(options);
+            var entityTypes = builder.FinalizeModel().GetScaffoldEntityTypes(options);
             Assert.Contains(entityTypes, e => e.ClrType.Name == "Category");
             Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Product");
         }
@@ -50,7 +50,7 @@ namespace Scaffolding.Handlebars.Tests
                 ExcludedTables = new List<string> { "dbo.Category", "dbo.Product" }
             };
 
-            var entityTypes = builder.Model.GetScaffoldEntityTypes(options);
+            var entityTypes = builder.FinalizeModel().GetScaffoldEntityTypes(options);
             Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Category");
             Assert.Contains(entityTypes, e => e.ClrType.Name == "Product");
         }
@@ -70,7 +70,7 @@ namespace Scaffolding.Handlebars.Tests
                 ExcludedTables = null
             };
 
-            var entityTypes = builder.Model.GetScaffoldEntityTypes(options);
+            var entityTypes = builder.FinalizeModel().GetScaffoldEntityTypes(options);
             Assert.Contains(entityTypes, e => e.ClrType.Name == "Category");
             Assert.Contains(entityTypes, e => e.ClrType.Name == "Product");
         }
@@ -90,7 +90,7 @@ namespace Scaffolding.Handlebars.Tests
                 ExcludedTables = new List<string> { "Product" }
             };
 
-            var entityTypes = builder.Model.GetScaffoldEntityTypes(options);
+            var entityTypes = builder.FinalizeModel().GetScaffoldEntityTypes(options);
             Assert.Contains(entityTypes, e => e.ClrType.Name == "Category");
             Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Product");
         }
@@ -110,7 +110,7 @@ namespace Scaffolding.Handlebars.Tests
                 ExcludedTables = new List<string> { "dbo.Category", "dbo.Product" }
             };
 
-            var entityTypes = builder.Model.GetScaffoldEntityTypes(options);
+            var entityTypes = builder.FinalizeModel().GetScaffoldEntityTypes(options);
             Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Category");
             Assert.Contains(entityTypes, e => e.ClrType.Name == "Product");
         }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {
     /// <summary>
-    /// Extension methods for Entity Framework <see cref="IModel"/> class.
+    /// Extension methods for Entity Framework <see cref="IMutableModel"/> class.
     /// </summary>
     public static class IModelExtensions
     {

@@ -1,4 +1,4 @@
 ﻿{{#each dbsets}}
         {{my-helper}}
-        public virtual DbSet<{{set-property-type}}> {{set-property-name}} { get; set; }{{#if nullable-reference-types }} = default!;{{/if}}
+        public virtual DbSet<{{set-property-type}}> {{set-property-name}} { get; set; }{{#if nullable-reference-types }} = null!;{{/if}}
 {{/each}}

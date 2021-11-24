@@ -27,9 +27,6 @@ namespace ScaffoldingSample
                 // Generate both context and entities
                 options.ReverseEngineerOptions = ReverseEngineerOptions.DbContextAndEntities;
 
-                // Enable Nullable reference types Support https://docs.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
-                options.EnableNullableReferenceTypes = true;
-
                 // Put Models into folders by DB Schema
                 options.EnableSchemaFolders = true;
 

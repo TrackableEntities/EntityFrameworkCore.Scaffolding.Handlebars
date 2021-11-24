@@ -49,6 +49,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         protected virtual IEntityTypeTransformationService EntityTypeTransformationService { get; }
 
         /// <summary>
+        /// Indicates if nullable reference types should be used.
+        /// </summary>
+        protected bool UseNullableReferenceTypes { get; private set; }
+
+        /// <summary>
         /// Constructor for the Handlebars entity types generator.
         /// </summary>
         /// <param name="annotationCodeGenerator">Annotation code generator.</param>
@@ -79,12 +84,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
         /// <param name="namespace">Entity type namespace.</param>
         /// <param name="useDataAnnotations">If true use data annotations.</param>
+        /// <param name="useNullableReferenceTypes">If true use nullable reference types.</param>
         /// <returns>Generated entity type.</returns>
-        public override string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations)
+        public override string WriteCode(IEntityType entityType, string @namespace, bool useDataAnnotations, bool useNullableReferenceTypes)
         {
             Check.NotNull(entityType, nameof(entityType));
             Check.NotNull(@namespace, nameof(@namespace));
 
+            UseNullableReferenceTypes = useNullableReferenceTypes;
             TemplateData = new Dictionary<string, object>();
             GenerateImports(entityType);
             GenerateClass(entityType);
@@ -133,6 +140,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             GenerateConstructor(entityType);
             GenerateProperties(entityType);
             GenerateNavigationProperties(entityType);
+            GenerateSkipNavigationProperties(entityType);
         }
 
         /// <summary>
@@ -174,7 +182,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var properties = new List<Dictionary<string, object>>();
 
-            foreach (var property in entityType.GetProperties().OrderBy(p => p.GetColumnOrdinal()))
+            foreach (var property in entityType.GetProperties().OrderBy(p => p.GetColumnOrder()))
             {
                 properties.Add(new Dictionary<string, object>
                 {
@@ -183,7 +191,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-annotations",  new List<Dictionary<string, object>>() },
                     { "property-comment", property.GetComment() },
                     { "property-isnullable", property.IsNullable },
-                    { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
+                    { "nullable-reference-types", UseNullableReferenceTypes }
                 });
             }
 
@@ -216,13 +224,47 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         { "nav-property-type", navigation.TargetEntityType.Name },
                         { "nav-property-name", TypeScriptHelper.ToCamelCase(navigation.Name) },
                         { "nav-property-annotations", new List<Dictionary<string, object>>() },
-                        { "nullable-reference-types",  _options?.Value?.EnableNullableReferenceTypes == true }
+                        { "nullable-reference-types",  UseNullableReferenceTypes }
                     });
                 }
 
                 var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(navProperties);
 
                 TemplateData.Add("nav-properties", transformedNavProperties);
+            }
+        }
+
+        /// <summary>
+        /// Generate entity type skip navigation properties.
+        /// </summary>
+        /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
+        protected override void GenerateSkipNavigationProperties(IEntityType entityType)
+        {
+            Check.NotNull(entityType, nameof(entityType));
+
+            var sortedNavigations = entityType.GetSkipNavigations()
+                .OrderBy(n => n.IsOnDependent ? 0 : 1)
+                .ThenBy(n => n.IsCollection ? 1 : 0);
+
+            if (sortedNavigations.Any())
+            {
+                var navProperties = new List<Dictionary<string, object>>();
+
+                foreach (var navigation in sortedNavigations)
+                {
+                    navProperties.Add(new Dictionary<string, object>
+                    {
+                        { "nav-property-collection", navigation.IsCollection },
+                        { "nav-property-type", navigation.TargetEntityType.Name },
+                        { "nav-property-name", TypeScriptHelper.ToCamelCase(navigation.Name) },
+                        { "nav-property-annotations", new List<Dictionary<string, object>>() },
+                        { "nullable-reference-types",  UseNullableReferenceTypes }
+                    });
+                }
+
+                var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(navProperties);
+
+                TemplateData.Add("skip-nav-properties", transformedNavProperties);
             }
         }
     }

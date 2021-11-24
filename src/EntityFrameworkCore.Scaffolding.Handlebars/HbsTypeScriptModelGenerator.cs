@@ -118,6 +118,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     options.ContextNamespace,
                     options.ModelNamespace,
                     options.UseDataAnnotations,
+                    options.UseNullableReferenceTypes,
                     options.SuppressConnectionStringWarning,
                     options.SuppressOnConfiguring);
 
@@ -138,9 +139,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     generatedCode = CSharpEntityTypeGenerator.WriteCode(
                         entityType,
                         options.ModelNamespace,
-                        options.UseDataAnnotations);
+                        options.UseDataAnnotations,
+                        options.UseNullableReferenceTypes);
 
-                    var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.DisplayName());
+                    var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.Name);
                     var entityTypeFileName = transformedFileName + FileExtension;
                     if (_options?.Value?.EnableSchemaFolders == true) {
                         entityTypeFileName = entityType.GetSchema() + @"\" + entityTypeFileName;

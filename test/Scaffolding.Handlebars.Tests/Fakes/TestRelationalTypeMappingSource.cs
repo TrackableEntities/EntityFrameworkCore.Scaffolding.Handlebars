@@ -16,7 +16,7 @@ namespace Scaffolding.Handlebars.Tests.Fakes
     public class TestRelationalTypeMappingSource : RelationalTypeMappingSource
     {
         private static readonly RelationalTypeMapping _string
-            = new StringTypeMapping("just_string(2000)");
+            = new StringTypeMapping("just_string(2000)", dbType: DbType.String);
 
         private static readonly RelationalTypeMapping _binary
             = new ByteArrayTypeMapping("just_binary(max)", dbType: DbType.Binary);

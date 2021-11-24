@@ -32,8 +32,6 @@ namespace FakeNamespace
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation(""Relational:Collation"", ""SQL_Latin1_General_CP1_CI_AS"");
-
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.ToTable(""Category"");
@@ -50,7 +48,7 @@ namespace FakeNamespace
             {
                 entity.ToTable(""Product"");
 
-                entity.HasIndex(e => e.CategoryId);
+                entity.HasIndex(e => e.CategoryId, ""IX_Product_CategoryId"");
 
                 entity.Property(e => e.ProductName)
                     .IsRequired()
@@ -96,8 +94,6 @@ namespace FakeNamespace
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation(""Relational:Collation"", ""SQL_Latin1_General_CP1_CI_AS"");
-
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.ToTable(""Category"");
@@ -114,7 +110,7 @@ namespace FakeNamespace
             {
                 entity.ToTable(""Product"");
 
-                entity.HasIndex(e => e.CategoryId);
+                entity.HasIndex(e => e.CategoryId, ""IX_Product_CategoryId"");
 
                 entity.Property(e => e.ProductName)
                     .IsRequired()
@@ -169,8 +165,6 @@ namespace FakeNamespace
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation(""Relational:Collation"", ""SQL_Latin1_General_CP1_CI_AS"");
-
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.HasComment(""A category of products"");

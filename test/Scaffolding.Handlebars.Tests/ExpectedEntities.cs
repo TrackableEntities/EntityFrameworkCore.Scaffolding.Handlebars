@@ -141,14 +141,14 @@ namespace FakeNamespace
             Products = new HashSet<Product>();
         }
 
-        public int CategoryId { get; set; } = default!;
+        public int CategoryId { get; set; }
 
         /// <summary>
         /// The name of a category
         /// </summary>
-        public string CategoryName { get; set; } = default!;
+        public string CategoryName { get; set; } = null!;
 
-        public virtual ICollection<Product> Products { get; set; } = default!;
+        public virtual ICollection<Product> Products { get; set; }
     }
 }
 ";
@@ -161,10 +161,10 @@ namespace FakeNamespace
 {
     public partial class Product
     {
-        public int ProductId { get; set; } = default!;
-        public string ProductName { get; set; } = default!;
+        public int ProductId { get; set; }
+        public string ProductName { get; set; } = null!;
         public decimal? UnitPrice { get; set; }
-        public bool Discontinued { get; set; } = default!;
+        public bool Discontinued { get; set; }
         public byte[]? RowVersion { get; set; }
         public int? CategoryId { get; set; }
 

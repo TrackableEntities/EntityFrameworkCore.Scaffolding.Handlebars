@@ -4,6 +4,7 @@
 // Modifications copyright(C) 2019 Tony Sneed.
 
 using System.IO;
+using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
@@ -73,8 +74,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="cSharpHelper">CSharp helper.</param>
         /// <param name="options">Handlebar scaffolding options.</param>
         public HbsCSharpModelGenerator(
-            [NotNull] ModelCodeGeneratorDependencies dependencies, 
-            [NotNull] ICSharpDbContextGenerator cSharpDbContextGenerator, 
+            [NotNull] ModelCodeGeneratorDependencies dependencies,
+            [NotNull] ICSharpDbContextGenerator cSharpDbContextGenerator,
             [NotNull] ICSharpEntityTypeGenerator cSharpEntityTypeGenerator,
             [NotNull] IHbsHelperService handlebarsHelperService,
             [NotNull] IHbsBlockHelperService handlebarsBlockHelperService,
@@ -126,6 +127,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     options.ContextNamespace,
                     options.ModelNamespace,
                     options.UseDataAnnotations,
+                    options.UseNullableReferenceTypes,
                     options.SuppressConnectionStringWarning,
                     options.SuppressOnConfiguring);
 
@@ -143,12 +145,17 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
                 {
+                    if (IsManyToManyJoinEntityType(entityType))
+                    {
+                        continue;
+                    }
                     generatedCode = CSharpEntityTypeGenerator.WriteCode(
                         entityType,
                         options.ModelNamespace,
-                        options.UseDataAnnotations);
+                        options.UseDataAnnotations,
+                        options.UseNullableReferenceTypes);
 
-                    var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.DisplayName());
+                    var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.Name);
                     var schema = !string.IsNullOrEmpty(entityType.GetTableName())
                         ? entityType.GetSchema()
                         : entityType.GetViewSchema();
@@ -158,13 +165,40 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     resultingFiles.AdditionalFiles.Add(
                         new ScaffoldedFile
                         {
-                            Path = entityTypeFileName, 
-                            Code = generatedCode 
+                            Path = entityTypeFileName,
+                            Code = generatedCode
                         });
                 }
             }
 
             return resultingFiles;
+        }
+
+
+        internal static bool IsManyToManyJoinEntityType(IEntityType entityType)
+        {
+            if (!entityType.GetNavigations().Any()
+                && !entityType.GetSkipNavigations().Any())
+            {
+                var primaryKey = entityType.FindPrimaryKey();
+                var properties = entityType.GetProperties().ToList();
+                var foreignKeys = entityType.GetForeignKeys().ToList();
+                if (primaryKey != null
+                    && primaryKey.Properties.Count > 1
+                    && foreignKeys.Count == 2
+                    && primaryKey.Properties.Count == properties.Count
+                    && foreignKeys[0].Properties.Count + foreignKeys[1].Properties.Count == properties.Count
+                    && !foreignKeys[0].Properties.Intersect(foreignKeys[1].Properties).Any()
+                    && foreignKeys[0].IsRequired
+                    && foreignKeys[1].IsRequired
+                    && !foreignKeys[0].IsUnique
+                    && !foreignKeys[1].IsUnique)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

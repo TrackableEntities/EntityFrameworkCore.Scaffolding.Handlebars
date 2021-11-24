@@ -17,10 +17,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="contextNamespace">Context namespace.</param>
         /// <param name="modelNamespace">Model namespace.</param>
         /// <param name="useDataAnnotations">If false use fluent modeling API.</param>
+        /// <param name="useNullableReferenceTypes">If true use nullable reference types.</param>
         /// <param name="suppressConnectionStringWarning">Suppress connection string warning.</param>
         /// <param name="suppressOnConfiguring">Suppress OnConfiguring method.</param>
         /// <returns>DbContext class.</returns>
-        public string WriteCode(IModel model, string contextName, string connectionString, string contextNamespace, string modelNamespace, bool useDataAnnotations, bool suppressConnectionStringWarning, bool suppressOnConfiguring)
+        public string WriteCode(IModel model, string contextName, string connectionString, string contextNamespace, string modelNamespace, bool useDataAnnotations, bool useNullableReferenceTypes, bool suppressConnectionStringWarning, bool suppressOnConfiguring)
         {
             return string.Empty;
         }

@@ -140,6 +140,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             GenerateConstructor(entityType);
             GenerateProperties(entityType);
             GenerateNavigationProperties(entityType);
+            GenerateSkipNavigationProperties(entityType);
         }
 
         /// <summary>
@@ -230,6 +231,40 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(navProperties);
 
                 TemplateData.Add("nav-properties", transformedNavProperties);
+            }
+        }
+
+        /// <summary>
+        /// Generate entity type skip navigation properties.
+        /// </summary>
+        /// <param name="entityType">Represents an entity type in an <see cref="T:Microsoft.EntityFrameworkCore.Metadata.IModel" />.</param>
+        protected override void GenerateSkipNavigationProperties(IEntityType entityType)
+        {
+            Check.NotNull(entityType, nameof(entityType));
+
+            var sortedNavigations = entityType.GetSkipNavigations()
+                .OrderBy(n => n.IsOnDependent ? 0 : 1)
+                .ThenBy(n => n.IsCollection ? 1 : 0);
+
+            if (sortedNavigations.Any())
+            {
+                var navProperties = new List<Dictionary<string, object>>();
+
+                foreach (var navigation in sortedNavigations)
+                {
+                    navProperties.Add(new Dictionary<string, object>
+                    {
+                        { "nav-property-collection", navigation.IsCollection },
+                        { "nav-property-type", navigation.TargetEntityType.Name },
+                        { "nav-property-name", TypeScriptHelper.ToCamelCase(navigation.Name) },
+                        { "nav-property-annotations", new List<Dictionary<string, object>>() },
+                        { "nullable-reference-types",  UseNullableReferenceTypes }
+                    });
+                }
+
+                var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(navProperties);
+
+                TemplateData.Add("skip-nav-properties", transformedNavProperties);
             }
         }
     }

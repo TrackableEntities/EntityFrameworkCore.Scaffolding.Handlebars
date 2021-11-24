@@ -340,18 +340,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         GenerateNavigationDataAnnotations(navigation);
                     }
 
-                    var propertyIsNullable = !navigation.IsCollection && (
-                        navigation.IsOnDependent
-                        ? !navigation.ForeignKey.IsRequired
-                        : !navigation.ForeignKey.IsRequiredDependent
-                    );
+                    var propertyIsNullable = !navigation.IsCollection &&
+                        UseNullableReferenceTypes &&
+                        !navigation.ForeignKey.IsRequired;
                     var navPropertyType = navigation.TargetEntityType.Name;
-                    if (UseNullableReferenceTypes &&
-                        !navPropertyType.EndsWith("?") &&
-                        propertyIsNullable) {
+                    if (propertyIsNullable &&
+                        !navPropertyType.EndsWith("?")) {
                         navPropertyType += "?";
                     }
-
                     navProperties.Add(new Dictionary<string, object>
                     {
                         { "nav-property-collection", navigation.IsCollection },
@@ -391,15 +387,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         GenerateNavigationDataAnnotations(navigation);
                     }
 
-                    var propertyIsNullable = !navigation.IsCollection && (
-                        navigation.IsOnDependent
-                        ? !navigation.ForeignKey.IsRequired
-                        : !navigation.ForeignKey.IsRequiredDependent
-                    );
+                    var propertyIsNullable = !navigation.IsCollection &&
+                        UseNullableReferenceTypes &&
+                        !navigation.ForeignKey.IsRequired;
                     var navPropertyType = navigation.TargetEntityType.Name;
-                    if (UseNullableReferenceTypes &&
-                        !navPropertyType.EndsWith("?") &&
-                        propertyIsNullable) {
+                    if (propertyIsNullable &&
+                        !navPropertyType.EndsWith("?")) {
                         navPropertyType += "?";
                     }
                     navProperties.Add(new Dictionary<string, object>

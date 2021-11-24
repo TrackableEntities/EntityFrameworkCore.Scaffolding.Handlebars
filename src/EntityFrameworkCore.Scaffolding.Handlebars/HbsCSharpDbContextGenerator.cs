@@ -744,13 +744,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 canUseDataAnnotations = false;
                 lines.Add(
                     $".{nameof(ReferenceReferenceBuilder.HasPrincipalKey)}"
-                    + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformPropertyName(((ITypeBase)foreignKey.PrincipalEntityType).DisplayName(), "")}>" : "")
+                    + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformPropertyName(foreignKey.PrincipalEntityType.Name, "")}>" : "")
                     + $"(p => {GenerateLambdaToKey(foreignKey.PrincipalKey.Properties, "p", EntityTypeTransformationService.TransformNavPropertyName)})");
             }
 
             lines.Add(
                 $".{nameof(ReferenceReferenceBuilder.HasForeignKey)}"
-                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(foreignKey.DeclaringEntityType, EntityTypeTransformationService.TransformTypeEntityName(((ITypeBase)foreignKey.DeclaringEntityType).DisplayName()))}>" : "")
+                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(foreignKey.DeclaringEntityType, EntityTypeTransformationService.TransformTypeEntityName(foreignKey.DeclaringEntityType.Name))}>" : "")
                 + $"(d => {GenerateLambdaToKey(foreignKey.Properties, "d", EntityTypeTransformationService.TransformPropertyName)})");
 
             var defaultOnDeleteAction = foreignKey.IsRequired
@@ -828,7 +828,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                                 lines.Add($".{nameof(RelationalKeyBuilderExtensions.HasName)}({CSharpHelper.Literal(key.GetName()!)})");
                             }
 
-                            GenerateAnnotations(keyAnnotations.Values);
+                            lines.AddRange(
+                                AnnotationCodeGenerator.GenerateFluentApiCalls(key, keyAnnotations).Select(m => CSharpHelper.Fragment(m))
+                                    .Concat(GenerateAnnotations(keyAnnotations.Values)));
+
                             WriteLines(";");
 
                             var annotations = AnnotationCodeGenerator
@@ -856,7 +859,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                             lines.Add($"j.{nameof(RelationalEntityTypeBuilderExtensions.ToTable)}({parameterString})");
 
-                            GenerateAnnotations(annotations.Values);
+                            lines.AddRange(
+                                AnnotationCodeGenerator.GenerateFluentApiCalls(joinEntityType, annotations).Select(m => CSharpHelper.Fragment(m))
+                                    .Concat(GenerateAnnotations(annotations.Values)));
 
                             sb.AppendLine();
                             WriteLines(";");
@@ -879,7 +884,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                                     lines.Add($".{nameof(IndexBuilder.IsUnique)}()");
                                 }
 
-                                GenerateAnnotations(indexAnnotations.Values);
+                                lines.AddRange(
+                                    AnnotationCodeGenerator.GenerateFluentApiCalls(index, indexAnnotations).Select(m => CSharpHelper.Fragment(m))
+                                        .Concat(GenerateAnnotations(indexAnnotations.Values)));
 
                                 sb.AppendLine();
                                 WriteLines(";");
@@ -981,7 +988,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                                     lines.Add($".{nameof(PropertyBuilder.IsConcurrencyToken)}()");
                                 }
 
-                                GenerateAnnotations(propertyAnnotations.Values);
+                                lines.AddRange(
+                                    AnnotationCodeGenerator.GenerateFluentApiCalls(property, propertyAnnotations).Select(m => CSharpHelper.Fragment(m))
+                                        .Concat(GenerateAnnotations(propertyAnnotations.Values)));
 
                                 if (lines.Count > 1)
                                 {
@@ -1024,7 +1033,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                                 lines.Add($".{nameof(ReferenceReferenceBuilder.OnDelete)}({CSharpHelper.Literal(foreignKey.DeleteBehavior)})");
                             }
 
-                            GenerateAnnotations(annotations.Values);
+                            lines.AddRange(
+                                AnnotationCodeGenerator.GenerateFluentApiCalls(foreignKey, annotations).Select(m => CSharpHelper.Fragment(m))
+                                    .Concat(GenerateAnnotations(annotations.Values)));
                             WriteLines(",");
                         }
 

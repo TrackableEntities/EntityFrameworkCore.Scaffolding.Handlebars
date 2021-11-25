@@ -14,14 +14,14 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
 
 ## Prerequisites
 
-- [Visual Studio 2022](https://www.visualstudio.com/downloads/) or greater.
-- [.NET Core 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0) RC2 or greater.
+- [Visual Studio 2022](https://www.visualstudio.com/downloads/) or greater, [JetBrains Rider](https://www.jetbrains.com/rider) 2021.3 or greater.
+- [.NET Core 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0) or greater.
 - [EF Core CLI 6.0](https://docs.microsoft.com/en-us/ef/core/cli/dotnet) or greater.
   - Install global `dotnet-ef` tool.
     ```
     dotnet tool install --global dotnet-ef
     ```
-  - Update global `dotnet-ef` tool.
+  - Or update global `dotnet-ef` tool.
     ```
     dotnet tool update --global dotnet-ef
     ```
@@ -34,6 +34,21 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
     - Create a new database named **NorthwindSlim**.
     - Download the `NorthwindSlim.sql` file from <https://github.com/TrackableEntities/northwind-slim>.
     - Unzip **NorthwindSlim.sql** and run the script to create tables and populate them with data.
+
+## Upgrading from v5 to v6
+
+1. Upgrade `TargetFramework` in **.csproj** file to `net6.0`.
+   - Optional: Set `ImplicitUsings` to `enable`.
+   - Optional: Set `Nullable` ro `enable`.
+2. Update the following NuGet packages to `6.0.0` or later:
+   - Microsoft.EntityFrameworkCore.Design
+   - Microsoft.EntityFrameworkCore.SqlServer
+   - EntityFrameworkCore.Scaffolding.Handlebars
+3. Remove the `EnableNullableReferenceTypes` option from `services.AddHandlebarsScaffolding` in `ScaffoldingDesignTimeServices.ConfigureDesignTimeServices`.
+   - Version 6 relies on [support for nullable reference types in EF Core 6](https://docs.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types).
+4. Run `dotnet ef dbcontext scaffold` command to regenerate entities.
+   - You may retain your customized Handlebars templates.
+   - [Many-to-many relationships](https://docs.microsoft.com/en-us/ef/core/modeling/relationships?tabs=fluent-api%2Cfluent-api-simple-key%2Csimple-key#many-to-many) will be materialized without the need for an intermediate entity.
 
 ## Usage
 
@@ -94,8 +109,7 @@ Take advantage of C# nullable reference types by enabling them in your .csproj f
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>netcoreapp3.1</TargetFramework>
-  <LangVersion>8.0</LangVersion>
+  <TargetFramework>net6.0</TargetFramework>
   <Nullable>enable</Nullable>
 </PropertyGroup>
 ```

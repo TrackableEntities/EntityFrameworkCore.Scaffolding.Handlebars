@@ -1,4 +1,4 @@
-﻿import { EmployeeTerritory } from './EmployeeTerritory';
+﻿import { Territory } from './Territory';
 
 export interface Employee {
     employeeId: number;
@@ -8,5 +8,5 @@ export interface Employee {
     hireDate: Date;
     city: string;
     country: string;
-    employeeTerritories: EmployeeTerritory[];
+    territories: Territory[];
 }

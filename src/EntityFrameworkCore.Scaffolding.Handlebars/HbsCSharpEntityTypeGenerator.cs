@@ -9,7 +9,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
-using System.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -407,7 +406,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 }
 
                 var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(navProperties);
-                TemplateData.Add("skip-nav-properties", transformedNavProperties);
+                if (TemplateData.TryGetValue("nav-properties", out var navProps)
+                    && navProps is List<Dictionary<string, object>> existingNavProps)
+                    transformedNavProperties.ForEach(item => existingNavProps.Add(item));
+                else
+                    TemplateData.Add("nav-properties", transformedNavProperties);
             }
         }
 

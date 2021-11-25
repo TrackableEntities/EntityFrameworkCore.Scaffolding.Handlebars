@@ -108,15 +108,22 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             Check.NotNull(entityType, nameof(entityType));
 
-            var sortedNavigations = entityType.GetNavigations()
+            var navigations = new List<INavigationBase>();
+            IEnumerable<INavigationBase> sortedNavigations = entityType.GetScaffoldNavigations(_options.Value)
                 .OrderBy(n => n.IsOnDependent ? 0 : 1)
                 .ThenBy(n => n.IsCollection ? 1 : 0)
                 .Distinct();
+            IEnumerable<INavigationBase> sortedSkipNavigations = entityType.GetScaffoldSkipNavigations(_options.Value)
+                .OrderBy(n => n.IsOnDependent ? 0 : 1)
+                .ThenBy(n => n.IsCollection ? 1 : 0)
+                .Distinct();
+            navigations.AddRange(sortedNavigations);
+            navigations.AddRange(sortedSkipNavigations);
 
-            if (sortedNavigations.Any())
+            if (navigations.Any())
             {
                 var imports = new List<Dictionary<string, object>>();
-                foreach (var navigation in sortedNavigations)
+                foreach (var navigation in navigations)
                 {
                     imports.Add(new Dictionary<string, object> { { "import", navigation.TargetEntityType.Name } });
                 }
@@ -263,8 +270,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 }
 
                 var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(navProperties);
-
-                TemplateData.Add("skip-nav-properties", transformedNavProperties);
+                if (TemplateData.TryGetValue("nav-properties", out var navProps)
+                    && navProps is List<Dictionary<string, object>> existingNavProps)
+                    transformedNavProperties.ForEach(item => existingNavProps.Add(item));
+                else
+                    TemplateData.Add("nav-properties", transformedNavProperties);
             }
         }
     }

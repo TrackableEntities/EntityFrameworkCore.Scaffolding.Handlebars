@@ -19,7 +19,7 @@ namespace ScaffoldingSample
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
             // Uncomment to launch JIT debugger and hit breakpoints
-            System.Diagnostics.Debugger.Launch();
+            //System.Diagnostics.Debugger.Launch();
 
             // Add Handlebars scaffolding templates
             services.AddHandlebarsScaffolding(options =>

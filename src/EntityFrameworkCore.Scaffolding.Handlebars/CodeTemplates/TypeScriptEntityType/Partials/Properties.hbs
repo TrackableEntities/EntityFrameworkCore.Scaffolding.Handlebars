@@ -15,12 +15,3 @@
 {{/if}}
 {{/each}}
 {{/if}}
-{{#if skip-nav-properties}}
-{{#each skip-nav-properties}}
-{{#if nav-property-collection}}
-    {{nav-property-name}}: {{nav-property-type}}[];
-{{else}}
-    {{nav-property-name}}: {{nav-property-type}};
-{{/if}}
-{{/each}}
-{{/if}}

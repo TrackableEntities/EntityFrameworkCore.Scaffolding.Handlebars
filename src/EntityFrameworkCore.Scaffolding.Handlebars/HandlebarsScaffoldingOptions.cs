@@ -51,6 +51,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         public bool EnableSchemaFolders { get; set; }
 
         /// <summary>
+        /// Gets or sets whether entity properties are declared and instantiated in the C# 8.0+ nullable reference types style (optional).
+        /// https://docs.microsoft.com/en-us/dotnet/csharp/nullable-references
+        /// https://docs.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
+        /// </summary>
+        [Obsolete("Deprecated in favor of support for nullable reference types in EF Core 6.", true)]
+        public bool EnableNullableReferenceTypes { get; set; }
+
+        /// <summary>
         /// Gets or sets whether table and column descriptions generate XML comments.
         /// </summary>
         public bool GenerateComments { get; set; } = true;

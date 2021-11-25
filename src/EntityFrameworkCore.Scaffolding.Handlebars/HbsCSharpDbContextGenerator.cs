@@ -431,7 +431,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 GenerateRelationship(foreignKey, sb);
             }
 
-            foreach (var skipNavigation in entityType.GetSkipNavigations())
+            foreach (var skipNavigation in entityType.GetScaffoldSkipNavigations(_options.Value))
             {
                 if (skipNavigation.JoinEntityType.FindPrimaryKey()!.Properties[0].GetContainingForeignKeys().Single().PrincipalEntityType == entityType)
                 {
@@ -789,6 +789,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             sb.AppendLine();
 
+            if (_options.Value.ExcludedTables != null
+                && _options.Value.ExcludedTables.Contains(skipNavigation.Inverse.ForeignKey.PrincipalEntityType.Name))
+                return;
+
             var inverse = skipNavigation.Inverse;
             var joinEntityType = skipNavigation.JoinEntityType;
             using (sb.Indent())
@@ -804,9 +808,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         sb.AppendLine($"{CSharpHelper.Literal(joinEntityType.Name)},");
                         var lines = new List<string>();
 
-                        GenerateForeignKeyConfigurationLines(inverse.ForeignKey, inverse.ForeignKey.PrincipalEntityType.Name, "l");
-                        GenerateForeignKeyConfigurationLines(
-                            skipNavigation.ForeignKey, skipNavigation.ForeignKey.PrincipalEntityType.Name, "r");
+                        var navEntityTypeName = GetEntityTypeName(inverse.ForeignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(inverse.ForeignKey.PrincipalEntityType.Name));
+                        var skipNavEntityTypeName = GetEntityTypeName(skipNavigation.ForeignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(skipNavigation.ForeignKey.PrincipalEntityType.Name));
+                        GenerateForeignKeyConfigurationLines(inverse.ForeignKey, navEntityTypeName, "l");
+                        GenerateForeignKeyConfigurationLines(skipNavigation.ForeignKey, skipNavEntityTypeName, "r");
                         sb.AppendLine("j =>");
                         sb.AppendLine("{");
 

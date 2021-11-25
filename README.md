@@ -14,9 +14,9 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
 
 ## Prerequisites
 
-- [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.8 Preview 4.0 or greater.
-- .[NET Core 5.0 SDK](https://dotnet.microsoft.com/download/dotnet/5.0) RC2 or greater.
-- [EF Core CLI 5.0](https://devblogs.microsoft.com/dotnet/announcing-entity-framework-core-ef-core-5-rc2/) or greater.
+- [Visual Studio 2022](https://www.visualstudio.com/downloads/) or greater.
+- [.NET Core 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0) RC2 or greater.
+- [EF Core CLI 6.0](https://docs.microsoft.com/en-us/ef/core/cli/dotnet) or greater.
   - Install global `dotnet-ef` tool.
     ```
     dotnet tool install --global dotnet-ef
@@ -37,10 +37,7 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
 
 ## Usage
 
-1. Create a new **.NET Core** class library.
-    - If necessary, edit the csproj file to update the **TargetFramework** to 3.1 or 5.0
-
-    > **Note**: Using the EF Core toolchain with a _.NET Standard_ class library is currently not supported. Instead, you can add a .NET Standard class library to the same solution as the .NET Core library, then add existing items and select **Add As Link** to include entity classes.
+1. Create a new **.NET 6** class library.
 
 2. Add EF Core SQL Server and Tools NuGet packages.
     - `Microsoft.EntityFrameworkCore.SqlServer`
@@ -93,7 +90,7 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
 
 ## Nullable Reference Types
 
-Take advantage of C# nullable reference types by enabling them in your .csproj file.
+Take advantage of C# nullable reference types by enabling them in your .csproj file. (This is by default in .NET 6.)
 
 ```xml
 <PropertyGroup>
@@ -103,21 +100,12 @@ Take advantage of C# nullable reference types by enabling them in your .csproj f
 </PropertyGroup>
 ```
 
-Then enable nullable reference types for Handlebars scaffolding.
-
-```csharp
-services.AddHandlebarsScaffolding(options =>
-{
-    options.EnableNullableReferenceTypes = true;
-});
-```
-
 Non-nullable properties will include the [null forgiving operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/null-forgiving).
 
 ```csharp
 public partial class Product
 {
-    public string ProductName { get; set; } = default!;
+    public string ProductName { get; set; } = null!;
     public decimal? UnitPrice { get; set; }
 }
 ```
@@ -130,7 +118,7 @@ You can optionally exclude certain tables from code generation. These may also b
 services.AddHandlebarsScaffolding(options =>
 {
     // Exclude some tables
-    options.ExcludedTables = new List<string> { "Territory", "dbo.EmployeeTerritories" };
+    options.ExcludedTables = new List<string> { "dbo.Territory" };
 });
 ```
 

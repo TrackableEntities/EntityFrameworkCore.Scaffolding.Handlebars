@@ -10,14 +10,14 @@ namespace ScaffoldingSample.Models.dbo
             Orders = new HashSet<Order>();
         }
 
-        public string CustomerId { get; set; } = default!;
-        public string CompanyName { get; set; } = default!;
+        public string CustomerId { get; set; } = null!;
+        public string CompanyName { get; set; } = null!;
         public string? ContactName { get; set; }
         public string? City { get; set; }
-        public Country Country { get; set; } = default!;
+        public Country? Country { get; set; } = null!;
 
-        public virtual CustomerSetting? CustomerSetting { get; set; }
-        public virtual ICollection<Order> Orders { get; set; } = default!;
+        public virtual CustomerSetting CustomerSetting { get; set; } = null!;
+        public virtual ICollection<Order> Orders { get; set; }
 
         // My Handlebars Block Helper: True
         // My Handlebars Block Helper: False

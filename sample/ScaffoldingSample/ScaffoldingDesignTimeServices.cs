@@ -19,7 +19,7 @@ namespace ScaffoldingSample
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
             // Uncomment to launch JIT debugger and hit breakpoints
-            //Debugger.Launch();
+            System.Diagnostics.Debugger.Launch();
 
             // Add Handlebars scaffolding templates
             services.AddHandlebarsScaffolding(options =>
@@ -31,7 +31,7 @@ namespace ScaffoldingSample
                 options.EnableSchemaFolders = true;
 
                 // Exclude some tables
-                options.ExcludedTables = new List<string> { "Territory", "EmployeeTerritories" };
+                //options.ExcludedTables = new List<string> { "dbo.Territory" };
 
                 // Add custom template data
                 options.TemplateData = new Dictionary<string, object>
@@ -58,7 +58,7 @@ namespace ScaffoldingSample
             services.AddHandlebarsTransformers(
                 propertyTransformer: e =>
                     e.PropertyName == "Country"
-                        ? new EntityPropertyInfo("Country", e.PropertyName, false)
+                        ? new EntityPropertyInfo("Country?", e.PropertyName, false)
                         : new EntityPropertyInfo(e.PropertyType, e.PropertyName, e.PropertyIsNullable));
 
             // Add optional Handlebars transformers

@@ -10,10 +10,10 @@ namespace ScaffoldingSample.Models.dbo
             Products = new HashSet<Product>();
         }
 
-        public int CategoryId { get; set; } = default!;
-        public string CategoryName { get; set; } = default!;
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; } = null!;
 
-        public virtual ICollection<Product> Products { get; set; } = default!;
+        public virtual ICollection<Product> Products { get; set; }
 
         // My Handlebars Block Helper: True
         // My Handlebars Block Helper: False

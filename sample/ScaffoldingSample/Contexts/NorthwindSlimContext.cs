@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata; // Comment
 using dbo = ScaffoldingSample.Models.dbo;
@@ -8,19 +9,21 @@ namespace ScaffoldingSample.Contexts
     public partial class NorthwindSlimContext : DbContext
     {
         // My Handlebars Helper
-        public virtual DbSet<dbo.Category> Categories { get; set; } = default!;
+        public virtual DbSet<dbo.Category> Categories { get; set; } = null!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.Customer> Customers { get; set; } = default!;
+        public virtual DbSet<dbo.Customer> Customers { get; set; } = null!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.CustomerSetting> CustomerSettings { get; set; } = default!;
+        public virtual DbSet<dbo.CustomerSetting> CustomerSettings { get; set; } = null!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.Employee> Employees { get; set; } = default!;
+        public virtual DbSet<dbo.Employee> Employees { get; set; } = null!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.Order> Orders { get; set; } = default!;
+        public virtual DbSet<dbo.Order> Orders { get; set; } = null!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.OrderDetail> OrderDetails { get; set; } = default!;
+        public virtual DbSet<dbo.OrderDetail> OrderDetails { get; set; } = null!;
         // My Handlebars Helper
-        public virtual DbSet<dbo.Product> Products { get; set; } = default!;
+        public virtual DbSet<dbo.Product> Products { get; set; } = null!;
+        // My Handlebars Helper
+        public virtual DbSet<dbo.Territory> Territories { get; set; } = null!;
 
         public NorthwindSlimContext(DbContextOptions<NorthwindSlimContext> options) : base(options)
         {
@@ -37,15 +40,11 @@ namespace ScaffoldingSample.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
-
             modelBuilder.Entity<dbo.Category>(entity =>
             {
                 entity.ToTable("Category");
 
-                entity.Property(e => e.CategoryName)
-                    .IsRequired()
-                    .HasMaxLength(15);
+                entity.Property(e => e.CategoryName).HasMaxLength(15);
             });
 
             modelBuilder.Entity<dbo.Customer>(entity =>
@@ -54,13 +53,11 @@ namespace ScaffoldingSample.Contexts
 
                 entity.Property(e => e.CustomerId)
                     .HasMaxLength(5)
-                    .IsFixedLength(true);
+                    .IsFixedLength();
 
                 entity.Property(e => e.City).HasMaxLength(15);
 
-                entity.Property(e => e.CompanyName)
-                    .IsRequired()
-                    .HasMaxLength(40);
+                entity.Property(e => e.CompanyName).HasMaxLength(40);
 
                 entity.Property(e => e.ContactName).HasMaxLength(30);
 
@@ -76,11 +73,9 @@ namespace ScaffoldingSample.Contexts
 
                 entity.Property(e => e.CustomerId)
                     .HasMaxLength(5)
-                    .IsFixedLength(true);
+                    .IsFixedLength();
 
-                entity.Property(e => e.Setting)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.Setting).HasMaxLength(50);
 
                 entity.HasOne(d => d.Customer)
                     .WithOne(p => p.CustomerSetting)
@@ -99,15 +94,26 @@ namespace ScaffoldingSample.Contexts
 
                 entity.Property(e => e.Country).HasMaxLength(15);
 
-                entity.Property(e => e.FirstName)
-                    .IsRequired()
-                    .HasMaxLength(20);
+                entity.Property(e => e.FirstName).HasMaxLength(20);
 
                 entity.Property(e => e.HireDate).HasColumnType("datetime");
 
-                entity.Property(e => e.LastName)
-                    .IsRequired()
-                    .HasMaxLength(20);
+                entity.Property(e => e.LastName).HasMaxLength(20);
+
+                entity.HasMany(d => d.Territories)
+                    .WithMany(p => p.Employees)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "EmployeeTerritory",
+                        l => l.HasOne<dbo.Territory>().WithMany().HasForeignKey("TerritoryId").HasConstraintName("FK_dbo.EmployeeTerritories_dbo.Territory_TerritoryId"),
+                        r => r.HasOne<dbo.Employee>().WithMany().HasForeignKey("EmployeeId").HasConstraintName("FK_dbo.EmployeeTerritories_dbo.Employee_EmployeeId"),
+                        j =>
+                        {
+                            j.HasKey("EmployeeId", "TerritoryId").HasName("PK_dbo.EmployeeTerritories");
+
+                            j.ToTable("EmployeeTerritories");
+
+                            j.IndexerProperty<string>("TerritoryId").HasMaxLength(20);
+                        });
             });
 
             modelBuilder.Entity<dbo.Order>(entity =>
@@ -116,7 +122,7 @@ namespace ScaffoldingSample.Contexts
 
                 entity.Property(e => e.CustomerId)
                     .HasMaxLength(5)
-                    .IsFixedLength(true);
+                    .IsFixedLength();
 
                 entity.Property(e => e.Freight)
                     .HasColumnType("money")
@@ -157,9 +163,7 @@ namespace ScaffoldingSample.Contexts
             {
                 entity.ToTable("Product");
 
-                entity.Property(e => e.ProductName)
-                    .IsRequired()
-                    .HasMaxLength(40);
+                entity.Property(e => e.ProductName).HasMaxLength(40);
 
                 entity.Property(e => e.RowVersion)
                     .IsRowVersion()
@@ -173,6 +177,15 @@ namespace ScaffoldingSample.Contexts
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.CategoryId)
                     .HasConstraintName("FK_Products_Categories");
+            });
+
+            modelBuilder.Entity<dbo.Territory>(entity =>
+            {
+                entity.ToTable("Territory");
+
+                entity.Property(e => e.TerritoryId).HasMaxLength(20);
+
+                entity.Property(e => e.TerritoryDescription).HasMaxLength(50);
             });
 
             OnModelCreatingPartial(modelBuilder);

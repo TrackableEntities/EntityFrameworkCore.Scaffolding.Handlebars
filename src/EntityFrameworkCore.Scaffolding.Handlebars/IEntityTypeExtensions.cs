@@ -20,19 +20,23 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns>Filtered set of navigations for scaffolding.</returns>
         public static IEnumerable<INavigation> GetScaffoldNavigations(this IEntityType entityType, HandlebarsScaffoldingOptions options)
         {
+            var result = new List<INavigation>();
             var navigations = entityType.GetNavigations();
-            if (options.ExcludedTables != null && options.ExcludedTables.Any())
-            {
-                var excludedTables = options.ExcludedTables.Select(t => new TableAndSchema(t)).ToList();
-                navigations = navigations.Where(n =>
-                        !excludedTables.Any(e =>
-                            (string.IsNullOrEmpty(e.Schema) ||
-                             string.Equals(n.ForeignKey.GetRelatedEntityType(n.DeclaringEntityType).GetSchema(), e.Schema, StringComparison.OrdinalIgnoreCase))
-                            && string.Equals(n.ForeignKey.GetRelatedEntityType(n.DeclaringEntityType).GetTableName(), e.Table, StringComparison.OrdinalIgnoreCase)))
-                        .ToList();
-            }
+            var excludedTables = GetExcludedTables(options);
 
-            return navigations;
+            foreach (var nav in navigations)
+            {
+                var schema = nav.TargetEntityType.GetSchema();
+                var table = nav.TargetEntityType.GetTableName();
+                if (!excludedTables.Any(e =>
+                    (!options.EnableSchemaFolders && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase))
+                    || string.Equals(schema, e.Schema, StringComparison.OrdinalIgnoreCase)
+                       && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase)))
+                {
+                    result.Add(nav);
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -43,18 +47,23 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns>Filtered set of navigations for scaffolding.</returns>
         public static IEnumerable<ISkipNavigation> GetScaffoldSkipNavigations(this IEntityType entityType, HandlebarsScaffoldingOptions options)
         {
+            var result = new List<ISkipNavigation>();
             var navigations = entityType.GetSkipNavigations();
-            if (options.ExcludedTables != null && options.ExcludedTables.Any())
+            var excludedTables = GetExcludedTables(options);
+
+            foreach (var nav in navigations)
             {
-                var excludedTables = options.ExcludedTables.Select(t => new TableAndSchema(t)).ToList();
-                navigations = navigations.Where(n =>
-                    !excludedTables.Any(e =>
-                        (string.IsNullOrEmpty(e.Schema) ||
-                         string.Equals(n.ForeignKey.GetRelatedEntityType(n.DeclaringEntityType).GetSchema(), e.Schema, StringComparison.OrdinalIgnoreCase))
-                         && string.Equals(n.ForeignKey.GetRelatedEntityType(n.DeclaringEntityType).GetTableName(), e.Table, StringComparison.OrdinalIgnoreCase)))
-                    .ToList();
+                var schema = nav.TargetEntityType.GetSchema();
+                var table = nav.TargetEntityType.GetTableName();
+                if (!excludedTables.Any(e =>
+                    (!options.EnableSchemaFolders && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase))
+                    || string.Equals(schema, e.Schema, StringComparison.OrdinalIgnoreCase)
+                       && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase)))
+                {
+                    result.Add(nav);
+                }
             }
-            return navigations;
+            return result;
         }
 
         /// <summary>
@@ -65,19 +74,31 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns>Filtered set of foreign keys for scaffolding.</returns>
         public static IEnumerable<IForeignKey> GetScaffoldForeignKeys(this IEntityType entityType, HandlebarsScaffoldingOptions options)
         {
+            var result = new List<IForeignKey>();
             var foreignKeys = entityType.GetForeignKeys();
-            if (options.ExcludedTables != null && options.ExcludedTables.Any())
-            {
-                var excludedTables = options.ExcludedTables.Select(t => new TableAndSchema(t)).ToList();
-                foreignKeys = foreignKeys.Where(f =>
-                        !excludedTables.Any(e =>
-                            (string.IsNullOrEmpty(e.Schema) ||
-                             string.Equals(f.GetRelatedEntityType(f.DeclaringEntityType).GetSchema(), e.Schema, StringComparison.OrdinalIgnoreCase))
-                            && string.Equals(f.GetRelatedEntityType(f.DeclaringEntityType).GetTableName(), e.Table, StringComparison.OrdinalIgnoreCase)))
-                        .ToList();
-            }
+            var excludedTables = GetExcludedTables(options);
 
-            return foreignKeys;
+            foreach (var fk in foreignKeys)
+            {
+                var schema = fk.GetRelatedEntityType(fk.DeclaringEntityType).GetSchema();
+                var table = fk.GetRelatedEntityType(fk.DeclaringEntityType).GetTableName();
+                if (!excludedTables.Any(e =>
+                    (!options.EnableSchemaFolders && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase))
+                    || string.Equals(schema, e.Schema, StringComparison.OrdinalIgnoreCase)
+                       && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase)))
+                {
+                    result.Add(fk);
+                }
+            }
+            return result;
+        }
+
+        private static List<TableAndSchema> GetExcludedTables(HandlebarsScaffoldingOptions options)
+        {
+            var excludedTables = new List<TableAndSchema>();
+            if (options.ExcludedTables != null)
+                excludedTables = options.ExcludedTables.Select(t => new TableAndSchema(t)).ToList();
+            return excludedTables;
         }
     }
 }

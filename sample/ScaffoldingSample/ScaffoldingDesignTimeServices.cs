@@ -70,7 +70,7 @@ namespace ScaffoldingSample
 
             // Add optional Handlebars transformers
             //services.AddHandlebarsTransformers(
-            //    entityNameTransformer: n => n + "Foo",
+            //    entityTypeNameTransformer: n => n + "Foo",
             //    entityFileNameTransformer: n => n + "Foo",
             //    constructorTransformer: (e, p) => new EntityPropertyInfo(p.PropertyType + "Foo", p.PropertyName + "Foo"),
             //    propertyTransformer: (e, p) => new EntityPropertyInfo(p.PropertyType, p.PropertyName + "Foo"),

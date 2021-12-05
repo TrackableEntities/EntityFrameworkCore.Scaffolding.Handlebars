@@ -188,7 +188,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         ///     </para>
         /// </summary>
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
-        /// <param name="entityNameTransformer">Entity name transformer.</param>
+        /// <param name="entityTypeNameTransformer">Entity name transformer.</param>
         /// <param name="entityFileNameTransformer">Entity file name transformer.</param>
         /// <param name="constructorTransformer"></param>
         /// <param name="propertyTransformer">Property name transformer.</param>
@@ -196,7 +196,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="contextFileNameTransformer">Context file name transformer.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsTransformers(this IServiceCollection services,
-            Func<string, string> entityNameTransformer = null,
+            Func<string, string> entityTypeNameTransformer = null,
             Func<string, string> entityFileNameTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
             Func<EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
@@ -205,7 +205,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         {
             services.AddSingleton<IEntityTypeTransformationService>(provider =>
                 new HbsEntityTypeTransformationService(
-                    entityNameTransformer,
+                    entityTypeNameTransformer,
                     entityFileNameTransformer,
                     constructorTransformer,
                     propertyTransformer,
@@ -223,7 +223,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         ///     </para>
         /// </summary>
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
-        /// <param name="entityNameTransformer">Entity name transformer.</param>
+        /// <param name="entityTypeNameTransformer">Entity name transformer.</param>
         /// <param name="entityFileNameTransformer">Entity file name transformer.</param>
         /// <param name="constructorTransformer"></param>
         /// <param name="propertyTransformer">Property name transformer.</param>
@@ -231,7 +231,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="contextFileNameTransformer">Context file name transformer.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsTransformers(this IServiceCollection services,
-            Func<string, string> entityNameTransformer = null,
+            Func<string, string> entityTypeNameTransformer = null,
             Func<string, string> entityFileNameTransformer = null,
             Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
             Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
@@ -240,7 +240,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         {
             services.AddSingleton<IEntityTypeTransformationService>(provider =>
                 new HbsEntityTypeTransformationService2(
-                    entityNameTransformer,
+                    entityTypeNameTransformer,
                     entityFileNameTransformer,
                     constructorTransformer,
                     propertyTransformer,

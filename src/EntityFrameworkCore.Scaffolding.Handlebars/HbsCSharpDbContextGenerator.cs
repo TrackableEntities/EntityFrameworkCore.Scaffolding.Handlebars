@@ -417,18 +417,18 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                 if (!UseDataAnnotations || indexAnnotations.Count > 0)
                 {
-                    GenerateIndex(index, sb);
+                    GenerateIndex(entityType, index, sb);
                 }
             }
 
             foreach (var property in entityType.GetProperties())
             {
-                GenerateProperty(property, sb);
+                GenerateProperty(entityType, property, UseDataAnnotations, sb);
             }
 
             foreach (var foreignKey in entityType.GetScaffoldForeignKeys(_options.Value))
             {
-                GenerateRelationship(foreignKey, sb);
+                GenerateRelationship(entityType, foreignKey, UseDataAnnotations, sb);
             }
 
             foreach (var skipNavigation in entityType.GetScaffoldSkipNavigations(_options.Value))
@@ -511,7 +511,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.HasKey)}(e => {GenerateLambdaToKey(key.Properties, "e", EntityTypeTransformationService.TransformPropertyName)})"
+                $".{nameof(EntityTypeBuilder.HasKey)}(e => {GenerateLambdaToKey(entityType, key.Properties, "e", EntityTypeTransformationService.TransformPropertyName)})"
             };
 
             if (explicitName)
@@ -569,7 +569,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
         }
 
-        private void GenerateIndex(IIndex index, IndentedStringBuilder sb)
+        private void GenerateIndex(IEntityType entityType, IIndex index, IndentedStringBuilder sb)
         {
             var annotations = AnnotationCodeGenerator
                 .FilterIgnoredAnnotations(index.GetAnnotations())
@@ -578,7 +578,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.HasIndex)}(e => {GenerateLambdaToKey(index.Properties, "e", EntityTypeTransformationService.TransformPropertyName)}, {CSharpHelper.Literal(index.GetDatabaseName())})"
+                $".{nameof(EntityTypeBuilder.HasIndex)}(e => {GenerateLambdaToKey(entityType, index.Properties, "e", EntityTypeTransformationService.TransformPropertyName)}, {CSharpHelper.Literal(index.GetDatabaseName())})"
             };
             annotations.Remove(RelationalAnnotationNames.Name);
 
@@ -594,11 +594,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             AppendMultiLineFluentApi(index.DeclaringEntityType, lines, sb);
         }
 
-        private void GenerateProperty(IProperty property, IndentedStringBuilder sb)
+        private void GenerateProperty(IEntityType entityType, IProperty property, bool useDataAnnotations, IndentedStringBuilder sb)
         {
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.Property)}(e => e.{EntityTypeTransformationService.TransformPropertyName(property.Name, property.DeclaringType.Name)})"
+                $".{nameof(EntityTypeBuilder.Property)}(e => e.{EntityTypeTransformationService.TransformPropertyName(entityType, property.Name, property.DeclaringType.Name)})"
             };
 
             var annotations = AnnotationCodeGenerator
@@ -720,7 +720,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             AppendMultiLineFluentApi(property.DeclaringEntityType, lines, sb);
         }
 
-        private void GenerateRelationship(IForeignKey foreignKey, IndentedStringBuilder sb)
+        private void GenerateRelationship(IEntityType entityType, IForeignKey foreignKey, bool useDataAnnotations, IndentedStringBuilder sb)
         {
             var canUseDataAnnotations = true;
             var annotations = AnnotationCodeGenerator
@@ -731,11 +731,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var lines = new List<string>
             {
                 $".{nameof(EntityTypeBuilder.HasOne)}("
-                + (foreignKey.DependentToPrincipal != null ? $"d => d.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.DependentToPrincipal?.Name, foreignKey.PrincipalToDependent?.DeclaringType.Name)}" : null)
+                + (foreignKey.DependentToPrincipal != null ? $"d => d.{EntityTypeTransformationService.TransformNavPropertyName(entityType, foreignKey.DependentToPrincipal?.Name, foreignKey.PrincipalToDependent?.DeclaringType.Name)}" : null)
                 + ")",
                 $".{(foreignKey.IsUnique ? nameof(ReferenceNavigationBuilder.WithOne) : nameof(ReferenceNavigationBuilder.WithMany))}"
                 + "("
-                + (foreignKey.PrincipalToDependent != null ? $"p => p.{EntityTypeTransformationService.TransformNavPropertyName(foreignKey.PrincipalToDependent?.Name, foreignKey.DependentToPrincipal?.DeclaringType.Name)}" : null)
+                + (foreignKey.PrincipalToDependent != null ? $"p => p.{EntityTypeTransformationService.TransformNavPropertyName(entityType, foreignKey.PrincipalToDependent?.Name, foreignKey.DependentToPrincipal?.DeclaringType.Name)}" : null)
                 + ")"
             };
 
@@ -744,14 +744,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 canUseDataAnnotations = false;
                 lines.Add(
                     $".{nameof(ReferenceReferenceBuilder.HasPrincipalKey)}"
-                    + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformPropertyName(foreignKey.PrincipalEntityType.Name, "")}>" : "")
-                    + $"(p => {GenerateLambdaToKey(foreignKey.PrincipalKey.Properties, "p", EntityTypeTransformationService.TransformNavPropertyName)})");
+                    + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformPropertyName(entityType, ((ITypeBase)foreignKey.PrincipalEntityType).DisplayName(), "")}>" : "")
+                    + $"(p => {GenerateLambdaToKey(entityType, foreignKey.PrincipalKey.Properties, "p", EntityTypeTransformationService.TransformNavPropertyName)})");
             }
 
             lines.Add(
                 $".{nameof(ReferenceReferenceBuilder.HasForeignKey)}"
-                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(foreignKey.DeclaringEntityType, EntityTypeTransformationService.TransformTypeEntityName(foreignKey.DeclaringEntityType.Name))}>" : "")
-                + $"(d => {GenerateLambdaToKey(foreignKey.Properties, "d", EntityTypeTransformationService.TransformPropertyName)})");
+                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(foreignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(((ITypeBase)foreignKey.DeclaringEntityType).DisplayName()))}>" : "")
+                + $"(d => {GenerateLambdaToKey(entityType, foreignKey.Properties, "d", EntityTypeTransformationService.TransformPropertyName)})");
 
             var defaultOnDeleteAction = foreignKey.IsRequired
                 ? DeleteBehavior.Cascade
@@ -1169,15 +1169,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         }
 
         private static string GenerateLambdaToKey(
+            IEntityType entityType,
             IReadOnlyList<IProperty> properties,
             string lambdaIdentifier,
-            Func<string, string, string> nameTransform)
+            Func<IEntityType, string, string, string> nameTransform)
         {
             return properties.Count <= 0
                 ? ""
                 : properties.Count == 1
-                ? $"{lambdaIdentifier}.{nameTransform(properties[0].Name, properties[0].DeclaringType.Name)}"
-                : $"new {{ {string.Join(", ", properties.Select(p => lambdaIdentifier + "." + nameTransform(p.Name, p.DeclaringType.Name)))} }}";
+                ? $"{lambdaIdentifier}.{nameTransform(entityType, properties[0].Name, properties[0].DeclaringType.Name)}"
+                : $"new {{ {string.Join(", ", properties.Select(p => lambdaIdentifier + "." + nameTransform(entityType, p.Name, p.DeclaringType.Name)))} }}";
         }
 
         private static void RemoveAnnotation(ref List<IAnnotation> annotations, string annotationName)

@@ -4,6 +4,7 @@ using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using HandlebarsDotNet;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -197,9 +198,9 @@ namespace Microsoft.EntityFrameworkCore.Design
         public static IServiceCollection AddHandlebarsTransformers(this IServiceCollection services,
             Func<string, string> entityNameTransformer = null,
             Func<string, string> entityFileNameTransformer = null,
-            Func<EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
-            Func<EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
-            Func<EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null,
             Func<string, string> contextFileNameTransformer = null)
         {
             services.AddSingleton<IEntityTypeTransformationService>(provider =>

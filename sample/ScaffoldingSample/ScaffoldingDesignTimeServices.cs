@@ -58,7 +58,7 @@ namespace ScaffoldingSample
             services.AddHandlebarsTransformers(
                 propertyTransformer: (e, p) =>
                     p.PropertyName == "Country"
-                        ? new EntityPropertyInfo("Country", p.PropertyName, false)
+                        ? new EntityPropertyInfo("Country?", p.PropertyName, false)
                         : new EntityPropertyInfo(p.PropertyType, p.PropertyName, p.PropertyIsNullable));
 
             // Add Handlebars transformer for Id property

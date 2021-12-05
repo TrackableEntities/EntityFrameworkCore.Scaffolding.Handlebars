@@ -15,7 +15,9 @@ namespace Scaffolding.Handlebars.Tests.Fakes
         {
         }
 
-        public override MethodCallCodeFragment GenerateUseProvider(string connectionString, MethodCallCodeFragment providerOptions) 
+        public override MethodCallCodeFragment GenerateUseProvider(string connectionString, MethodCallCodeFragment providerOptions)
+#pragma warning disable CS0618 // Type or member is obsolete
             => new MethodCallCodeFragment("UseTestProvider", connectionString);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }

@@ -173,7 +173,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     });
                 }
 
-                var transformedLines = EntityTypeTransformationService.TransformConstructor(lines);
+                var transformedLines = EntityTypeTransformationService.TransformConstructor(entityType, lines);
 
                 TemplateData.Add("lines", transformedLines);
             }
@@ -202,7 +202,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 });
             }
 
-            var transformedProperties = EntityTypeTransformationService.TransformProperties(properties);
+            var transformedProperties = EntityTypeTransformationService.TransformProperties(entityType, properties);
 
             TemplateData.Add("properties", transformedProperties);
         }
@@ -235,7 +235,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     });
                 }
 
-                var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(navProperties);
+                var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(entityType, navProperties);
 
                 TemplateData.Add("nav-properties", transformedNavProperties);
             }
@@ -269,7 +269,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     });
                 }
 
-                var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(navProperties);
+                var transformedNavProperties = EntityTypeTransformationService.TransformNavigationProperties(entityType, navProperties);
                 if (TemplateData.TryGetValue("nav-properties", out var navProps)
                     && navProps is List<Dictionary<string, object>> existingNavProps)
                     transformedNavProperties.ForEach(item => existingNavProps.Add(item));

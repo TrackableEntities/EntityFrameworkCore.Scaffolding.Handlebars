@@ -7,6 +7,7 @@ namespace Scaffolding.Handlebars.Tests
         {
             public static string ContextClass =
 @"using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 

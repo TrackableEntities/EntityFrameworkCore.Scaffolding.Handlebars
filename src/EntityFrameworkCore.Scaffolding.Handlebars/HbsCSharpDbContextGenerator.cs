@@ -744,13 +744,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 canUseDataAnnotations = false;
                 lines.Add(
                     $".{nameof(ReferenceReferenceBuilder.HasPrincipalKey)}"
-                    + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformPropertyName(entityType, ((ITypeBase)foreignKey.PrincipalEntityType).DisplayName(), "")}>" : "")
+                    + (foreignKey.IsUnique ? $"<{EntityTypeTransformationService.TransformPropertyName(entityType, foreignKey.PrincipalEntityType.Name, "")}>" : "")
                     + $"(p => {GenerateLambdaToKey(entityType, foreignKey.PrincipalKey.Properties, "p", EntityTypeTransformationService.TransformNavPropertyName)})");
             }
 
             lines.Add(
                 $".{nameof(ReferenceReferenceBuilder.HasForeignKey)}"
-                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(foreignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(((ITypeBase)foreignKey.DeclaringEntityType).DisplayName()))}>" : "")
+                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(foreignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(foreignKey.DeclaringEntityType.Name))}>" : "")
                 + $"(d => {GenerateLambdaToKey(entityType, foreignKey.Properties, "d", EntityTypeTransformationService.TransformPropertyName)})");
 
             var defaultOnDeleteAction = foreignKey.IsRequired
@@ -797,10 +797,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var joinEntityType = skipNavigation.JoinEntityType;
             using (sb.Indent())
             {
-                sb.AppendLine($"{EntityLambdaIdentifier}.{nameof(EntityTypeBuilder.HasMany)}(d => d.{skipNavigation.Name})");
+                sb.AppendLine($"{EntityLambdaIdentifier}.{nameof(EntityTypeBuilder.HasMany)}(d => d.{EntityTypeTransformationService.TransformTypeEntityName(skipNavigation.Name)})");
                 using (sb.Indent())
                 {
-                    sb.AppendLine($".{nameof(CollectionNavigationBuilder.WithMany)}(p => p.{inverse.Name})");
+                    sb.AppendLine($".{nameof(CollectionNavigationBuilder.WithMany)}(p => p.{EntityTypeTransformationService.TransformTypeEntityName(inverse.Name)})");
                     sb.AppendLine(
                         $".{nameof(CollectionCollectionBuilder.UsingEntity)}<{CSharpHelper.Reference(Model.DefaultPropertyBagType)}>(");
                     using (sb.Indent())

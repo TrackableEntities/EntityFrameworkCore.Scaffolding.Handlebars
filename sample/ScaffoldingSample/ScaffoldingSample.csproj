@@ -15,4 +15,8 @@
     <ProjectReference Include="..\..\src\EntityFrameworkCore.Scaffolding.Handlebars\EntityFrameworkCore.Scaffolding.Handlebars.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\dbo\" />
+  </ItemGroup>
+
 </Project>

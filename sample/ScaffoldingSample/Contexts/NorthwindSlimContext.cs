@@ -79,7 +79,7 @@ namespace ScaffoldingSample.Contexts
 
                 entity.HasOne(d => d.Customer)
                     .WithOne(p => p.CustomerSetting)
-                    .HasForeignKey<dbo.CustomerSetting (Dictionary<string, object>)>(d => d.CustomerId)
+                    .HasForeignKey<dbo.CustomerSetting>(d => d.CustomerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CustomerSetting_Customer");
             });

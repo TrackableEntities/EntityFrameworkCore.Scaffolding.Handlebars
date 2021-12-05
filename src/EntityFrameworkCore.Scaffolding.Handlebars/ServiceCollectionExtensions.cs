@@ -188,7 +188,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         ///     </para>
         /// </summary>
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
-        /// <param name="entityNameTransformer">Entity name transformer.</param>
+        /// <param name="entityTypeNameTransformer">Entity name transformer.</param>
         /// <param name="entityFileNameTransformer">Entity file name transformer.</param>
         /// <param name="constructorTransformer"></param>
         /// <param name="propertyTransformer">Property name transformer.</param>
@@ -196,7 +196,42 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="contextFileNameTransformer">Context file name transformer.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
         public static IServiceCollection AddHandlebarsTransformers(this IServiceCollection services,
-            Func<string, string> entityNameTransformer = null,
+            Func<string, string> entityTypeNameTransformer = null,
+            Func<string, string> entityFileNameTransformer = null,
+            Func<EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
+            Func<EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
+            Func<EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null,
+            Func<string, string> contextFileNameTransformer = null)
+        {
+            services.AddSingleton<IEntityTypeTransformationService>(provider =>
+                new HbsEntityTypeTransformationService(
+                    entityTypeNameTransformer,
+                    entityFileNameTransformer,
+                    constructorTransformer,
+                    propertyTransformer,
+                    navPropertyTransformer));
+            services.AddSingleton<IContextTransformationService>(provider =>
+                new HbsContextTransformationService(contextFileNameTransformer));
+            return services;
+        }
+
+        /// <summary>
+        /// Register Handlebars transformers.
+        ///     <para>
+        ///         Note: You must first call AddHandlebarsScaffolding before calling AddHandlebarsTransformers.
+        ///         This overload surfaces IEntityType in the transformers.
+        ///     </para>
+        /// </summary>
+        /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
+        /// <param name="entityTypeNameTransformer">Entity name transformer.</param>
+        /// <param name="entityFileNameTransformer">Entity file name transformer.</param>
+        /// <param name="constructorTransformer"></param>
+        /// <param name="propertyTransformer">Property name transformer.</param>
+        /// <param name="navPropertyTransformer">Navigation property name transformer.</param>
+        /// <param name="contextFileNameTransformer">Context file name transformer.</param>
+        /// <returns>The same service collection so that multiple calls can be chained.</returns>
+        public static IServiceCollection AddHandlebarsTransformers(this IServiceCollection services,
+            Func<string, string> entityTypeNameTransformer = null,
             Func<string, string> entityFileNameTransformer = null,
             Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
             Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
@@ -204,8 +239,8 @@ namespace Microsoft.EntityFrameworkCore.Design
             Func<string, string> contextFileNameTransformer = null)
         {
             services.AddSingleton<IEntityTypeTransformationService>(provider =>
-                new HbsEntityTypeTransformationService(
-                    entityNameTransformer,
+                new HbsEntityTypeTransformationService2(
+                    entityTypeNameTransformer,
                     entityFileNameTransformer,
                     constructorTransformer,
                     propertyTransformer,

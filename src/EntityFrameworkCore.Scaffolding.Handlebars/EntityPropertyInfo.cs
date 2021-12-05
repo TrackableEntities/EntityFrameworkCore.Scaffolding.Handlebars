@@ -16,7 +16,7 @@
         /// <param name="propertyType">Property type.</param>
         /// <param name="propertyName">Property name.</param>
         /// <param name="propertyIsNullable">Property is nullable.</param>
-        public EntityPropertyInfo(string propertyType, string propertyName, bool propertyIsNullable = false)
+        public EntityPropertyInfo(string propertyType, string propertyName, bool? propertyIsNullable = null)
         {
             PropertyType = propertyType;
             PropertyName = propertyName;
@@ -36,6 +36,6 @@
         /// <summary>
         /// Property is nullable.
         /// </summary>
-        public bool PropertyIsNullable { get; set; }
+        public bool? PropertyIsNullable { get; set; }
     }
 }

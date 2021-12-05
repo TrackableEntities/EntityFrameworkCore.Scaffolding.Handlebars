@@ -262,12 +262,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 var propertyType = CSharpHelper.Reference(property.ClrType);
                 if (UseNullableReferenceTypes
                     && property.IsNullable
-                    && !propertyType.EndsWith("?")) {
-                        propertyType += "?";
-                }
-                var propertyIsNullable = property.ClrType.IsValueType
-                    || (UseNullableReferenceTypes
-                     && property.IsNullable);
+                    && !propertyType.EndsWith("?"))
+                    { propertyType += "?"; }
+                var propertyIsNullable = UseNullableReferenceTypes
+                    && (property.ClrType.IsValueType || property.IsNullable);
                 properties.Add(new Dictionary<string, object>
                 {
                     { "property-type", propertyType },
@@ -343,10 +341,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         UseNullableReferenceTypes &&
                         !navigation.ForeignKey.IsRequired;
                     var navPropertyType = navigation.TargetEntityType.Name;
-                    if (propertyIsNullable &&
-                        !navPropertyType.EndsWith("?")) {
-                        navPropertyType += "?";
-                    }
                     navProperties.Add(new Dictionary<string, object>
                     {
                         { "nav-property-collection", navigation.IsCollection },

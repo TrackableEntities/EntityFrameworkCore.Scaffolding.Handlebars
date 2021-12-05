@@ -231,6 +231,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         { "nav-property-type", navigation.TargetEntityType.Name },
                         { "nav-property-name", TypeScriptHelper.ToCamelCase(navigation.Name) },
                         { "nav-property-annotations", new List<Dictionary<string, object>>() },
+                        { "nav-property-isnullable", false },
                         { "nullable-reference-types",  UseNullableReferenceTypes }
                     });
                 }
@@ -265,6 +266,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         { "nav-property-type", navigation.TargetEntityType.Name },
                         { "nav-property-name", TypeScriptHelper.ToCamelCase(navigation.Name) },
                         { "nav-property-annotations", new List<Dictionary<string, object>>() },
+                        { "nav-property-isnullable", false },
                         { "nullable-reference-types",  UseNullableReferenceTypes }
                     });
                 }

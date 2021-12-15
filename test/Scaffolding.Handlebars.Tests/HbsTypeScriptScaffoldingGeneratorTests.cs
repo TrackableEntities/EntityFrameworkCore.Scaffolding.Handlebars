@@ -371,6 +371,7 @@ namespace Scaffolding.Handlebars.Tests
                         provider.GetRequiredService<IProviderConfigurationCodeGenerator>(),
                         provider.GetRequiredService<IAnnotationCodeGenerator>(),
                         provider.GetRequiredService<IDbContextTemplateService>(),
+                        provider.GetRequiredService<IContextTransformationService>(),
                         provider.GetRequiredService<IEntityTypeTransformationService>(),
                         provider.GetRequiredService<ICSharpHelper>(),
                         provider.GetRequiredService<IOptions<HandlebarsScaffoldingOptions>>());

@@ -34,6 +34,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         private string _modelNamespace;
 
         /// <summary>
+        /// Service for transforming context definitions
+        /// </summary>
+        protected IContextTransformationService ContextTransformationService { get; }
+
+        /// <summary>
         /// CSharp helper.
         /// </summary>
         protected ICSharpHelper CSharpHelper { get; }
@@ -82,12 +87,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="annotationCodeGenerator">Annotation code generator.</param>
         /// <param name="cSharpHelper">CSharp helper.</param>
         /// <param name="dbContextTemplateService">Template service for DbContext generator.</param>
+        /// <param name="contextTransformationService">Template service for DbContext generator.</param>
         /// <param name="entityTypeTransformationService">Service for transforming entity definitions.</param>
         /// <param name="options">Handlebars scaffolding options.</param>
         public HbsCSharpDbContextGenerator(
             [NotNull] IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator,
             [NotNull] IAnnotationCodeGenerator annotationCodeGenerator,
             [NotNull] IDbContextTemplateService dbContextTemplateService,
+            [NotNull] IContextTransformationService contextTransformationService,
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
             [NotNull] ICSharpHelper cSharpHelper,
             [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
@@ -97,6 +104,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             AnnotationCodeGenerator = annotationCodeGenerator;
             CSharpHelper = cSharpHelper;
             DbContextTemplateService = dbContextTemplateService;
+            ContextTransformationService = contextTransformationService;
             EntityTypeTransformationService = entityTypeTransformationService;
             _options = options;
         }
@@ -118,7 +126,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             string modelNamespace, bool useDataAnnotations, bool useNullableReferenceTypes, bool suppressConnectionStringWarning, bool suppressOnConfiguring)
         {
             Check.NotNull(model, nameof(model));
-
+			ContextTransformationService.TransformContextFileName(contextName + ".cs");
             if (!string.IsNullOrEmpty(modelNamespace) && string.CompareOrdinal(contextNamespace, modelNamespace) != 0)
                 _modelNamespace = modelNamespace;
 

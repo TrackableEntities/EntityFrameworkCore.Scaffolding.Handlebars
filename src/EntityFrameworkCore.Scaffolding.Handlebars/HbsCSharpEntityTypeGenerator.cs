@@ -133,7 +133,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             bool enableSchemaFolders = (_options?.Value?.EnableSchemaFolders).GetValueOrDefault();
             GenerateImports(entityType, @namespace, enableSchemaFolders);
 
-            // TODO: _sb.AppendLine("#nullable disable");
             @namespace = GetNamespaceForEntity(entityType, @namespace, enableSchemaFolders);
 
             TemplateData.Add("namespace", @namespace);

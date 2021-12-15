@@ -708,28 +708,25 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         private void GenerateForeignKeyAttribute(IEntityType entityType, ISkipNavigation navigation)
         {
-            if (navigation.IsOnDependent)
+            if (navigation.ForeignKey.PrincipalKey.IsPrimaryKey())
             {
-                if (navigation.ForeignKey.PrincipalKey.IsPrimaryKey())
+                var foreignKeyAttribute = new AttributeWriter(nameof(ForeignKeyAttribute));
+
+                if (navigation.ForeignKey.Properties.Count > 1)
                 {
-                    var foreignKeyAttribute = new AttributeWriter(nameof(ForeignKeyAttribute));
-
-                    if (navigation.ForeignKey.Properties.Count > 1)
-                    {
-                        foreignKeyAttribute.AddParameter(
-                                CSharpHelper.Literal(
-                                    string.Join(",", navigation.ForeignKey.Properties.Select(p => EntityTypeTransformationService.TransformNavPropertyName(entityType, p.Name, p.ClrType.Name)))));
-                    }
-                    else
-                    {
-                        foreignKeyAttribute.AddParameter($"nameof({EntityTypeTransformationService.TransformNavPropertyName(entityType, navigation.ForeignKey.Properties.First().Name, navigation.ForeignKey.Properties.First().ClrType.Name)})");
-                    }
-
-                    NavPropertyAnnotations.Add(new Dictionary<string, object>
-                    {
-                        { "nav-property-annotation", foreignKeyAttribute }
-                    });
+                    foreignKeyAttribute.AddParameter(
+                        CSharpHelper.Literal(
+                            string.Join(",", navigation.ForeignKey.Properties.Select(p => EntityTypeTransformationService.TransformNavPropertyName(entityType, p.Name, p.ClrType.Name)))));
                 }
+                else
+                {
+                    foreignKeyAttribute.AddParameter($"nameof({EntityTypeTransformationService.TransformNavPropertyName(entityType, navigation.ForeignKey.Properties.First().Name, navigation.ForeignKey.Properties.First().ClrType.Name)})");
+                }
+
+                NavPropertyAnnotations.Add(new Dictionary<string, object>
+                {
+                    { "nav-property-annotation", foreignKeyAttribute }
+                });
             }
         }
 

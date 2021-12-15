@@ -536,6 +536,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             var explicitSchema = schema != null && schema != defaultSchema;
             var explicitTable = explicitSchema || tableName != null && tableName != entityType.GetDbSetName();
+            if (!explicitTable && tableName != null)
+            {
+                var overrideName = EntityTypeTransformationService.TransformTypeEntityName(tableName);
+                if (!tableName.Equals(overrideName)) explicitTable = true;
+            }
             if (explicitTable)
             {
                 var parameterString = CSharpHelper.Literal(tableName);
@@ -596,11 +601,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         private void GenerateProperty(IEntityType entityType, IProperty property, bool useDataAnnotations, IndentedStringBuilder sb)
         {
+            var propertyName = EntityTypeTransformationService.TransformPropertyName(entityType, property.Name, property.DeclaringType.Name);
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.Property)}(e => e.{EntityTypeTransformationService.TransformPropertyName(entityType, property.Name, property.DeclaringType.Name)})"
+                $".{nameof(EntityTypeBuilder.Property)}(e => e.{propertyName})"
             };
-
+            // Add .HasColumnName Fluent method for remapped columns where UseDataAnnotations is false
+            if (!propertyName.Equals(property.Name) && !UseDataAnnotations)
+            {
+                lines.Add($".HasColumnName(\"{property.Name}\")");
+            }
             var annotations = AnnotationCodeGenerator
                 .FilterIgnoredAnnotations(property.GetAnnotations())
                 .ToDictionary(a => a.Name, a => a);

@@ -5,13 +5,17 @@ namespace Scaffolding.Handlebars.Tests.Helpers
 {
     public static class HandlebarsTransformers
     {
-        static readonly Dictionary<string, string> _entityTypeNameMappings = new(){
-            {"Product","ProductRenamed"},
-            {"Category","CategoryRenamed"}
+        static readonly Dictionary<string, string> _entityTypeNameMappings = new()
+        {
+            { "Product","ProductRenamed" },
+            { "Category","CategoryRenamed" }
         };
-        static readonly Dictionary<string, string> _entityPropertyNameMappings = new(){
-            {"UnitPrice","UnitPriceRenamed"},
-            {"CategoryName","CategoryNameRenamed"}
+        static readonly Dictionary<string, string> _entityPropertyNameMappings = new()
+        {
+            { "ProductId", "ProductIdRenamed" },
+            { "UnitPrice","UnitPriceRenamed"},
+            { "CategoryId", "CategoryIdRenamed" },
+            { "CategoryName","CategoryNameRenamed" }
         };
         public static string MapEntityName(string entityName) =>
             _entityTypeNameMappings.TryGetValue(entityName, out var nameOverride) ? nameOverride : entityName;

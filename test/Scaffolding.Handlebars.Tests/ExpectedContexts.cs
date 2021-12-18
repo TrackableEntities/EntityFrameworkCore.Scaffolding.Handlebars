@@ -106,9 +106,13 @@ namespace FakeNamespace
         {
             modelBuilder.Entity<CategoryRenamed>(entity =>
             {
+                entity.HasKey(e => e.CategoryIdRenamed);
+
                 entity.ToTable(""Category"");
 
                 entity.HasComment(""A category of products"");
+
+                entity.Property(e => e.CategoryIdRenamed).HasColumnName(""CategoryId"");
 
                 entity.Property(e => e.CategoryNameRenamed)
                     .HasColumnName(""CategoryName"")
@@ -119,9 +123,15 @@ namespace FakeNamespace
 
             modelBuilder.Entity<ProductRenamed>(entity =>
             {
+                entity.HasKey(e => e.ProductIdRenamed);
+
                 entity.ToTable(""Product"");
 
-                entity.HasIndex(e => e.CategoryId, ""IX_Product_CategoryId"");
+                entity.HasIndex(e => e.CategoryIdRenamed, ""IX_Product_CategoryId"");
+
+                entity.Property(e => e.ProductIdRenamed).HasColumnName(""ProductId"");
+
+                entity.Property(e => e.CategoryIdRenamed).HasColumnName(""CategoryId"");
 
                 entity.Property(e => e.ProductName)
                     .IsRequired()
@@ -137,7 +147,7 @@ namespace FakeNamespace
 
                 entity.HasOne(d => d.Category)
                     .WithMany(p => p.Product)
-                    .HasForeignKey(d => d.CategoryId);
+                    .HasForeignKey(d => d.CategoryIdRenamed);
             });
 
             OnModelCreatingPartial(modelBuilder);
@@ -233,9 +243,13 @@ namespace FakeNamespace
         {
             modelBuilder.Entity<CategoryRenamed>(entity =>
             {
+                entity.HasKey(e => e.CategoryIdRenamed);
+
                 entity.ToTable(""Category"");
 
                 entity.HasComment(""A category of products"");
+
+                entity.Property(e => e.CategoryIdRenamed).HasColumnName(""CategoryId"");
 
                 entity.Property(e => e.CategoryNameRenamed)
                     .HasColumnName(""CategoryName"")
@@ -246,9 +260,15 @@ namespace FakeNamespace
 
             modelBuilder.Entity<ProductRenamed>(entity =>
             {
+                entity.HasKey(e => e.ProductIdRenamed);
+
                 entity.ToTable(""Product"");
 
-                entity.HasIndex(e => e.CategoryId, ""IX_Product_CategoryId"");
+                entity.HasIndex(e => e.CategoryIdRenamed, ""IX_Product_CategoryId"");
+
+                entity.Property(e => e.ProductIdRenamed).HasColumnName(""ProductId"");
+
+                entity.Property(e => e.CategoryIdRenamed).HasColumnName(""CategoryId"");
 
                 entity.Property(e => e.ProductName)
                     .IsRequired()
@@ -264,7 +284,7 @@ namespace FakeNamespace
 
                 entity.HasOne(d => d.Category)
                     .WithMany(p => p.Product)
-                    .HasForeignKey(d => d.CategoryId);
+                    .HasForeignKey(d => d.CategoryIdRenamed);
             });
 
             OnModelCreatingPartial(modelBuilder);

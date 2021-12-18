@@ -71,7 +71,7 @@ namespace FakeNamespace
             Products = new HashSet<ProductRenamed>();
         }
 
-        public int CategoryId { get; set; }
+        public int CategoryIdRenamed { get; set; }
 
         /// <summary>
         /// The name of a category
@@ -91,12 +91,12 @@ namespace FakeNamespace
 {
     public partial class ProductRenamed
     {
-        public int ProductId { get; set; }
+        public int ProductIdRenamed { get; set; }
         public string ProductName { get; set; }
         public decimal? UnitPriceRenamed { get; set; }
         public bool Discontinued { get; set; }
         public byte[] RowVersion { get; set; }
-        public int? CategoryId { get; set; }
+        public int? CategoryIdRenamed { get; set; }
 
         public virtual CategoryRenamed Category { get; set; }
     }
@@ -197,7 +197,8 @@ namespace FakeNamespace
         }
 
         [Key]
-        public int CategoryId { get; set; }
+        [Column(""CategoryId"")]
+        public int CategoryIdRenamed { get; set; }
 
         /// <summary>
         /// The name of a category
@@ -227,7 +228,8 @@ namespace FakeNamespace
     public partial class ProductRenamed
     {
         [Key]
-        public int ProductId { get; set; }
+        [Column(""ProductId"")]
+        public int ProductIdRenamed { get; set; }
         [Required]
         [StringLength(40)]
         public string ProductName { get; set; }
@@ -235,9 +237,10 @@ namespace FakeNamespace
         public decimal? UnitPriceRenamed { get; set; }
         public bool Discontinued { get; set; }
         public byte[] RowVersion { get; set; }
-        public int? CategoryId { get; set; }
+        [Column(""CategoryId"")]
+        public int? CategoryIdRenamed { get; set; }
 
-        [ForeignKey(nameof(CategoryId))]
+        [ForeignKey(nameof(CategoryIdRenamed))]
         [InverseProperty(""Products"")]
         public virtual CategoryRenamed Category { get; set; }
     }

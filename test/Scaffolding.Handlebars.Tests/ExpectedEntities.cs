@@ -53,6 +53,57 @@ namespace FakeNamespace
 ";
         }
 
+        private static class ExpectedEntitiesWithTransformMappings
+        {
+            public const string CategoryClass =
+@"using System;
+using System.Collections.Generic;
+
+namespace FakeNamespace
+{
+    /// <summary>
+    /// A category of products
+    /// </summary>
+    public partial class CategoryRenamed
+    {
+        public CategoryRenamed()
+        {
+            Products = new HashSet<ProductRenamed>();
+        }
+
+        public int CategoryIdRenamed { get; set; }
+
+        /// <summary>
+        /// The name of a category
+        /// </summary>
+        public string CategoryNameRenamed { get; set; }
+
+        public virtual ICollection<ProductRenamed> Products { get; set; }
+    }
+}
+";
+
+            public const string ProductClass =
+@"using System;
+using System.Collections.Generic;
+
+namespace FakeNamespace
+{
+    public partial class ProductRenamed
+    {
+        public int ProductIdRenamed { get; set; }
+        public string ProductName { get; set; }
+        public decimal? UnitPriceRenamed { get; set; }
+        public bool Discontinued { get; set; }
+        public byte[] RowVersion { get; set; }
+        public int? CategoryIdRenamed { get; set; }
+
+        public virtual CategoryRenamed Category { get; set; }
+    }
+}
+";
+        }
+
         private static class ExpectedEntitiesWithAnnotations
         {
             public const string CategoryClass =
@@ -118,6 +169,80 @@ namespace FakeNamespace
         [ForeignKey(nameof(CategoryId))]
         [InverseProperty(""Products"")]
         public virtual Category Category { get; set; }
+    }
+}
+";
+        }
+
+        private static class ExpectedEntitiesWithAnnotationsAndTransformMappings
+        {
+            public const string CategoryClass =
+                @"using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
+namespace FakeNamespace
+{
+    /// <summary>
+    /// A category of products
+    /// </summary>
+    [Table(""Category"")]
+    public partial class CategoryRenamed
+    {
+        public CategoryRenamed()
+        {
+            Products = new HashSet<ProductRenamed>();
+        }
+
+        [Key]
+        [Column(""CategoryId"")]
+        public int CategoryIdRenamed { get; set; }
+
+        /// <summary>
+        /// The name of a category
+        /// </summary>
+        [Required]
+        [Column(""CategoryName"")]
+        [StringLength(15)]
+        public string CategoryNameRenamed { get; set; }
+
+        [InverseProperty(nameof(ProductRenamed.Category))]
+        public virtual ICollection<ProductRenamed> Products { get; set; }
+    }
+}
+";
+
+            public const string ProductClass =
+                @"using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
+namespace FakeNamespace
+{
+    [Table(""Product"")]
+    [Index(nameof(CategoryId), Name = ""IX_Product_CategoryId"")]
+    public partial class ProductRenamed
+    {
+        [Key]
+        [Column(""ProductId"")]
+        public int ProductIdRenamed { get; set; }
+        [Required]
+        [StringLength(40)]
+        public string ProductName { get; set; }
+        [Column(""UnitPrice"", TypeName = ""money"")]
+        public decimal? UnitPriceRenamed { get; set; }
+        public bool Discontinued { get; set; }
+        public byte[] RowVersion { get; set; }
+        [Column(""CategoryId"")]
+        public int? CategoryIdRenamed { get; set; }
+
+        [ForeignKey(nameof(CategoryIdRenamed))]
+        [InverseProperty(""Products"")]
+        public virtual CategoryRenamed Category { get; set; }
     }
 }
 ";

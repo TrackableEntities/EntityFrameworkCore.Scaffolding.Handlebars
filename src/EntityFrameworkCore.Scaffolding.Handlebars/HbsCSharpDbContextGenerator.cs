@@ -493,17 +493,25 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (key.Properties.Count == 1
                 && annotations.Count == 0)
             {
+                bool propertyNameOverriden = false;
+                foreach (var property in key.Properties)
+                {
+                    var transformedKeyName = EntityTypeTransformationService.TransformPropertyName(entityType, property.Name, property.DeclaringType.Name);
+                    propertyNameOverriden = !property.Name.Equals(transformedKeyName);
+                    if (propertyNameOverriden) break;
+                }
+
                 if (key is IConventionKey concreteKey
                     && concreteKey.Properties.SequenceEqual(
                         KeyDiscoveryConvention.DiscoverKeyProperties(
                             concreteKey.DeclaringEntityType,
-                            concreteKey.DeclaringEntityType.GetProperties())))
+                            concreteKey.DeclaringEntityType.GetProperties()))
+                    && UseDataAnnotations || !propertyNameOverriden)
                 {
                     return;
                 }
 
-                if (!explicitName
-                    && UseDataAnnotations)
+                if (!explicitName && UseDataAnnotations)
                 {
                     return;
                 }
@@ -534,9 +542,13 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var schema = entityType.GetSchema();
             var defaultSchema = entityType.Model.GetDefaultSchema();
 
+            var transformedTableName = EntityTypeTransformationService.TransformTypeEntityName(tableName);
+            var tableNameOverriden = tableName != null && !tableName.Equals(transformedTableName);
+
             var explicitSchema = schema != null && schema != defaultSchema;
             var explicitTable = explicitSchema || tableName != null && tableName != entityType.GetDbSetName();
-            if (explicitTable)
+            if (!explicitTable && tableName != null && tableNameOverriden) explicitTable = true;
+            if (explicitTable && tableName != null)
             {
                 var parameterString = CSharpHelper.Literal(tableName);
                 if (explicitSchema)
@@ -555,7 +567,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var explicitViewSchema = viewSchema != null && viewSchema != defaultSchema;
             var explicitViewTable = explicitViewSchema || viewName != null;
 
-            if (explicitViewTable)
+            if (explicitViewTable && viewName != null)
             {
                 var parameterString = CSharpHelper.Literal(viewName);
                 if (explicitViewSchema)
@@ -596,11 +608,16 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         private void GenerateProperty(IEntityType entityType, IProperty property, bool useDataAnnotations, IndentedStringBuilder sb)
         {
+            var propertyName = EntityTypeTransformationService.TransformPropertyName(entityType, property.Name, property.DeclaringType.Name);
             var lines = new List<string>
             {
-                $".{nameof(EntityTypeBuilder.Property)}(e => e.{EntityTypeTransformationService.TransformPropertyName(entityType, property.Name, property.DeclaringType.Name)})"
+                $".{nameof(EntityTypeBuilder.Property)}(e => e.{propertyName})"
             };
-
+            // Add .HasColumnName Fluent method for remapped columns where UseDataAnnotations is false
+            if (!propertyName.Equals(property.Name) && !UseDataAnnotations)
+            {
+                lines.Add($".HasColumnName(\"{property.Name}\")");
+            }
             var annotations = AnnotationCodeGenerator
                 .FilterIgnoredAnnotations(property.GetAnnotations())
                 .ToDictionary(a => a.Name, a => a);

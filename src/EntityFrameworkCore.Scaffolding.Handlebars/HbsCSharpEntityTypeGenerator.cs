@@ -532,9 +532,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         private void GenerateColumnAttribute(IProperty property)
         {
             var columnName = property.GetColumnBaseName();
+            var propertyName = EntityTypeTransformationService.TransformPropertyName(property.DeclaringEntityType, property.Name, property.DeclaringType.Name);
             var columnType = property.GetConfiguredColumnType();
 
-            var delimitedColumnName = columnName != null && columnName != property.Name ? CSharpHelper.Literal(columnName) : null;
+            var delimitedColumnName = columnName != null && columnName != propertyName ? CSharpHelper.Literal(columnName) : null;
             var delimitedColumnType = columnType != null ? CSharpHelper.Literal(columnType) : null;
 
             if ((delimitedColumnName ?? delimitedColumnType) != null)

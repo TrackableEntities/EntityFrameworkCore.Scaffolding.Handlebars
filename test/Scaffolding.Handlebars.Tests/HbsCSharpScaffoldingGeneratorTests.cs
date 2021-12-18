@@ -139,7 +139,7 @@ namespace Scaffolding.Handlebars.Tests
                     Language = "C#",
                     SuppressOnConfiguring = suppressOnConfiguring
                 });
-
+                
             // Assert
             var files = GetGeneratedFiles(model, options);
             object expectedContext;
@@ -149,6 +149,51 @@ namespace Scaffolding.Handlebars.Tests
             if (suppressOnConfiguring)
             {
                 expectedContext = ExpectedContextsSupressOnConfiguring.ContextClass;
+            }
+            var context = files[Constants.Files.CSharpFiles.DbContextFile];
+
+            Assert.Equal(expectedContext, context);
+        }
+
+        [Theory]
+        [InlineData(false, "en-US", true)]
+        [InlineData(false, "en-US", false)]
+        [InlineData(true, "en-US", false)]
+        [InlineData(false, "tr-TR", false)]
+        [InlineData(true, "tr-TR", false)]
+        public void WriteCode_WithTransformMapping_Should_Generate_Context_File(bool useDataAnnotations, string culture, bool suppressOnConfiguring)
+        {
+            // Arrange
+            bool useTransformers = true;
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
+            var options = ReverseEngineerOptions.DbContextOnly;
+            var scaffolder = CreateScaffolder(options, useTransformers);
+
+            // Act
+            var model = scaffolder.ScaffoldModel(
+                connectionString: Constants.Connections.SqlServerConnection,
+                databaseOptions: new DatabaseModelFactoryOptions(),
+                modelOptions: new ModelReverseEngineerOptions(){NoPluralize = useTransformers}, // Pluralized properties can also generate .ToTable methods. We only want mapping transforms to generate the .ToTable methods
+                codeOptions: new ModelCodeGenerationOptions
+                {
+                    ContextNamespace = Constants.Parameters.RootNamespace,
+                    ModelNamespace = Constants.Parameters.RootNamespace,
+                    ContextName = Constants.Parameters.ContextName,
+                    ContextDir = Constants.Parameters.ProjectPath,
+                    UseDataAnnotations = useDataAnnotations,
+                    Language = "C#",
+                    SuppressOnConfiguring = suppressOnConfiguring
+                });
+                
+            // Assert
+            var files = GetGeneratedFiles(model, options);
+            object expectedContext;
+            expectedContext = useDataAnnotations
+                ? ExpectedContextsWithAnnotationsAndTransformMappings.ContextClass
+                : ExpectedContextsWithTransformMappings.ContextClass;
+            if (suppressOnConfiguring)
+            {
+                expectedContext = ExpectedContextsSupressOnConfiguringWithTransformMappings.ContextClass;
             }
             var context = files[Constants.Files.CSharpFiles.DbContextFile];
 
@@ -195,6 +240,51 @@ namespace Scaffolding.Handlebars.Tests
             expectedProduct = useDataAnnotations
                 ? ExpectedEntitiesWithAnnotations.ProductClass
                 : ExpectedEntities.ProductClass;
+            Assert.Equal(expectedCategory, category);
+            Assert.Equal(expectedProduct, product);
+        }
+
+        [Theory]
+        [InlineData(false, "en-US")]
+        [InlineData(true, "en-US")]
+        [InlineData(false, "tr-TR")]
+        [InlineData(true, "tr-TR")]
+        public void WriteCode_WithTransformMapping_Should_Generate_Entity_Files(bool useDataAnnotations, string culture)
+        {
+            // Arrange
+            bool useTransformers = true;
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
+            var options = ReverseEngineerOptions.EntitiesOnly;
+            var scaffolder = CreateScaffolder(options, useTransformers);
+
+            // Act
+            var model = scaffolder.ScaffoldModel(
+                connectionString: Constants.Connections.SqlServerConnection,
+                databaseOptions: new DatabaseModelFactoryOptions(),
+                modelOptions: new ModelReverseEngineerOptions(),
+                codeOptions: new ModelCodeGenerationOptions
+                {
+                    ContextNamespace = Constants.Parameters.RootNamespace,
+                    ModelNamespace = Constants.Parameters.RootNamespace,
+                    ContextName = Constants.Parameters.ContextName,
+                    ContextDir = Constants.Parameters.ProjectPath,
+                    UseDataAnnotations = useDataAnnotations,
+                    Language = "C#",
+                });
+
+            // Assert
+            var files = GetGeneratedFiles(model, options);
+            var category = files[Constants.Files.CSharpFiles.CategoryFile];
+            var product = files[Constants.Files.CSharpFiles.ProductFile];
+
+            object expectedCategory;
+            object expectedProduct;
+            expectedCategory = useDataAnnotations
+                ? ExpectedEntitiesWithAnnotationsAndTransformMappings.CategoryClass
+                : ExpectedEntitiesWithTransformMappings.CategoryClass;
+            expectedProduct = useDataAnnotations
+                ? ExpectedEntitiesWithAnnotationsAndTransformMappings.ProductClass
+                : ExpectedEntitiesWithTransformMappings.ProductClass;
             Assert.Equal(expectedCategory, category);
             Assert.Equal(expectedProduct, product);
         }
@@ -425,12 +515,16 @@ namespace Scaffolding.Handlebars.Tests
             Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
         }
 
+        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions, bool useEntityNameMappings)
+        {
+            return CreateScaffolder(revEngOptions, _ => { }, useEntityNameMappings, null);
+        }
         private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions, string filenamePrefix = null)
         {
-            return CreateScaffolder(revEngOptions, _ => { }, filenamePrefix);
+            return CreateScaffolder(revEngOptions, _ => { }, false, filenamePrefix);
         }
 
-        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions, Action<HandlebarsScaffoldingOptions> configureOptions, string filenamePrefix = null)
+        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions, Action<HandlebarsScaffoldingOptions> configureOptions, bool useEntityTransformMappings = false, string filenamePrefix = null)
         {
             var fileService = new InMemoryTemplateFileService();
             fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate,
@@ -486,19 +580,16 @@ namespace Scaffolding.Handlebars.Tests
                 new HbsBlockHelperService(new Dictionary<string, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>>()))
                 .AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
 
-
-            if (string.IsNullOrWhiteSpace(filenamePrefix))
-            {
-                services
-                    .AddSingleton<IContextTransformationService, HbsContextTransformationService>()
-                    .AddSingleton<IEntityTypeTransformationService, HbsEntityTypeTransformationService>();
-            }
-            else
-            {
-                services
-                    .AddSingleton<IContextTransformationService>(y => new HbsContextTransformationService(contextName => $"{filenamePrefix}{contextName}"))
-                    .AddSingleton<IEntityTypeTransformationService>(y => new HbsEntityTypeTransformationService(entityFileNameTransformer: entityName => $"{filenamePrefix}{entityName}"));
-            }
+            // Add Transformation Services
+            services
+                .AddSingleton<IContextTransformationService>(y => new HbsContextTransformationService(contextName => !string.IsNullOrWhiteSpace(filenamePrefix) ? $"{filenamePrefix}{contextName}" : contextName))
+                .AddSingleton<IEntityTypeTransformationService>(y => new HbsEntityTypeTransformationService(
+                    entityFileNameTransformer: entityName => !string.IsNullOrWhiteSpace(filenamePrefix) ? $"{filenamePrefix}{entityName}" : entityName,
+                    entityTypeNameTransformer: entityName => useEntityTransformMappings ? HandlebarsTransformers.MapEntityName(entityName) : entityName,
+                    constructorTransformer: epi => useEntityTransformMappings ? HandlebarsTransformers.MapPropertyInfo(epi) : epi,
+                    propertyTransformer: epi => useEntityTransformMappings ? HandlebarsTransformers.MapPropertyInfo(epi) : epi,                     
+                    navPropertyTransformer: epi => useEntityTransformMappings ? HandlebarsTransformers.MapNavPropertyInfo(epi) : epi
+                ));
 
             services.Configure(configureOptions);
 
@@ -510,7 +601,6 @@ namespace Scaffolding.Handlebars.Tests
                 .GetRequiredService<IReverseEngineerScaffolder>();
             return scaffolder;
         }
-
         private Dictionary<string, string> GetGeneratedFiles(ScaffoldedModel model, ReverseEngineerOptions options)
         {
             var generatedFiles = new Dictionary<string, string>();

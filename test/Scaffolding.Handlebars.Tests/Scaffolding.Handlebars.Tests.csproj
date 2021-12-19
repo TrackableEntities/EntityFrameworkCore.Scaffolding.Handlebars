@@ -11,6 +11,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="CodeTemplatesAlt\CSharpEntityType\Class.hbs" />
+    <None Remove="CodeTemplatesAlt\CSharpEntityType\Partials\Constructor.hbs" />
+    <None Remove="CodeTemplatesAlt\CSharpEntityType\Partials\Imports.hbs" />
+    <None Remove="CodeTemplatesAlt\CSharpEntityType\Partials\Properties.hbs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CodeTemplatesAlt\CSharpEntityType\Class.hbs" />
+    <EmbeddedResource Include="CodeTemplatesAlt\CSharpEntityType\Partials\Constructor.hbs" />
+    <EmbeddedResource Include="CodeTemplatesAlt\CSharpEntityType\Partials\Imports.hbs" />
+    <EmbeddedResource Include="CodeTemplatesAlt\CSharpEntityType\Partials\Properties.hbs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />

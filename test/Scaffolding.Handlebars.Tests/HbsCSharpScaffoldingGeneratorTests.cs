@@ -32,6 +32,10 @@ namespace Scaffolding.Handlebars.Tests
         private InputFile EntityImportsTemplate { get; }
         private InputFile EntityCtorTemplate { get; }
         private InputFile EntityPropertiesTemplate { get; }
+        private InputFile EntityClassAltTemplate { get; }
+        private InputFile EntityImportsAltTemplate { get; }
+        private InputFile EntityCtorAltTemplate { get; }
+        private InputFile EntityPropertiesAltTemplate { get; }
 
         public HbsCSharpScaffoldingGeneratorTests(NorthwindDbContextFixture fixture)
         {
@@ -39,6 +43,7 @@ namespace Scaffolding.Handlebars.Tests
             Fixture.Initialize(useInMemory: false);
 
             var projectRootDir = Path.Combine("..", "..", "..", "..", "..");
+            var projectRootAltDir = Path.Combine("..", "..", "..");
 
             var contextTemplatesVirtualPath =
                 $"{Constants.Templates.CodeTemplatesFolder}/{Constants.Templates.CSharpTemplateDirectories.ContextFolder}";
@@ -53,6 +58,13 @@ namespace Scaffolding.Handlebars.Tests
             var entityTemplatesPath = Path.Combine(projectRootDir, "src", Constants.Templates.ProjectFolder,
                 Constants.Templates.CodeTemplatesFolder, Constants.Templates.CSharpTemplateDirectories.EntityTypeFolder);
             var entityPartialTemplatesPath = Path.Combine(entityTemplatesPath, Constants.Templates.PartialsFolder);
+
+            var entityTemplatesVirtualAltPath =
+                $"{Constants.Templates.CodeTemplatesAltFolder}/{Constants.Templates.CSharpTemplateDirectories.EntityTypeFolder}";
+            var entityPartialsVirtualAltPath = entityTemplatesVirtualAltPath + $"/{Constants.Templates.PartialsFolder}";
+            var entityTemplatesAltPath = Path.Combine(projectRootAltDir, Constants.Templates.CodeTemplatesAltFolder,
+                Constants.Templates.CSharpTemplateDirectories.EntityTypeFolder);
+            var entityPartialTemplatesAltPath = Path.Combine(entityTemplatesAltPath, Constants.Templates.PartialsFolder);
 
             ContextClassTemplate = new InputFile
             {
@@ -108,6 +120,31 @@ namespace Scaffolding.Handlebars.Tests
                 Directory = entityPartialsVirtualPath,
                 File = Constants.Templates.EntityPropertiesFile,
                 Contents = File.ReadAllText(Path.Combine(entityPartialTemplatesPath, Constants.Templates.EntityPropertiesFile))
+            };
+
+            EntityClassAltTemplate = new InputFile
+            {
+                Directory = entityTemplatesVirtualAltPath,
+                File = Constants.Templates.EntityClassFile,
+                Contents = File.ReadAllText(Path.Combine(entityTemplatesAltPath, Constants.Templates.EntityClassFile))
+            };
+            EntityImportsAltTemplate = new InputFile
+            {
+                Directory = entityPartialsVirtualAltPath,
+                File = Constants.Templates.EntityImportsFile,
+                Contents = File.ReadAllText(Path.Combine(entityPartialTemplatesAltPath, Constants.Templates.EntityImportsFile))
+            };
+            EntityCtorAltTemplate = new InputFile
+            {
+                Directory = entityPartialsVirtualAltPath,
+                File = Constants.Templates.EntityCtorFile,
+                Contents = File.ReadAllText(Path.Combine(entityPartialTemplatesAltPath, Constants.Templates.EntityCtorFile))
+            };
+            EntityPropertiesAltTemplate = new InputFile
+            {
+                Directory = entityPartialsVirtualAltPath,
+                File = Constants.Templates.EntityPropertiesFile,
+                Contents = File.ReadAllText(Path.Combine(entityPartialTemplatesAltPath, Constants.Templates.EntityPropertiesFile))
             };
         }
 
@@ -197,6 +234,50 @@ namespace Scaffolding.Handlebars.Tests
                 : ExpectedEntities.ProductClass;
             Assert.Equal(expectedCategory, category);
             Assert.Equal(expectedProduct, product);
+        }
+
+        [Theory]
+        [InlineData(false, "en-US")]
+        [InlineData(true, "en-US")]
+        [InlineData(false, "tr-TR")]
+        [InlineData(true, "tr-TR")]
+        public void WriteCode_Should_Generate_Entity_Files_No_Encoding(bool useDataAnnotations, string culture)
+        {
+            // Arrange
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
+            var options = ReverseEngineerOptions.EntitiesOnly;
+            var scaffolder = CreateScaffolder(options, config =>
+            {
+                config.TemplateData = new Dictionary<string, object>
+                {
+                    { "custom-comment", "    /// 产品" },
+                    { "base-class", "EntityBase<int>" }
+                };
+            }, useAltTemplates: true);
+
+            // Act
+            var model = scaffolder.ScaffoldModel(
+                connectionString: Constants.Connections.SqlServerConnection,
+                databaseOptions: new DatabaseModelFactoryOptions(),
+                modelOptions: new ModelReverseEngineerOptions(),
+                codeOptions: new ModelCodeGenerationOptions
+                {
+                    ContextNamespace = Constants.Parameters.RootNamespace,
+                    ModelNamespace = Constants.Parameters.RootNamespace,
+                    ContextName = Constants.Parameters.ContextName,
+                    ContextDir = Constants.Parameters.ProjectPath,
+                    UseDataAnnotations = useDataAnnotations,
+                    Language = "C#",
+                });
+
+            // Assert
+            var files = GetGeneratedFiles(model, options);
+            var actualCategory = files[Constants.Files.CSharpFiles.CategoryFile];
+
+            object expectedCategory = useDataAnnotations
+                ? ExpectedEntitiesWithAnnotationsNoEncoding.CategoryClass
+                : ExpectedEntitiesNoEncoding.CategoryClass;
+            Assert.Equal(expectedCategory, actualCategory);
         }
 
         [Theory]
@@ -425,24 +506,31 @@ namespace Scaffolding.Handlebars.Tests
             Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
         }
 
-        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions, string filenamePrefix = null)
+        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions,
+            string filenamePrefix = null, bool useAltTemplates = false)
         {
-            return CreateScaffolder(revEngOptions, _ => { }, filenamePrefix);
+            return CreateScaffolder(revEngOptions, _ => { }, filenamePrefix, useAltTemplates);
         }
 
-        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions, Action<HandlebarsScaffoldingOptions> configureOptions, string filenamePrefix = null)
+        private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions, Action<HandlebarsScaffoldingOptions> configureOptions,
+            string filenamePrefix = null, bool useAltTemplates = false)
         {
             var fileService = new InMemoryTemplateFileService();
+            var entityClassTemplate = useAltTemplates ? EntityClassAltTemplate : EntityClassTemplate;
+            var entityImportsTemplate = useAltTemplates ? EntityImportsAltTemplate : EntityImportsTemplate;
+            var entityCtorTemplate = useAltTemplates ? EntityCtorAltTemplate : EntityCtorTemplate;
+            var entityPropertiesTemplate = useAltTemplates ? EntityPropertiesAltTemplate : EntityPropertiesTemplate;
             fileService.InputFiles(ContextClassTemplate, ContextImportsTemplate,
                 ContextCtorTemplate, ContextOnConfiguringTemplate, ContextDbSetsTemplate,
-                EntityClassTemplate, EntityImportsTemplate, EntityCtorTemplate, EntityPropertiesTemplate);
+                entityClassTemplate, entityImportsTemplate, entityCtorTemplate, entityPropertiesTemplate);
 
             var services = new ServiceCollection()
                 .AddEntityFrameworkDesignTimeServices()
                 .AddSingleton<IDbContextTemplateService, FakeHbsDbContextTemplateService>()
                 .AddSingleton<IEntityTypeTemplateService, FakeHbsEntityTypeTemplateService>()
                 .AddSingleton<ITemplateFileService>(fileService)
-                .AddSingleton<ITemplateLanguageService, FakeCSharpTemplateLanguageService>()
+                .AddSingleton<ITemplateLanguageService, FakeCSharpTemplateLanguageService>(
+                    _ => new FakeCSharpTemplateLanguageService(useAltTemplates))
                 .AddSingleton<IModelCodeGenerator, HbsCSharpModelGenerator>();
 
 #pragma warning disable EF1001 // Internal EF Core API usage.

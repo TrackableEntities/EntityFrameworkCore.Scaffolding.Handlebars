@@ -56,20 +56,20 @@ namespace ScaffoldingSample
 
             // Add Handlebars transformer for Country property
             services.AddHandlebarsTransformers(
-                propertyTransformer: (e, p) =>
+                propertyTransformer: p =>
                     p.PropertyName == "Country"
                         ? new EntityPropertyInfo("Country?", p.PropertyName, false)
                         : new EntityPropertyInfo(p.PropertyType, p.PropertyName, p.PropertyIsNullable));
 
             // Add Handlebars transformer for Id property
-            //services.AddHandlebarsTransformers(
+            //services.AddHandlebarsTransformers2(
             //    propertyTransformer: (e, p) =>
             //        $"{e.Name}Id" == p.PropertyName
             //            ? new EntityPropertyInfo(p.PropertyType, "Id", false)
             //            : new EntityPropertyInfo(p.PropertyType, p.PropertyName, p.PropertyIsNullable));
 
             // Add optional Handlebars transformers
-            //services.AddHandlebarsTransformers(
+            //services.AddHandlebarsTransformers2(
             //    entityTypeNameTransformer: n => n + "Foo",
             //    entityFileNameTransformer: n => n + "Foo",
             //    constructorTransformer: (e, p) => new EntityPropertyInfo(p.PropertyType + "Foo", p.PropertyName + "Foo"),

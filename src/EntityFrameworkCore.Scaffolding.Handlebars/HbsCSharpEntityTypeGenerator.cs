@@ -713,21 +713,34 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 var foreignKeyAttribute = new AttributeWriter(nameof(ForeignKeyAttribute));
 
+                bool propertyNameOverriden = false;
                 if (navigation.ForeignKey.Properties.Count > 1)
                 {
+                    foreach (var property in navigation.ForeignKey.Properties)
+                    {
+                        var transformedKeyName = EntityTypeTransformationService.TransformPropertyName(entityType, property.Name, property.DeclaringType.Name);
+                        propertyNameOverriden = !property.Name.Equals(transformedKeyName);
+                        if (propertyNameOverriden) break;
+                    }
+
                     foreignKeyAttribute.AddParameter(
                         CSharpHelper.Literal(
                             string.Join(",", navigation.ForeignKey.Properties.Select(p => EntityTypeTransformationService.TransformNavPropertyName(entityType, p.Name, p.ClrType.Name)))));
                 }
                 else
                 {
-                    foreignKeyAttribute.AddParameter($"nameof({EntityTypeTransformationService.TransformNavPropertyName(entityType, navigation.ForeignKey.Properties.First().Name, navigation.ForeignKey.Properties.First().ClrType.Name)})");
+                    var transformedKeyName = EntityTypeTransformationService.TransformPropertyName(entityType, navigation.ForeignKey.Properties.First().Name, navigation.ForeignKey.Properties.First().DeclaringType.Name);
+                    propertyNameOverriden = !navigation.ForeignKey.Properties.First().Name.Equals(transformedKeyName);
+                    foreignKeyAttribute.AddParameter($"nameof({transformedKeyName})");
                 }
 
-                NavPropertyAnnotations.Add(new Dictionary<string, object>
+                if (!propertyNameOverriden)
                 {
-                    { "nav-property-annotation", foreignKeyAttribute }
-                });
+                    NavPropertyAnnotations.Add(new Dictionary<string, object>
+                    {
+                        { "nav-property-annotation", foreignKeyAttribute }
+                    });
+                }
             }
         }
 

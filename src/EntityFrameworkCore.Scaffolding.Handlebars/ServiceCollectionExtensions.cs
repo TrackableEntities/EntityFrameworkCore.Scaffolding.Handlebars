@@ -230,7 +230,7 @@ namespace Microsoft.EntityFrameworkCore.Design
         /// <param name="navPropertyTransformer">Navigation property name transformer.</param>
         /// <param name="contextFileNameTransformer">Context file name transformer.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
-        public static IServiceCollection AddHandlebarsTransformers(this IServiceCollection services,
+        public static IServiceCollection AddHandlebarsTransformers2(this IServiceCollection services,
             Func<string, string> entityTypeNameTransformer = null,
             Func<string, string> entityFileNameTransformer = null,
             Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,

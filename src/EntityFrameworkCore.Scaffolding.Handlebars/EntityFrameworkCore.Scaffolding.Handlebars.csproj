@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>6.0.1</Version>
+    <Version>6.0.2</Version>
     <Authors>Tony Sneed</Authors>
     <Company>Tony Sneed</Company>
     <Title>Entity Framework Core Scaffolding with Handlebars</Title>
@@ -12,7 +12,7 @@
     <PackageProjectUrl>https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageTags>scaffolding reverse-engineer entity-framework-core handlebars</PackageTags>
-    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v6.0.1</PackageReleaseNotes>
+    <PackageReleaseNotes>See: https://github.com/TrackableEntities/EntityFrameworkCore.Scaffolding.Handlebars/releases/tag/v6.0.2</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
     <IncludeSource>true</IncludeSource>
     <SignAssembly>true</SignAssembly>
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Handlebars.Net" Version="2.0.9" />
+    <PackageReference Include="Handlebars.Net" Version="2.0.10" />
     <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0" />

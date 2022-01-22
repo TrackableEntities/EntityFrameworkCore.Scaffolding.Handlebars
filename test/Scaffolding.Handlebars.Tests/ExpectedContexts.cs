@@ -16,6 +16,7 @@ namespace FakeNamespace
     public partial class FakeDbContext : DbContext
     {
         public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Product> Products { get; set; }
 
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
@@ -43,6 +44,27 @@ namespace FakeNamespace
                     .IsRequired()
                     .HasMaxLength(15)
                     .HasComment(""The name of a category"");
+            });
+
+            modelBuilder.Entity<Customer>(entity =>
+            {
+                entity.HasKey(e => e.CustomerKey);
+
+                entity.ToTable(""Customer"");
+
+                entity.Property(e => e.CustomerKey)
+                    .HasMaxLength(5)
+                    .IsFixedLength();
+
+                entity.Property(e => e.City).HasMaxLength(15);
+
+                entity.Property(e => e.CompanyName)
+                    .IsRequired()
+                    .HasMaxLength(40);
+
+                entity.Property(e => e.ContactName).HasMaxLength(30);
+
+                entity.Property(e => e.Country).HasMaxLength(15);
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -87,6 +109,7 @@ namespace FakeNamespace
     public partial class FakeDbContext : DbContext
     {
         public virtual DbSet<CategoryRenamed> Category { get; set; }
+        public virtual DbSet<CustomerRenamed> Customer { get; set; }
         public virtual DbSet<ProductRenamed> Product { get; set; }
 
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
@@ -119,6 +142,27 @@ namespace FakeNamespace
                     .IsRequired()
                     .HasMaxLength(15)
                     .HasComment(""The name of a category"");
+            });
+
+            modelBuilder.Entity<CustomerRenamed>(entity =>
+            {
+                entity.HasKey(e => e.CustomerKey);
+
+                entity.ToTable(""Customer"");
+
+                entity.Property(e => e.CustomerKey)
+                    .HasMaxLength(5)
+                    .IsFixedLength();
+
+                entity.Property(e => e.City).HasMaxLength(15);
+
+                entity.Property(e => e.CompanyName)
+                    .IsRequired()
+                    .HasMaxLength(40);
+
+                entity.Property(e => e.ContactName).HasMaxLength(30);
+
+                entity.Property(e => e.Country).HasMaxLength(15);
             });
 
             modelBuilder.Entity<ProductRenamed>(entity =>
@@ -171,6 +215,7 @@ namespace FakeNamespace
     public partial class FakeDbContext : DbContext
     {
         public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Product> Products { get; set; }
 
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
@@ -189,6 +234,27 @@ namespace FakeNamespace
                     .IsRequired()
                     .HasMaxLength(15)
                     .HasComment(""The name of a category"");
+            });
+
+            modelBuilder.Entity<Customer>(entity =>
+            {
+                entity.HasKey(e => e.CustomerKey);
+
+                entity.ToTable(""Customer"");
+
+                entity.Property(e => e.CustomerKey)
+                    .HasMaxLength(5)
+                    .IsFixedLength();
+
+                entity.Property(e => e.City).HasMaxLength(15);
+
+                entity.Property(e => e.CompanyName)
+                    .IsRequired()
+                    .HasMaxLength(40);
+
+                entity.Property(e => e.ContactName).HasMaxLength(30);
+
+                entity.Property(e => e.Country).HasMaxLength(15);
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -233,6 +299,7 @@ namespace FakeNamespace
     public partial class FakeDbContext : DbContext
     {
         public virtual DbSet<CategoryRenamed> Category { get; set; }
+        public virtual DbSet<CustomerRenamed> Customer { get; set; }
         public virtual DbSet<ProductRenamed> Product { get; set; }
 
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
@@ -256,6 +323,27 @@ namespace FakeNamespace
                     .IsRequired()
                     .HasMaxLength(15)
                     .HasComment(""The name of a category"");
+            });
+
+            modelBuilder.Entity<CustomerRenamed>(entity =>
+            {
+                entity.HasKey(e => e.CustomerKey);
+
+                entity.ToTable(""Customer"");
+
+                entity.Property(e => e.CustomerKey)
+                    .HasMaxLength(5)
+                    .IsFixedLength();
+
+                entity.Property(e => e.City).HasMaxLength(15);
+
+                entity.Property(e => e.CompanyName)
+                    .IsRequired()
+                    .HasMaxLength(40);
+
+                entity.Property(e => e.ContactName).HasMaxLength(30);
+
+                entity.Property(e => e.Country).HasMaxLength(15);
             });
 
             modelBuilder.Entity<ProductRenamed>(entity =>
@@ -308,6 +396,7 @@ namespace FakeNamespace
     public partial class FakeDbContext : DbContext
     {
         public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Product> Products { get; set; }
 
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
@@ -330,6 +419,11 @@ namespace FakeNamespace
                 entity.HasComment(""A category of products"");
 
                 entity.Property(e => e.CategoryName).HasComment(""The name of a category"");
+            });
+
+            modelBuilder.Entity<Customer>(entity =>
+            {
+                entity.Property(e => e.CustomerKey).IsFixedLength();
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -360,6 +454,7 @@ namespace FakeNamespace
     public partial class FakeDbContext : DbContext
     {
         public virtual DbSet<CategoryRenamed> Category { get; set; }
+        public virtual DbSet<CustomerRenamed> Customer { get; set; }
         public virtual DbSet<ProductRenamed> Product { get; set; }
 
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
@@ -382,6 +477,11 @@ namespace FakeNamespace
                 entity.HasComment(""A category of products"");
 
                 entity.Property(e => e.CategoryNameRenamed).HasComment(""The name of a category"");
+            });
+
+            modelBuilder.Entity<CustomerRenamed>(entity =>
+            {
+                entity.Property(e => e.CustomerKey).IsFixedLength();
             });
 
             modelBuilder.Entity<ProductRenamed>(entity =>

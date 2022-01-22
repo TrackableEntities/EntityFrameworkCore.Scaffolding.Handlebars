@@ -48,12 +48,14 @@
             {
                 public const string DbContextFile = Parameters.ContextName + ".cs";
                 public const string CategoryFile = "Category.cs";
+                public const string CustomerFile = "Customer.cs";
                 public const string ProductFile = "Product.cs";
             }
             public static class TypeScriptFiles
             {
                 public const string DbContextFile = Parameters.ContextName + ".cs";
                 public const string CategoryFile = "Category.ts";
+                public const string CustomerFile = "Customer.ts";
                 public const string ProductFile = "Product.ts";
             }
         }

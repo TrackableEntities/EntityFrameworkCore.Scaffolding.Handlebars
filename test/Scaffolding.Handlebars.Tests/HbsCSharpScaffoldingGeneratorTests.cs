@@ -526,9 +526,11 @@ namespace Scaffolding.Handlebars.Tests
             // Assert
             var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.CSharpFiles.DbContextFile);
             var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.CategoryFile);
+            var expectedCustomerPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.CustomerFile);
             var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.ProductFile);
             Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
-            Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
+            Assert.Equal(expectedCustomerPath, result.AdditionalFiles[1]);
+            Assert.Equal(expectedProductPath, result.AdditionalFiles[2]);
             Assert.False(File.Exists(expectedContextPath));
         }
 
@@ -561,10 +563,12 @@ namespace Scaffolding.Handlebars.Tests
             // Assert
             var expectedContextPath = Path.Combine(directory.Path, "Contexts", $"{filenamePrefix}{Constants.Files.CSharpFiles.DbContextFile}");
             var expectedCategoryPath = Path.Combine(directory.Path, "Models", $"{filenamePrefix}{Constants.Files.CSharpFiles.CategoryFile}");
+            var expectedCustomerPath = Path.Combine(directory.Path, "Models", $"{filenamePrefix}{Constants.Files.CSharpFiles.CustomerFile}");
             var expectedProductPath = Path.Combine(directory.Path, "Models", $"{filenamePrefix}{ Constants.Files.CSharpFiles.ProductFile}");
             Assert.Equal(expectedContextPath, result.ContextFile);
             Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
-            Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
+            Assert.Equal(expectedCustomerPath, result.AdditionalFiles[1]);
+            Assert.Equal(expectedProductPath, result.AdditionalFiles[2]);
         }
 
         [Fact]
@@ -595,10 +599,12 @@ namespace Scaffolding.Handlebars.Tests
             // Assert
             var expectedContextPath = Path.Combine(directory.Path, "Contexts", Constants.Files.CSharpFiles.DbContextFile);
             var expectedCategoryPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.CategoryFile);
+            var expectedCustomerPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.CustomerFile);
             var expectedProductPath = Path.Combine(directory.Path, "Models", Constants.Files.CSharpFiles.ProductFile);
             Assert.Equal(expectedContextPath, result.ContextFile);
             Assert.Equal(expectedCategoryPath, result.AdditionalFiles[0]);
-            Assert.Equal(expectedProductPath, result.AdditionalFiles[1]);
+            Assert.Equal(expectedCustomerPath, result.AdditionalFiles[1]);
+            Assert.Equal(expectedProductPath, result.AdditionalFiles[2]);
         }
 
         private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions, bool useEntityNameMappings)
@@ -611,7 +617,7 @@ namespace Scaffolding.Handlebars.Tests
         }
 
         private IReverseEngineerScaffolder CreateScaffolder(ReverseEngineerOptions revEngOptions,
-            Action<HandlebarsScaffoldingOptions> configureOptions,bool useEntityTransformMappings = false,
+            Action<HandlebarsScaffoldingOptions> configureOptions, bool useEntityTransformMappings = false,
             string filenamePrefix = null, bool useAltTemplates = false)
         {
             HandlebarsLib.Configuration.NoEscape = true;
@@ -709,7 +715,8 @@ namespace Scaffolding.Handlebars.Tests
                 || options == ReverseEngineerOptions.DbContextAndEntities)
             {
                 generatedFiles.Add(Constants.Files.CSharpFiles.CategoryFile, model.AdditionalFiles[0].Code);
-                generatedFiles.Add(Constants.Files.CSharpFiles.ProductFile, model.AdditionalFiles[1].Code);
+                generatedFiles.Add(Constants.Files.CSharpFiles.CustomerFile, model.AdditionalFiles[1].Code);
+                generatedFiles.Add(Constants.Files.CSharpFiles.ProductFile, model.AdditionalFiles[2].Code);
             }
 
             return generatedFiles;

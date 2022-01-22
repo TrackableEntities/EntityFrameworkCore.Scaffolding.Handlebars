@@ -8,7 +8,8 @@ namespace Scaffolding.Handlebars.Tests.Helpers
         static readonly Dictionary<string, string> _entityTypeNameMappings = new()
         {
             { "Product","ProductRenamed" },
-            { "Category","CategoryRenamed" }
+            { "Customer","CustomerRenamed" },
+            { "Category", "CategoryRenamed" }
         };
         static readonly Dictionary<string, string> _entityPropertyNameMappings = new()
         {

@@ -506,7 +506,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         KeyDiscoveryConvention.DiscoverKeyProperties(
                             concreteKey.DeclaringEntityType,
                             concreteKey.DeclaringEntityType.GetProperties()))
-                    && UseDataAnnotations || !propertyNameOverriden)
+                    && !propertyNameOverriden)
                 {
                     return;
                 }

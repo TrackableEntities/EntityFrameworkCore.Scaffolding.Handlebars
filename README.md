@@ -126,13 +126,14 @@ public partial class Product
 
 ## Excluded Tables
 
-You can optionally exclude certain tables from code generation. These may also be qualified by schema name.
+You can optionally exclude certain tables from code generation. These may also be qualified by schema name. Simple pattern matching, where "*" means any sequence
+and "?" means a single character is supported.
 
 ```csharp
 services.AddHandlebarsScaffolding(options =>
 {
     // Exclude some tables
-    options.ExcludedTables = new List<string> { "dbo.Territory" };
+    options.ExcludedTables = new List<string> { "dbo.Territory", "temp.*", "*.Employee" };
 });
 ```
 

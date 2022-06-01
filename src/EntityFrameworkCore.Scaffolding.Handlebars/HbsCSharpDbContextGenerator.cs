@@ -806,8 +806,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             sb.AppendLine();
 
-            if (_options.Value.ExcludedTables != null
-                && _options.Value.ExcludedTables.Contains(skipNavigation.Inverse.ForeignKey.PrincipalEntityType.Name))
+            if (Helpers.TableExcluder.IsExcluded(_options.Value, skipNavigation.Inverse.ForeignKey.PrincipalEntityType))
                 return;
 
             var inverse = skipNavigation.Inverse;

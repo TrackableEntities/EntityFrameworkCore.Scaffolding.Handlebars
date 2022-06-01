@@ -114,5 +114,113 @@ namespace Scaffolding.Handlebars.Tests
             Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Category");
             Assert.Contains(entityTypes, e => e.ClrType.Name == "Product");
         }
+
+        [Fact]
+        public void IModel_Extensions_Should_Filter_EntityTypes_From_Options_By_TableName_Pattern()
+        {
+            var builder = new ModelBuilder(new ConventionSet());
+
+            builder.Entity<Category>()
+                .ToTable("Category", "dbo");
+
+            builder.Entity<Customer>()
+                .ToTable("Customer", "dbo");
+
+            builder.Entity<Product>()
+                .ToTable("Product", "prd");
+
+            var options = new HandlebarsScaffoldingOptions
+            {
+                ExcludedTables = new List<string> { "Prod*", "C??tomer" }
+            };
+
+            var entityTypes = builder.FinalizeModel().GetScaffoldEntityTypes(options);
+
+            Assert.Contains(entityTypes, e => e.ClrType.Name == "Category");
+
+            Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Product");
+            Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Customer");
+        }
+
+        [Fact]
+        public void IModel_Extensions_Should_Filter_EntityTypes_From_Options_By_TableSchema_Pattern()
+        {
+            var builder = new ModelBuilder(new ConventionSet());
+
+            builder.Entity<Category>()
+                .ToTable("Category", "dbo");
+
+            builder.Entity<Customer>()
+                .ToTable("Customer", "dbo");
+
+            builder.Entity<Product>()
+                .ToTable("Product", "prd");
+
+            var options = new HandlebarsScaffoldingOptions
+            {
+                ExcludedTables = new List<string> { "dbo.*" }
+            };
+
+            var entityTypes = builder.FinalizeModel().GetScaffoldEntityTypes(options);
+
+            Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Category");
+            Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Customer");
+
+            Assert.Contains(entityTypes, e => e.ClrType.Name == "Product");
+        }
+
+        [Fact]
+        public void IModel_Extensions_Should_Filter_EntityTypes_From_Options_By_ViewName_Pattern()
+        {
+            var builder = new ModelBuilder(new ConventionSet());
+
+            builder.Entity<Category>()
+                .ToView("Category", "dbo");
+
+            builder.Entity<Customer>()
+                .ToView("Customer", "dbo");
+
+            builder.Entity<Product>()
+                .ToView("Product", "prd");
+
+            var options = new HandlebarsScaffoldingOptions
+            {
+                ExcludedTables = new List<string> { "Prod*", "C??tomer" }
+            };
+
+            var entityTypes = builder.FinalizeModel().GetScaffoldEntityTypes(options);
+
+            Assert.Contains(entityTypes, e => e.ClrType.Name == "Category");
+
+            Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Product");
+            Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Customer");
+        }
+
+        [Fact]
+        public void IModel_Extensions_Should_Filter_EntityTypes_From_Options_By_ViewSchema_Pattern()
+        {
+            var builder = new ModelBuilder(new ConventionSet());
+
+            builder.Entity<Category>()
+                .ToView("Category", "dbo");
+
+            builder.Entity<Customer>()
+                .ToView("Customer", "dbo");
+
+            builder.Entity<Product>()
+                .ToView("Product", "prd");
+
+            var options = new HandlebarsScaffoldingOptions
+            {
+                ExcludedTables = new List<string> { "dbo.*" }
+            };
+
+            var entityTypes = builder.FinalizeModel().GetScaffoldEntityTypes(options);
+
+            Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Category");
+            Assert.DoesNotContain(entityTypes, e => e.ClrType.Name == "Customer");
+
+            Assert.Contains(entityTypes, e => e.ClrType.Name == "Product");
+        }
     }
 }

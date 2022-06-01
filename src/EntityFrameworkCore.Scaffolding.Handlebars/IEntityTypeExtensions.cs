@@ -1,8 +1,6 @@
-﻿using System;
+﻿using System.Linq;
 using System.Collections.Generic;
-using System.Linq;
-using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
-using Microsoft.EntityFrameworkCore;
+
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -20,23 +18,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns>Filtered set of navigations for scaffolding.</returns>
         public static IEnumerable<INavigation> GetScaffoldNavigations(this IEntityType entityType, HandlebarsScaffoldingOptions options)
         {
-            var result = new List<INavigation>();
-            var navigations = entityType.GetNavigations();
-            var excludedTables = GetExcludedTables(options);
-
-            foreach (var nav in navigations)
-            {
-                var schema = nav.TargetEntityType.GetSchema();
-                var table = nav.TargetEntityType.GetTableName();
-                if (!excludedTables.Any(e =>
-                    (!options.EnableSchemaFolders && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase))
-                    || string.Equals(schema, e.Schema, StringComparison.OrdinalIgnoreCase)
-                       && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase)))
-                {
-                    result.Add(nav);
-                }
-            }
-            return result;
+            return entityType
+                .GetNavigations()
+                .Where(nav => !Helpers.TableExcluder.IsExcluded(options, nav.TargetEntityType))
+                .ToList();
         }
 
         /// <summary>
@@ -47,23 +32,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns>Filtered set of navigations for scaffolding.</returns>
         public static IEnumerable<ISkipNavigation> GetScaffoldSkipNavigations(this IEntityType entityType, HandlebarsScaffoldingOptions options)
         {
-            var result = new List<ISkipNavigation>();
-            var navigations = entityType.GetSkipNavigations();
-            var excludedTables = GetExcludedTables(options);
-
-            foreach (var nav in navigations)
-            {
-                var schema = nav.TargetEntityType.GetSchema();
-                var table = nav.TargetEntityType.GetTableName();
-                if (!excludedTables.Any(e =>
-                    (!options.EnableSchemaFolders && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase))
-                    || string.Equals(schema, e.Schema, StringComparison.OrdinalIgnoreCase)
-                       && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase)))
-                {
-                    result.Add(nav);
-                }
-            }
-            return result;
+            return entityType
+                .GetSkipNavigations()
+                .Where(nav => !Helpers.TableExcluder.IsExcluded(options, nav.TargetEntityType))
+                .ToList();
         }
 
         /// <summary>
@@ -74,31 +46,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <returns>Filtered set of foreign keys for scaffolding.</returns>
         public static IEnumerable<IForeignKey> GetScaffoldForeignKeys(this IEntityType entityType, HandlebarsScaffoldingOptions options)
         {
-            var result = new List<IForeignKey>();
-            var foreignKeys = entityType.GetForeignKeys();
-            var excludedTables = GetExcludedTables(options);
-
-            foreach (var fk in foreignKeys)
-            {
-                var schema = fk.GetRelatedEntityType(fk.DeclaringEntityType).GetSchema();
-                var table = fk.GetRelatedEntityType(fk.DeclaringEntityType).GetTableName();
-                if (!excludedTables.Any(e =>
-                    (!options.EnableSchemaFolders && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase))
-                    || string.Equals(schema, e.Schema, StringComparison.OrdinalIgnoreCase)
-                       && string.Equals(table, e.Table, StringComparison.OrdinalIgnoreCase)))
-                {
-                    result.Add(fk);
-                }
-            }
-            return result;
-        }
-
-        private static List<TableAndSchema> GetExcludedTables(HandlebarsScaffoldingOptions options)
-        {
-            var excludedTables = new List<TableAndSchema>();
-            if (options.ExcludedTables != null)
-                excludedTables = options.ExcludedTables.Select(t => new TableAndSchema(t)).ToList();
-            return excludedTables;
+            return entityType
+                .GetForeignKeys()
+                .Where(fk => !Helpers.TableExcluder.IsExcluded(options, fk.GetRelatedEntityType(fk.DeclaringEntityType)))
+                .ToList();
         }
     }
 }

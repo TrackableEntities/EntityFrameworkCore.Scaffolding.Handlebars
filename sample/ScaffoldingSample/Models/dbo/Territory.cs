@@ -10,7 +10,7 @@ namespace ScaffoldingSample.Models.dbo
             Employees = new HashSet<Employee>();
         }
 
-        public string TerritoryId { get; set; } = null!;
+        public ScaffoldingSample.TerritoryId TerritoryId { get; set; }
         public string TerritoryDescription { get; set; } = null!;
 
         public virtual ICollection<Employee> Employees { get; set; }

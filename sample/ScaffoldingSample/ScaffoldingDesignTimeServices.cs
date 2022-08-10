@@ -61,6 +61,17 @@ namespace ScaffoldingSample
                         ? new EntityPropertyInfo("Country?", p.PropertyName, false)
                         : new EntityPropertyInfo(p.PropertyType, p.PropertyName, p.PropertyIsNullable));
 
+            // Add Handlebars transformer for strong typed primary key columns
+            services.AddHandlebarsTransformers(propertyTransformer: propertyInfo =>
+            {
+                if (propertyInfo.PropertyName == "EmployeeId")
+                    return new EntityPropertyInfo(typeof(EmployeeId).FullName, propertyInfo.PropertyName, propertyInfo.PropertyIsNullable);
+                if (propertyInfo.PropertyName == "TerritoryId")
+                    return new EntityPropertyInfo(typeof(TerritoryId).FullName, propertyInfo.PropertyName, true);
+                
+                return new EntityPropertyInfo(propertyInfo.PropertyType, propertyInfo.PropertyName, propertyInfo.PropertyIsNullable);
+            });
+
             // Add Handlebars transformer for Id property
             //services.AddHandlebarsTransformers2(
             //    propertyTransformer: (e, p) =>

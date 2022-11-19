@@ -36,7 +36,7 @@ namespace ScaffoldingSample.Embedded.Contexts
             {
                 entity.ToTable("Category");
 
-                entity.HasComment("hello table Customer");
+                entity.HasAnnotation("Relational: Comment", "A category of products");
 
                 entity.Property(e => e.CategoryName)
                     .IsRequired()

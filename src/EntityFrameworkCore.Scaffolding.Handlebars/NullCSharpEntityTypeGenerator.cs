@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+﻿using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
 {

@@ -38,7 +38,7 @@ namespace FakeNamespace
             {
                 entity.ToTable(""Category"");
 
-                entity.HasComment(""A category of products"");
+                entity.HasAnnotation(""Relational:Comment"", ""A category of products"");
 
                 entity.Property(e => e.CategoryName)
                     .IsRequired()

@@ -1,15 +1,9 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-// Modifications copyright(C) 2020 Tony Sneed.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -18,7 +12,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -26,7 +19,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// <summary>
     /// Generator for the DbContext class using Handlebars templates.
     /// </summary>
-    public class HbsCSharpDbContextGenerator : CSharpDbContextGenerator
+    public class HbsCSharpDbContextGenerator : ICSharpDbContextGenerator
     {
         private const string EntityLambdaIdentifier = "entity";
         private const string Language = "CSharp";
@@ -91,7 +84,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
             [NotNull] ICSharpHelper cSharpHelper,
             [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
-            : base(providerConfigurationCodeGenerator, annotationCodeGenerator, cSharpHelper)
         {
             ProviderConfigurationCodeGenerator = providerConfigurationCodeGenerator;
             AnnotationCodeGenerator = annotationCodeGenerator;
@@ -110,11 +102,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="contextNamespace">Context namespace.</param>
         /// <param name="modelNamespace">Model namespace.</param>
         /// <param name="useDataAnnotations">If false use fluent modeling API.</param>
-        /// <param name="useNullableReferenceTypes"></param>
+        /// <param name="useNullableReferenceTypes">True if using nullable reference types.</param>
         /// <param name="suppressConnectionStringWarning">Suppress connection string warning.</param>
         /// <param name="suppressOnConfiguring">Suppress OnConfiguring method.</param>
         /// <returns>DbContext class.</returns>
-        public override string WriteCode(IModel model, string contextName, string connectionString, string contextNamespace,
+        public virtual string WriteCode(IModel model, string contextName, string connectionString, string contextNamespace,
             string modelNamespace, bool useDataAnnotations, bool useNullableReferenceTypes, bool suppressConnectionStringWarning, bool suppressOnConfiguring)
         {
             Check.NotNull(model, nameof(model));
@@ -150,7 +142,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="connectionString">Database connection string.</param>
         /// <param name="suppressConnectionStringWarning">Suppress connection string warning.</param>
         /// <param name="suppressOnConfiguring">Suppress OnConfiguring method.</param>
-        protected override void GenerateClass([NotNull] IModel model, [NotNull] string contextName, [NotNull] string connectionString,
+        protected virtual void GenerateClass([NotNull] IModel model, [NotNull] string contextName, [NotNull] string connectionString,
             bool suppressConnectionStringWarning, bool suppressOnConfiguring)
         {
             Check.NotNull(model, nameof(model));
@@ -163,7 +155,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 GenerateModelImports(model);
             TemplateData.Add("class", contextName);
             GenerateDbSets(model);
-            GenerateEntityTypeErrors(model);
             if (suppressOnConfiguring)
                 TemplateData.Add("suppress-on-configuring", true);
             else
@@ -176,7 +167,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         /// <param name="connectionString">Database connection string.</param>
         /// <param name="suppressConnectionStringWarning">Suppress connection string warning.</param>
-        protected override void GenerateOnConfiguring([NotNull] string connectionString, bool suppressConnectionStringWarning)
+        protected virtual void GenerateOnConfiguring([NotNull] string connectionString, bool suppressConnectionStringWarning)
         {
             Check.NotNull(connectionString, nameof(connectionString));
 
@@ -201,7 +192,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// Generate OnModelBuilding method.
         /// </summary>
         /// <param name="model">Metadata about the shape of entities, the relationships between them, and how they map to the database.</param>
-        protected override void GenerateOnModelCreating([NotNull] IModel model)
+        protected virtual void GenerateOnModelCreating([NotNull] IModel model)
         {
             Check.NotNull(model, nameof(model));
 
@@ -221,7 +212,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 annotations.Remove(CoreAnnotationNames.ProductVersion);
                 annotations.Remove(RelationalAnnotationNames.MaxIdentifierLength);
                 annotations.Remove(ScaffoldingAnnotationNames.DatabaseName);
-                annotations.Remove(ScaffoldingAnnotationNames.EntityTypeErrors);
 
                 var lines = new List<string>();
 
@@ -330,21 +320,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             }
 
             TemplateData.Add("model-imports", modelImports);
-        }
-
-        private void GenerateEntityTypeErrors(IModel model)
-        {
-            var entityTypeErrors = new List<Dictionary<string, object>>();
-
-            foreach (var entityTypeError in model.GetEntityTypeErrors())
-            {
-                entityTypeErrors.Add(new Dictionary<string, object>
-                {
-                    { "entity-type-error", $"// {entityTypeError.Value} Please see the warning messages." },
-                });
-            }
-
-            TemplateData.Add("entity-type-errors", entityTypeErrors);
         }
 
         private void InitializeEntityTypeBuilder(IEntityType entityType, IndentedStringBuilder sb)
@@ -493,12 +468,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (key.Properties.Count == 1
                 && annotations.Count == 0)
             {
-                bool propertyNameOverriden = false;
+                bool propertyNameVirtual = false;
                 foreach (var property in key.Properties)
                 {
                     var transformedKeyName = EntityTypeTransformationService.TransformPropertyName(entityType, property.Name, property.DeclaringType.Name);
-                    propertyNameOverriden = !property.Name.Equals(transformedKeyName);
-                    if (propertyNameOverriden) break;
+                    propertyNameVirtual = !property.Name.Equals(transformedKeyName);
+                    if (propertyNameVirtual) break;
                 }
 
                 if (key is IConventionKey concreteKey
@@ -506,7 +481,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         KeyDiscoveryConvention.DiscoverKeyProperties(
                             concreteKey.DeclaringEntityType,
                             concreteKey.DeclaringEntityType.GetProperties()))
-                    && !propertyNameOverriden)
+                    && !propertyNameVirtual)
                 {
                     return;
                 }
@@ -543,11 +518,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var defaultSchema = entityType.Model.GetDefaultSchema();
 
             var transformedTableName = EntityTypeTransformationService.TransformTypeEntityName(tableName);
-            var tableNameOverriden = tableName != null && !tableName.Equals(transformedTableName);
+            var tableNameVirtual = tableName != null && !tableName.Equals(transformedTableName);
 
             var explicitSchema = schema != null && schema != defaultSchema;
             var explicitTable = explicitSchema || tableName != null && tableName != entityType.GetDbSetName();
-            if (!explicitTable && tableName != null && tableNameOverriden) explicitTable = true;
+            if (!explicitTable && tableName != null && tableNameVirtual) explicitTable = true;
             if (explicitTable && tableName != null)
             {
                 var parameterString = CSharpHelper.Literal(tableName);
@@ -1146,7 +1121,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             using (sb.Indent())
             using (sb.Indent())
             {
-                sb.AppendLine("protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)");
+                sb.AppendLine("protected virtual void OnConfiguring(DbContextOptionsBuilder optionsBuilder)");
                 sb.AppendLine("{");
 
                 using (sb.Indent())

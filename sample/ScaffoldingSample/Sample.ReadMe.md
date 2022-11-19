@@ -4,8 +4,8 @@ Demonstrates how to reverse engineer an existing database using the EF Core tool
 
 ## Prerequisites
 
-- [Visual Studio 2019](https://www.visualstudio.com/downloads/) 16.4 or greater.
-- The .[NET Core 3.1 SDK](https://www.microsoft.com/net/download/core).
+- [Visual Studio 2022](https://www.visualstudio.com/downloads/) 17.4 or greater.
+- The .[NET SDK](https://www.microsoft.com/net/download/core).
 
 ## Database Setup
 

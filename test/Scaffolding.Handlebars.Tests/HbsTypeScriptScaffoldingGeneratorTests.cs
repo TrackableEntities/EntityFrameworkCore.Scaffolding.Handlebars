@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
+using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Scaffolding;
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.SqlServer.Design.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -406,7 +406,8 @@ namespace Scaffolding.Handlebars.Tests
                     }))
                 .AddSingleton<IHbsBlockHelperService>(provider =>
                     new HbsBlockHelperService(new Dictionary<string, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>>()))
-                .AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>();
+                .AddSingleton<IReverseEngineerScaffolder, HbsReverseEngineerScaffolder>()
+                .Configure<IOptions<HandlebarsScaffoldingOptions>>(_ => new HandlebarsScaffoldingOptions());
 
 
             if (string.IsNullOrWhiteSpace(filenamePrefix))

@@ -1,9 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-// Modifications copyright(C) 2019 Tony Sneed.
-
-using System.IO;
+﻿using System.IO;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +12,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// <summary>
     /// Scaffolding generator for TypeScript entity type classes using Handlebars templates.
     /// </summary>
-    public class HbsTypeScriptModelGenerator : CSharpModelGenerator
+    public class HbsTypeScriptModelGenerator : IModelCodeGenerator
     {
         private const string FileExtension = ".ts";
 
@@ -51,6 +46,24 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// </summary>
         protected IContextTransformationService ContextTransformationService { get; }
 
+        /// <summary>
+        /// Generate the DbContext class.
+        /// </summary>
+        protected virtual ICSharpDbContextGenerator CSharpDbContextGenerator { get; }
+
+        /// <summary>
+        /// Generate entity type class.
+        /// </summary>
+        protected virtual ICSharpEntityTypeGenerator CSharpEntityTypeGenerator { get; }
+
+        /// <summary>
+        /// Dependencies for this service.
+        /// </summary>
+        protected virtual ModelCodeGeneratorDependencies Dependencies { get; }
+
+        /// <inheritdoc />
+        public virtual string Language => null;
+
         private readonly IOptions<HandlebarsScaffoldingOptions> _options;
 
         /// <summary>
@@ -77,8 +90,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             [NotNull] IEntityTypeTransformationService entityTypeTransformationService,
             [NotNull] IContextTransformationService contextTransformationService,
             [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
-            : base(dependencies, cSharpDbContextGenerator, cSharpEntityTypeGenerator)
         {
+            Dependencies = dependencies;
+            CSharpDbContextGenerator = cSharpDbContextGenerator;
+            CSharpEntityTypeGenerator = cSharpEntityTypeGenerator;
             HandlebarsHelperService = handlebarsHelperService;
             HandlebarsBlockHelperService = handlebarsBlockHelperService;
             DbContextTemplateService = dbContextTemplateService;
@@ -94,7 +109,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="model"> The model.</param>
         /// <param name="options"> The options to use during generation. </param>
         /// <returns> The generated model. </returns>
-        public override ScaffoldedModel GenerateModel(IModel model, ModelCodeGenerationOptions options)
+        public virtual ScaffoldedModel GenerateModel(IModel model, ModelCodeGenerationOptions options)
         {
             Check.NotNull(model, nameof(model));
             Check.NotNull(options, nameof(options));

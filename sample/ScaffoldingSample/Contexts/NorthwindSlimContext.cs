@@ -25,6 +25,10 @@ namespace ScaffoldingSample.Contexts
         // My Handlebars Helper
         public virtual DbSet<dbo.Territory> Territories { get; set; } = null!;
 
+        public NorthwindSlimContext()
+        {
+        }
+
         public NorthwindSlimContext(DbContextOptions<NorthwindSlimContext> options) : base(options)
         {
         }

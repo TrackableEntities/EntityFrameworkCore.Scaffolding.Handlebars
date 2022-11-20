@@ -1,9 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-// Modifications copyright(C) 2019 Tony Sneed.
-
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using JetBrains.Annotations;
@@ -11,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding;
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars
@@ -19,7 +13,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// <summary>
     /// Scaffolding generator for DbContext and entity type classes using Handlebars templates.
     /// </summary>
-    public class HbsCSharpModelGenerator : CSharpModelGenerator
+    public class HbsCSharpModelGenerator : IModelCodeGenerator
     {
         private const string FileExtension = ".cs";
         private readonly IOptions<HandlebarsScaffoldingOptions> _options;
@@ -52,12 +46,30 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <summary>
         /// Service for transforming context definitions.
         /// </summary>
-        protected IContextTransformationService ContextTransformationService { get; }
+        protected virtual IContextTransformationService ContextTransformationService { get; }
+
+        /// <summary>
+        /// Generate the DbContext class.
+        /// </summary>
+        protected virtual ICSharpDbContextGenerator CSharpDbContextGenerator { get; }
+
+        /// <summary>
+        /// Generate entity type class.
+        /// </summary>
+        protected virtual ICSharpEntityTypeGenerator CSharpEntityTypeGenerator { get; }
+
+        /// <summary>
+        /// Dependencies for this service.
+        /// </summary>
+        protected virtual ModelCodeGeneratorDependencies Dependencies { get; }
 
         /// <summary>
         /// CSharp helper.
         /// </summary>
         public ICSharpHelper CSharpHelper { get; }
+
+        /// <inheritdoc />
+        public virtual string Language => null;
 
         /// <summary>
         /// Constructor for the HbsCSharpModelGenerator.
@@ -85,8 +97,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             [NotNull] IContextTransformationService contextTransformationService,
             [NotNull] ICSharpHelper cSharpHelper,
             [NotNull] IOptions<HandlebarsScaffoldingOptions> options)
-            : base(dependencies, cSharpDbContextGenerator, cSharpEntityTypeGenerator)
         {
+            Dependencies = dependencies;
+            CSharpDbContextGenerator = cSharpDbContextGenerator;
+            CSharpEntityTypeGenerator = cSharpEntityTypeGenerator;
             HandlebarsHelperService = handlebarsHelperService;
             HandlebarsBlockHelperService = handlebarsBlockHelperService;
             DbContextTemplateService = dbContextTemplateService;
@@ -103,7 +117,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         /// <param name="model"> The model.</param>
         /// <param name="options"> The options to use during generation. </param>
         /// <returns> The generated model. </returns>
-        public override ScaffoldedModel GenerateModel(IModel model, ModelCodeGenerationOptions options)
+        public virtual ScaffoldedModel GenerateModel(IModel model, ModelCodeGenerationOptions options)
         {
             Check.NotNull(model, nameof(model));
             Check.NotNull(options, nameof(options));
@@ -159,7 +173,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     var schema = !string.IsNullOrEmpty(entityType.GetTableName())
                         ? entityType.GetSchema()
                         : entityType.GetViewSchema();
-                    var entityTypeFileName = _options?.Value?.EnableSchemaFolders == true
+                    var entityTypeFileName = _options?.Value.EnableSchemaFolders == true
                         ? Path.Combine(CSharpHelper.Namespace(schema), transformedFileName + FileExtension)
                         : transformedFileName + FileExtension;
                     resultingFiles.AdditionalFiles.Add(

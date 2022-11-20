@@ -19,6 +19,10 @@ namespace FakeNamespace
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Product> Products { get; set; }
 
+        public FakeDbContext()
+        {
+        }
+
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
         {
         }
@@ -38,7 +42,7 @@ namespace FakeNamespace
             {
                 entity.ToTable(""Category"");
 
-                entity.HasComment(""A category of products"");
+                entity.HasAnnotation(""Relational:Comment"", ""A category of products"");
 
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
@@ -112,6 +116,10 @@ namespace FakeNamespace
         public virtual DbSet<CustomerRenamed> Customer { get; set; }
         public virtual DbSet<ProductRenamed> Product { get; set; }
 
+        public FakeDbContext()
+        {
+        }
+
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
         {
         }
@@ -133,7 +141,7 @@ namespace FakeNamespace
 
                 entity.ToTable(""Category"");
 
-                entity.HasComment(""A category of products"");
+                entity.HasAnnotation(""Relational:Comment"", ""A category of products"");
 
                 entity.Property(e => e.CategoryIdRenamed).HasColumnName(""CategoryId"");
 
@@ -218,6 +226,10 @@ namespace FakeNamespace
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Product> Products { get; set; }
 
+        public FakeDbContext()
+        {
+        }
+
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
         {
         }
@@ -228,7 +240,7 @@ namespace FakeNamespace
             {
                 entity.ToTable(""Category"");
 
-                entity.HasComment(""A category of products"");
+                entity.HasAnnotation(""Relational:Comment"", ""A category of products"");
 
                 entity.Property(e => e.CategoryName)
                     .IsRequired()
@@ -302,6 +314,10 @@ namespace FakeNamespace
         public virtual DbSet<CustomerRenamed> Customer { get; set; }
         public virtual DbSet<ProductRenamed> Product { get; set; }
 
+        public FakeDbContext()
+        {
+        }
+
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
         {
         }
@@ -314,7 +330,7 @@ namespace FakeNamespace
 
                 entity.ToTable(""Category"");
 
-                entity.HasComment(""A category of products"");
+                entity.HasAnnotation(""Relational:Comment"", ""A category of products"");
 
                 entity.Property(e => e.CategoryIdRenamed).HasColumnName(""CategoryId"");
 
@@ -399,6 +415,10 @@ namespace FakeNamespace
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Product> Products { get; set; }
 
+        public FakeDbContext()
+        {
+        }
+
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
         {
         }
@@ -416,7 +436,7 @@ namespace FakeNamespace
         {
             modelBuilder.Entity<Category>(entity =>
             {
-                entity.HasComment(""A category of products"");
+                entity.HasAnnotation(""Relational:Comment"", ""A category of products"");
 
                 entity.Property(e => e.CategoryName).HasComment(""The name of a category"");
             });
@@ -457,6 +477,10 @@ namespace FakeNamespace
         public virtual DbSet<CustomerRenamed> Customer { get; set; }
         public virtual DbSet<ProductRenamed> Product { get; set; }
 
+        public FakeDbContext()
+        {
+        }
+
         public FakeDbContext(DbContextOptions<FakeDbContext> options) : base(options)
         {
         }
@@ -474,7 +498,7 @@ namespace FakeNamespace
         {
             modelBuilder.Entity<CategoryRenamed>(entity =>
             {
-                entity.HasComment(""A category of products"");
+                entity.HasAnnotation(""Relational:Comment"", ""A category of products"");
 
                 entity.Property(e => e.CategoryNameRenamed).HasComment(""The name of a category"");
             });

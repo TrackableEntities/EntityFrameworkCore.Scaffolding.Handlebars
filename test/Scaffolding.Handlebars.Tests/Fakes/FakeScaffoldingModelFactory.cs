@@ -1,9 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-// Modifications copyright(C) 2019 Tony Sneed.
-
-using Microsoft.EntityFrameworkCore.Design;
+﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Design.Internal;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -22,9 +17,8 @@ namespace Scaffolding.Handlebars.Tests.Fakes
             IPluralizer pluralizer,
             ICSharpUtilities cSharpUtilities,
             IScaffoldingTypeMapper scaffoldingTypeMapper,
-            LoggingDefinitions loggingDefinitions,
             IModelRuntimeInitializer modelRuntimeInitializer)
-            : base(reporter, candidateNamingService, pluralizer, cSharpUtilities, scaffoldingTypeMapper, loggingDefinitions, modelRuntimeInitializer)
+            : base(reporter, candidateNamingService, pluralizer, cSharpUtilities, scaffoldingTypeMapper, modelRuntimeInitializer)
         {
         }
 

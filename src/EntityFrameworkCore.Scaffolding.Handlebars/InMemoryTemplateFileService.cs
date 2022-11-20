@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 
 namespace EntityFrameworkCore.Scaffolding.Handlebars

@@ -1,23 +1,18 @@
-// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-// Modifications copyright(C) 2018 Tony Sneed.
-
 using System;
 using System.Collections.Generic;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
+using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Design.Internal;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Scaffolding.Handlebars.Tests.Fakes;
 using Scaffolding.Handlebars.Tests.Helpers;
 using Xunit;
@@ -86,6 +81,7 @@ namespace Scaffolding.Handlebars.Tests
                     }))
                 .AddSingleton<IHbsBlockHelperService>(provider =>
                     new HbsBlockHelperService(new Dictionary<string, Action<EncodedTextWriter, BlockHelperOptions, Context, Arguments>>()))
+                .Configure<IOptions<HandlebarsScaffoldingOptions>>(options => new HandlebarsScaffoldingOptions())
                 .BuildServiceProvider(validateScopes: true)
                 .CreateScope()
                 .ServiceProvider

@@ -12,12 +12,6 @@ namespace {{namespace}}
     public partial class {{class}} : DbContext
     {
 {{{> dbsets}}}
-{{#if entity-type-errors}}
-{{#each entity-type-errors}}
-        {{{entity-type-error}}}
-{{/each}}
-
-{{/if}}
 
 {{{> dbconstructor}}}
 

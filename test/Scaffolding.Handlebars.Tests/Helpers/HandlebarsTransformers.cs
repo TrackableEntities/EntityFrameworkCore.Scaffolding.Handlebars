@@ -1,5 +1,8 @@
+using System;
 using EntityFrameworkCore.Scaffolding.Handlebars;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Scaffolding.Handlebars.Tests.Helpers
 {
@@ -11,6 +14,14 @@ namespace Scaffolding.Handlebars.Tests.Helpers
             { "Customer","CustomerRenamed" },
             { "Category", "CategoryRenamed" }
         };
+
+        static readonly Dictionary<string, Func<IEntityType, string, string>> _entityTypeNameMappings2 = new()
+        {
+            { "Product", (entityType, _) => entityType.GetSchema() + "_ProductRenamed" },
+            { "Customer", (entityType, _) => entityType.GetSchema() + "_CustomerRenamed" },
+            { "Category", (entityType, _) => entityType.GetSchema() + "_CategoryRenamed" }
+        };
+
         static readonly Dictionary<string, string> _entityPropertyNameMappings = new()
         {
             { "ProductId", "ProductIdRenamed" },
@@ -18,6 +29,7 @@ namespace Scaffolding.Handlebars.Tests.Helpers
             { "CategoryId", "CategoryIdRenamed" },
             { "CategoryName","CategoryNameRenamed" }
         };
+
         public static string MapEntityName(string entityName) =>
             _entityTypeNameMappings.TryGetValue(entityName, out var nameOverride) ? nameOverride : entityName;
 
@@ -32,5 +44,8 @@ namespace Scaffolding.Handlebars.Tests.Helpers
 
         private static string MapPropertyName(string propertyName) =>
             _entityPropertyNameMappings.TryGetValue(propertyName, out var propertyNameOverride) ? propertyNameOverride : propertyName;
+
+        public static string MapName2(IEntityType entityType, string entityName) =>
+            _entityTypeNameMappings2.TryGetValue(entityName, out var nameOverride) ? nameOverride(entityType, entityName) : entityName;
     }
 }

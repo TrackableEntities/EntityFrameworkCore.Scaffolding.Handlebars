@@ -6,6 +6,7 @@ using EntityFrameworkCore.Scaffolding.Handlebars.Helpers;
 using EntityFrameworkCore.Scaffolding.Handlebars.Internal;
 using HandlebarsDotNet;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.Extensions.DependencyInjection;
 using HandlebarsLib = HandlebarsDotNet.Handlebars;
@@ -249,6 +250,41 @@ namespace Microsoft.EntityFrameworkCore.Design
                     navPropertyTransformer));
             services.AddSingleton<IContextTransformationService>(provider =>
                 new HbsContextTransformationService(contextFileNameTransformer));
+            return services;
+        }
+
+        /// <summary>
+        /// Register Handlebars transformers.
+        ///     <para>
+        ///         Note: You must first call AddHandlebarsScaffolding before calling AddHandlebarsTransformers.
+        ///         This overload surfaces IEntityType in the transformers.
+        ///     </para>
+        /// </summary>
+        /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
+        /// <param name="entityTypeNameTransformer">Entity name transformer.</param>
+        /// <param name="entityFileNameTransformer">Entity file name transformer.</param>
+        /// <param name="constructorTransformer"></param>
+        /// <param name="propertyTransformer">Property name transformer.</param>
+        /// <param name="navPropertyTransformer">Navigation property name transformer.</param>
+        /// <param name="contextFileNameTransformer2">Context file name transformer.</param>
+        /// <returns>The same service collection so that multiple calls can be chained.</returns>
+        public static IServiceCollection AddHandlebarsTransformers2(this IServiceCollection services,
+            Func<IEntityType, string, string> entityTypeNameTransformer = null,
+            Func<IEntityType, string, string> entityFileNameTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null,
+            Func<string, string> contextFileNameTransformer2 = null)
+        {
+            services.AddSingleton<IEntityTypeTransformationService>(provider =>
+                new HbsEntityTypeTransformationService2(
+                    entityTypeNameTransformer,
+                    entityFileNameTransformer,
+                    constructorTransformer,
+                    propertyTransformer,
+                    navPropertyTransformer));
+            services.AddSingleton<IContextTransformationService>(provider =>
+                new HbsContextTransformationService(contextFileNameTransformer2));
             return services;
         }
     }

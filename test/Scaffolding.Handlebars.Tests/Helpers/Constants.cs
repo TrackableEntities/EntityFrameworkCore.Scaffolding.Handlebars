@@ -42,14 +42,38 @@
             }
         }
 
+        public static class Names
+        {
+            public const string Category = "Category";
+            public const string Customer = "Customer";
+            public const string Product = "Product";
+
+            public static class Transformed
+            {
+                public const string Category = Names.Category + "Renamed";
+                public const string Customer = Names.Customer + "Renamed";
+                public const string Product = Names.Product + "Renamed";
+            }
+
+            public static class Transformed2
+            {
+                public const string Category = "dbo_" + Transformed.Category;
+                public const string Customer = "dbo_" + Transformed.Customer;
+                public const string Product = "dbo_" + Transformed.Product;
+            }
+        }
+
         public static class Files
         {
             public static class CSharpFiles
             {
                 public const string DbContextFile = Parameters.ContextName + ".cs";
                 public const string CategoryFile = "Category.cs";
+                public const string CategoryFileTransformed2 = "dbo_" + CategoryFile;
                 public const string CustomerFile = "Customer.cs";
+                public const string CustomerFileTransformed2 = "dbo_" + CustomerFile;
                 public const string ProductFile = "Product.cs";
+                public const string ProductFileTransformed2 = "dbo_" + ProductFile;
             }
             public static class TypeScriptFiles
             {

@@ -1,4 +1,6 @@
-﻿namespace Scaffolding.Handlebars.Tests
+﻿using Scaffolding.Handlebars.Tests.Helpers;
+
+namespace Scaffolding.Handlebars.Tests
 {
     public partial class HbsCSharpScaffoldingGeneratorTests
     {
@@ -55,53 +57,59 @@ namespace FakeNamespace
 
         private static class ExpectedEntitiesWithTransformMappings
         {
-            public const string CategoryClass =
+            public const string CategoryClassConst =
 @"using System;
 using System.Collections.Generic;
 
 namespace FakeNamespace
-{
+{{
     /// <summary>
     /// A category of products
     /// </summary>
-    public partial class CategoryRenamed
-    {
-        public CategoryRenamed()
-        {
-            Products = new HashSet<ProductRenamed>();
-        }
+    public partial class {0}
+    {{
+        public {0}()
+        {{
+            Products = new HashSet<{1}>();
+        }}
 
-        public int CategoryIdRenamed { get; set; }
+        public int CategoryIdRenamed {{ get; set; }}
 
         /// <summary>
         /// The name of a category
         /// </summary>
-        public string CategoryNameRenamed { get; set; }
+        public string CategoryNameRenamed {{ get; set; }}
 
-        public virtual ICollection<ProductRenamed> Products { get; set; }
-    }
-}
+        public virtual ICollection<{1}> Products {{ get; set; }}
+    }}
+}}
 ";
 
-            public const string ProductClass =
+            public const string ProductClassConst =
 @"using System;
 using System.Collections.Generic;
 
 namespace FakeNamespace
-{
-    public partial class ProductRenamed
-    {
-        public int ProductIdRenamed { get; set; }
-        public string ProductName { get; set; }
-        public decimal? UnitPriceRenamed { get; set; }
-        public bool Discontinued { get; set; }
-        public byte[] RowVersion { get; set; }
-        public int? CategoryIdRenamed { get; set; }
+{{
+    public partial class {0}
+    {{
+        public int ProductIdRenamed {{ get; set; }}
+        public string ProductName {{ get; set; }}
+        public decimal? UnitPriceRenamed {{ get; set; }}
+        public bool Discontinued {{ get; set; }}
+        public byte[] RowVersion {{ get; set; }}
+        public int? CategoryIdRenamed {{ get; set; }}
 
-        public virtual CategoryRenamed Category { get; set; }
-    }
-}
+        public virtual {1} Category {{ get; set; }}
+    }}
+}}
 ";
+
+            public static readonly string CategoryClass = string.Format(CategoryClassConst, Constants.Names.Transformed.Category, Constants.Names.Transformed.Product);
+            public static readonly string CategoryClassTransformed2 = string.Format(CategoryClassConst, Constants.Names.Transformed2.Category, Constants.Names.Transformed2.Product);
+
+            public static readonly string ProductClass = string.Format(ProductClassConst, Constants.Names.Transformed.Product, Constants.Names.Transformed.Category);
+            public static readonly string ProductClassTransformed2 = string.Format(CategoryClassConst, Constants.Names.Transformed2.Product, Constants.Names.Transformed2.Product);
         }
 
         private static class ExpectedEntitiesNoEncoding
@@ -230,7 +238,7 @@ namespace FakeNamespace
 
         private static class ExpectedEntitiesWithAnnotationsAndTransformMappings
         {
-            public const string CategoryClass =
+            public const string CategoryClassConst =
                 @"using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -238,21 +246,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace FakeNamespace
-{
+{{
     /// <summary>
     /// A category of products
     /// </summary>
     [Table(""Category"")]
-    public partial class CategoryRenamed
-    {
-        public CategoryRenamed()
-        {
-            Products = new HashSet<ProductRenamed>();
-        }
+    public partial class {0}
+    {{
+        public {0}()
+        {{
+            Products = new HashSet<{1}>();
+        }}
 
         [Key]
         [Column(""CategoryId"")]
-        public int CategoryIdRenamed { get; set; }
+        public int CategoryIdRenamed {{ get; set; }}
 
         /// <summary>
         /// The name of a category
@@ -260,15 +268,15 @@ namespace FakeNamespace
         [Required]
         [Column(""CategoryName"")]
         [StringLength(15)]
-        public string CategoryNameRenamed { get; set; }
+        public string CategoryNameRenamed {{ get; set; }}
 
-        [InverseProperty(nameof(ProductRenamed.Category))]
-        public virtual ICollection<ProductRenamed> Products { get; set; }
-    }
-}
+        [InverseProperty(nameof({1}.Category))]
+        public virtual ICollection<{1}> Products {{ get; set; }}
+    }}
+}}
 ";
 
-            public const string ProductClass =
+            public const string ProductClassConst =
                 @"using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -276,30 +284,37 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace FakeNamespace
-{
+{{
     [Table(""Product"")]
     [Index(nameof(CategoryId), Name = ""IX_Product_CategoryId"")]
-    public partial class ProductRenamed
-    {
+    public partial class {0}
+    {{
         [Key]
         [Column(""ProductId"")]
-        public int ProductIdRenamed { get; set; }
+        public int ProductIdRenamed {{ get; set; }}
         [Required]
         [StringLength(40)]
-        public string ProductName { get; set; }
+        public string ProductName {{ get; set; }}
         [Column(""UnitPrice"", TypeName = ""money"")]
-        public decimal? UnitPriceRenamed { get; set; }
-        public bool Discontinued { get; set; }
-        public byte[] RowVersion { get; set; }
+        public decimal? UnitPriceRenamed {{ get; set; }}
+        public bool Discontinued {{ get; set; }}
+        public byte[] RowVersion {{ get; set; }}
         [Column(""CategoryId"")]
-        public int? CategoryIdRenamed { get; set; }
+        public int? CategoryIdRenamed {{ get; set; }}
 
         [ForeignKey(nameof(CategoryIdRenamed))]
         [InverseProperty(""Products"")]
-        public virtual CategoryRenamed Category { get; set; }
-    }
-}
+        public virtual {1} Category {{ get; set; }}
+    }}
+}}
 ";
+
+            public static readonly string CategoryClass = string.Format(CategoryClassConst, Constants.Names.Transformed.Category, Constants.Names.Transformed.Product);
+            public static readonly string CategoryClassTransformed2 = string.Format(CategoryClassConst, Constants.Names.Transformed2.Category, Constants.Names.Transformed2.Product);
+
+            public static readonly string ProductClass = string.Format(ProductClassConst, Constants.Names.Transformed.Product, Constants.Names.Transformed.Category);
+            public static readonly string ProductClassTransformed2 = string.Format(CategoryClassConst, Constants.Names.Transformed2.Product, Constants.Names.Transformed2.Product);
+
         }
 
         private static class ExpectedEntitiesWithAnnotationsNoEncoding

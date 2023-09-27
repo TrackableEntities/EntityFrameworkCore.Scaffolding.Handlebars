@@ -52,5 +52,25 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             PropertyTransformer2 = propertyTransformer;
             NavPropertyTransformer2 = navPropertyTransformer;
         }
+
+        /// <summary>
+        /// HbsEntityTypeTransformationService constructor.
+        /// </summary>
+        /// <param name="entityTypeNameTransformer">Entity type name transformer.</param>
+        /// <param name="entityFileNameTransformer">Entity file name transformer.</param>
+        /// <param name="constructorTransformer">Constructor transformer.</param>
+        /// <param name="propertyTransformer">Property name transformer.</param>
+        /// <param name="navPropertyTransformer">Navigation property name transformer.</param>
+        public HbsEntityTypeTransformationService2(
+            Func<IEntityType, string, string> entityTypeNameTransformer = null,
+            Func<IEntityType, string, string> entityFileNameTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null)
+        {
+            ConstructorTransformer2 = constructorTransformer;
+            PropertyTransformer2 = propertyTransformer;
+            NavPropertyTransformer2 = navPropertyTransformer;
+        }
     }
 }

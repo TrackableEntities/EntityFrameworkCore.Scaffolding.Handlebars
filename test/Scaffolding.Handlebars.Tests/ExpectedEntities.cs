@@ -109,7 +109,7 @@ namespace FakeNamespace
             public static readonly string CategoryClassTransformed2 = string.Format(CategoryClassConst, Constants.Names.Transformed2.Category, Constants.Names.Transformed2.Product);
 
             public static readonly string ProductClass = string.Format(ProductClassConst, Constants.Names.Transformed.Product, Constants.Names.Transformed.Category);
-            public static readonly string ProductClassTransformed2 = string.Format(CategoryClassConst, Constants.Names.Transformed2.Product, Constants.Names.Transformed2.Product);
+            public static readonly string ProductClassTransformed2 = string.Format(ProductClassConst, Constants.Names.Transformed2.Product, Constants.Names.Transformed2.Category);
         }
 
         private static class ExpectedEntitiesNoEncoding
@@ -313,7 +313,7 @@ namespace FakeNamespace
             public static readonly string CategoryClassTransformed2 = string.Format(CategoryClassConst, Constants.Names.Transformed2.Category, Constants.Names.Transformed2.Product);
 
             public static readonly string ProductClass = string.Format(ProductClassConst, Constants.Names.Transformed.Product, Constants.Names.Transformed.Category);
-            public static readonly string ProductClassTransformed2 = string.Format(CategoryClassConst, Constants.Names.Transformed2.Product, Constants.Names.Transformed2.Product);
+            public static readonly string ProductClassTransformed2 = string.Format(ProductClassConst, Constants.Names.Transformed2.Product, Constants.Names.Transformed2.Category);
 
         }
 

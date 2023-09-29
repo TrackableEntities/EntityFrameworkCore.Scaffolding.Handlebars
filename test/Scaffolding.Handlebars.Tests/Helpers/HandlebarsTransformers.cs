@@ -33,19 +33,25 @@ namespace Scaffolding.Handlebars.Tests.Helpers
         public static string MapEntityName(string entityName) =>
             _entityTypeNameMappings.TryGetValue(entityName, out var nameOverride) ? nameOverride : entityName;
 
+        public static string MapEntityName2(IEntityType entityType, string entityName) =>
+            _entityTypeNameMappings2.TryGetValue(entityName, out var nameOverride) ? nameOverride(entityType, entityName) : entityName;
+
         public static EntityPropertyInfo MapNavPropertyInfo(EntityPropertyInfo e) =>
             new(MapPropertyTypeName(e.PropertyType), MapPropertyName(e.PropertyName));
 
+        public static EntityPropertyInfo MapNavPropertyInfo2(IEntityType entityType, EntityPropertyInfo e) =>
+            new(MapEntityName2(entityType, e.PropertyType), MapPropertyName(e.PropertyName));
+
         public static EntityPropertyInfo MapPropertyInfo(EntityPropertyInfo e) =>
             new(MapPropertyTypeName(e.PropertyType), MapPropertyName(e.PropertyName));
+
+        public static EntityPropertyInfo MapPropertyInfo2(IEntityType entityType, EntityPropertyInfo e) =>
+            new(MapEntityName2(entityType, e.PropertyType), MapPropertyName(e.PropertyName));
 
         private static string MapPropertyTypeName(string propertyTypeName) =>
             _entityTypeNameMappings.TryGetValue(propertyTypeName, out var propertyTypeNameOverride) ? propertyTypeNameOverride : propertyTypeName;
 
         private static string MapPropertyName(string propertyName) =>
             _entityPropertyNameMappings.TryGetValue(propertyName, out var propertyNameOverride) ? propertyNameOverride : propertyName;
-
-        public static string MapName2(IEntityType entityType, string entityName) =>
-            _entityTypeNameMappings2.TryGetValue(entityName, out var nameOverride) ? nameOverride(entityType, entityName) : entityName;
     }
 }

@@ -733,16 +733,18 @@ namespace Scaffolding.Handlebars.Tests
             // Add Transformation Services
             services
                 .AddSingleton<IContextTransformationService>(y => new HbsContextTransformationService(contextName => !string.IsNullOrWhiteSpace(filenamePrefix) ? $"{filenamePrefix}{contextName}" : contextName));
-            
+
+            services.AddHandlebarsTransformers2(constructorTransformer2: (type, info) => new EntityPropertyInfo());
+
             if (useEntityTransformMappings2)
             {
                 services
                     .AddSingleton<IEntityTypeTransformationService>(y => new HbsEntityTypeTransformationService2(
-                        entityFileNameTransformer: (entityType, entityName) => HandlebarsTransformers.MapName2(entityType, !string.IsNullOrWhiteSpace(filenamePrefix) ? $"{filenamePrefix}{entityName}" : entityName),
-                        entityTypeNameTransformer: (entityType, entityName) => HandlebarsTransformers.MapName2(entityType, entityName),
-                        constructorTransformer: (entityType, epi) => HandlebarsTransformers.MapPropertyInfo(epi),
-                        propertyTransformer: (entityType, epi) => HandlebarsTransformers.MapPropertyInfo(epi),
-                        navPropertyTransformer: (entityType, epi) => HandlebarsTransformers.MapNavPropertyInfo(epi)
+                        entityFileNameTransformer: (entityType, entityName) => HandlebarsTransformers.MapEntityName2(entityType, !string.IsNullOrWhiteSpace(filenamePrefix) ? $"{filenamePrefix}{entityName}" : entityName),
+                        entityTypeNameTransformer: (entityType, entityName) => HandlebarsTransformers.MapEntityName2(entityType, entityName),
+                        constructorTransformer: (entityType, epi) => HandlebarsTransformers.MapPropertyInfo2(entityType, epi),
+                        propertyTransformer: (entityType, epi) => HandlebarsTransformers.MapPropertyInfo2(entityType, epi),
+                        navPropertyTransformer: (entityType, epi) => HandlebarsTransformers.MapNavPropertyInfo2(entityType, epi)
                     ));
             }
             else 

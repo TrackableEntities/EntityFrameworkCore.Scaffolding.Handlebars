@@ -68,6 +68,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
             Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null)
         {
+            EntityTypeNameTransformer2 = entityTypeNameTransformer;
+            EntityFileNameTransformer2 = entityFileNameTransformer;
             ConstructorTransformer2 = constructorTransformer;
             PropertyTransformer2 = propertyTransformer;
             NavPropertyTransformer2 = navPropertyTransformer;

@@ -734,8 +734,6 @@ namespace Scaffolding.Handlebars.Tests
             services
                 .AddSingleton<IContextTransformationService>(y => new HbsContextTransformationService(contextName => !string.IsNullOrWhiteSpace(filenamePrefix) ? $"{filenamePrefix}{contextName}" : contextName));
 
-            services.AddHandlebarsTransformers2(constructorTransformer2: (type, info) => new EntityPropertyInfo());
-
             if (useEntityTransformMappings2)
             {
                 services

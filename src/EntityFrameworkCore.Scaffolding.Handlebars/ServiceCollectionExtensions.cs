@@ -261,30 +261,30 @@ namespace Microsoft.EntityFrameworkCore.Design
         ///     </para>
         /// </summary>
         /// <param name="services"> The <see cref="IServiceCollection" /> to add services to. </param>
-        /// <param name="entityTypeNameTransformer2">Entity name transformer.</param>
-        /// <param name="entityFileNameTransformer2">Entity file name transformer.</param>
-        /// <param name="constructorTransformer2"></param>
-        /// <param name="propertyTransformer2">Property name transformer.</param>
-        /// <param name="navPropertyTransformer2">Navigation property name transformer.</param>
-        /// <param name="contextFileNameTransformer2">Context file name transformer.</param>
+        /// <param name="entityTypeNameTransformer">Entity name transformer.</param>
+        /// <param name="entityFileNameTransformer">Entity file name transformer.</param>
+        /// <param name="constructorTransformer"></param>
+        /// <param name="propertyTransformer">Property name transformer.</param>
+        /// <param name="navPropertyTransformer">Navigation property name transformer.</param>
+        /// <param name="contextFileNameTransformer">Context file name transformer.</param>
         /// <returns>The same service collection so that multiple calls can be chained.</returns>
-        public static IServiceCollection AddHandlebarsTransformers2(this IServiceCollection services,
-            Func<IEntityType, string, string> entityTypeNameTransformer2 = null,
-            Func<IEntityType, string, string> entityFileNameTransformer2 = null,
-            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> constructorTransformer2 = null,
-            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> propertyTransformer2 = null,
-            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer2 = null,
-            Func<string, string> contextFileNameTransformer2 = null)
+        public static IServiceCollection AddHandlebarsEntityTypeTransformers(this IServiceCollection services,
+            Func<IEntityType, string, string> entityTypeNameTransformer = null,
+            Func<IEntityType, string, string> entityFileNameTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> constructorTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> propertyTransformer = null,
+            Func<IEntityType, EntityPropertyInfo, EntityPropertyInfo> navPropertyTransformer = null,
+            Func<string, string> contextFileNameTransformer = null)
         {
             services.AddSingleton<IEntityTypeTransformationService>(provider =>
                 new HbsEntityTypeTransformationService2(
-                    entityTypeNameTransformer2,
-                    entityFileNameTransformer2,
-                    constructorTransformer2,
-                    propertyTransformer2,
-                    navPropertyTransformer2));
+                    entityTypeNameTransformer,
+                    entityFileNameTransformer,
+                    constructorTransformer,
+                    propertyTransformer,
+                    navPropertyTransformer));
             services.AddSingleton<IContextTransformationService>(provider =>
-                new HbsContextTransformationService(contextFileNameTransformer2));
+                new HbsContextTransformationService(contextFileNameTransformer));
             return services;
         }
     }

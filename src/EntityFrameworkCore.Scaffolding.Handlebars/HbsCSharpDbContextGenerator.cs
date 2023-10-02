@@ -789,11 +789,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var joinEntityType = skipNavigation.JoinEntityType;
             using (sb.Indent())
             {
-                // TODO: Needs some serious testing, which types on skipNavigation and inverse should be used?
                 sb.AppendLine($"{EntityLambdaIdentifier}.{nameof(EntityTypeBuilder.HasMany)}(d => d.{EntityTypeTransformationService.TransformTypeEntityName(skipNavigation.JoinEntityType, skipNavigation.Name)})");
                 using (sb.Indent())
                 {
-                    // TODO: Needs some serious testing, which types on skipNavigation and inverse should be used?
                     sb.AppendLine($".{nameof(CollectionNavigationBuilder.WithMany)}(p => p.{EntityTypeTransformationService.TransformTypeEntityName(inverse.DeclaringEntityType, inverse.Name)})");
                     sb.AppendLine(
                         $".{nameof(CollectionCollectionBuilder.UsingEntity)}<{CSharpHelper.Reference(Model.DefaultPropertyBagType)}>(");

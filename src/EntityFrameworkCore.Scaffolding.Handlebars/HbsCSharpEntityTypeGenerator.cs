@@ -220,10 +220,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                 foreach (var navigation in collectionNavigations)
                 {
+                    var navPropertyType = EntityTypeTransformationService.TransformTypeEntityName(navigation.TargetEntityType, navigation.TargetEntityType.Name);
                     lines.Add(new Dictionary<string, object>
                     {
                         { "property-name", navigation.Name },
-                        { "property-type", navigation.TargetEntityType.Name }
+                        { "property-type", navPropertyType }
                     });
                 }
 
@@ -333,7 +334,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     var propertyIsNullable = !navigation.IsCollection &&
                         UseNullableReferenceTypes &&
                         !navigation.ForeignKey.IsRequired;
-                    var navPropertyType = navigation.TargetEntityType.Name;
+                    var navPropertyType = EntityTypeTransformationService.TransformTypeEntityName(navigation.TargetEntityType, navigation.TargetEntityType.Name);
                     navProperties.Add(new Dictionary<string, object>
                     {
                         { "nav-property-collection", navigation.IsCollection },
@@ -376,7 +377,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     var propertyIsNullable = !navigation.IsCollection &&
                         UseNullableReferenceTypes &&
                         !navigation.ForeignKey.IsRequired;
-                    var navPropertyType = navigation.TargetEntityType.Name;
+                    var navPropertyType = EntityTypeTransformationService.TransformTypeEntityName(navigation.TargetEntityType, navigation.TargetEntityType.Name);
                     if (propertyIsNullable &&
                         !navPropertyType.EndsWith("?")) {
                         navPropertyType += "?";

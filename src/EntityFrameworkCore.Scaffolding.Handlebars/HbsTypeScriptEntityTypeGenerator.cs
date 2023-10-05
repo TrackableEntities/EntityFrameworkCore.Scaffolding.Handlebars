@@ -158,10 +158,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                 foreach (var navigation in collectionNavigations)
                 {
+                    var navPropertyType = EntityTypeTransformationService.TransformTypeEntityName(navigation.TargetEntityType, navigation.TargetEntityType.Name);
                     lines.Add(new Dictionary<string, object>
                     {
                         { "property-name", navigation.Name },
-                        { "property-type", navigation.TargetEntityType.Name },
+                        { "property-type", navPropertyType },
                     });
                 }
 
@@ -217,10 +218,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                 foreach (var navigation in sortedNavigations)
                 {
+                    var navPropertyType = EntityTypeTransformationService.TransformTypeEntityName(navigation.TargetEntityType, navigation.TargetEntityType.Name);
                     navProperties.Add(new Dictionary<string, object>
                     {
                         { "nav-property-collection", navigation.IsCollection },
-                        { "nav-property-type", navigation.TargetEntityType.Name },
+                        { "nav-property-type", navPropertyType },
                         { "nav-property-name", TypeScriptHelper.ToCamelCase(navigation.Name) },
                         { "nav-property-annotations", new List<Dictionary<string, object>>() },
                         { "nav-property-isnullable", false },
@@ -252,10 +254,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                 foreach (var navigation in sortedNavigations)
                 {
+                    var navPropertyType = EntityTypeTransformationService.TransformTypeEntityName(navigation.TargetEntityType, navigation.TargetEntityType.Name);
                     navProperties.Add(new Dictionary<string, object>
                     {
                         { "nav-property-collection", navigation.IsCollection },
-                        { "nav-property-type", navigation.TargetEntityType.Name },
+                        { "nav-property-type", navPropertyType },
                         { "nav-property-name", TypeScriptHelper.ToCamelCase(navigation.Name) },
                         { "nav-property-annotations", new List<Dictionary<string, object>>() },
                         { "nav-property-isnullable", false },

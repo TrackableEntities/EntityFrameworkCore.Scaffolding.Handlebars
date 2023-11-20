@@ -14,7 +14,7 @@ namespace ScaffoldingSample.Models.dbo
         public string CompanyName { get; set; } = null!;
         public string? ContactName { get; set; }
         public string? City { get; set; }
-        public Country? Country { get; set; } = null!;
+        public string? Country { get; set; }
 
         public virtual CustomerSetting CustomerSetting { get; set; } = null!;
         public virtual ICollection<Order> Orders { get; set; }

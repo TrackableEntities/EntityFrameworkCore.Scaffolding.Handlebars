@@ -7,16 +7,33 @@ Demonstrates how to reverse engineer an existing database using the EF Core tool
 - [Visual Studio 2022](https://www.visualstudio.com/downloads/) 17.4 or greater.
 - The .[NET SDK](https://www.microsoft.com/net/download/core).
 
-## Database Setup
+## Windows Intel Setup
 
 - Use SQL Server Management Studio to connect to SQL Server
-    - The easiest is to use **LocalDb**, which is installed with Visual Studio.  
-    Connect to: `(localdb)\MsSqlLocalDb`.
-    - Create a new database named **NorthwindSlim**.
-    - Download the `NorthwindSlim.sql` file from <https://github.com/TrackableEntities/northwind-slim>.
-    - Unzip **NorthwindSlim.sql** and run the script to create tables and populate them with data.
+- The easiest is to use **LocalDb**, which is installed with Visual Studio.
+- Connect to: `(localdb)\MsSqlLocalDb`.
+- Create a new database named **NorthwindSlim**.
+- Download the `NorthwindSlim.sql` file from <https://github.com/TrackableEntities/northwind-slim>.
+- Unzip **NorthwindSlim.sql** and run the script to create tables and populate them with data.
 
-## Setup
+## MacOS arm64 Setup (M Series)
+
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Run Docker SQL Server instance for arm64
+
+```
+docker run -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=MyPass@word" -e "MSSQL_PID=Developer" -e "MSSQL_USER=SA" -p 1433:1433 -d --name=sql mcr.microsoft.com/azure-sql-edge
+```
+
+- Add VS Code [Extension for SQL Server](https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql)
+  - Connect with username `sa` and password `MyPass@word`
+  - Enable trust server certificate when prompted
+  - See [here](https://learn.microsoft.com/en-us/sql/tools/visual-studio-code/sql-server-develop-use-vscode?view=sql-server-ver16) for help connecting and writing commands and queries
+- Create a new database named **NorthwindSlim**.
+- Download the `NorthwindSlim.sql` file from <https://github.com/TrackableEntities/northwind-slim>.
+- Unzip **NorthwindSlim.sql** and run the script to create tables and populate them with data.
+
+## Project Setup
 
 Add NuGet packages.  
     - `Microsoft.EntityFrameworkCore.SqlServer`
@@ -156,10 +173,28 @@ public partial class NorthwindSlimContext
 
 - Install the global `dotnet ef` tool.
 ```
-dotnet tool install --global dotnet-ef --version 3.1.0-*
+dotnet tool install --global dotnet-ef
 ```
-- Open a command prompt at the **ScaffoldingSample** project root and execute:
+
+- Open a command prompt at the **ScaffoldingSample** project root.
+- *For Windows Intel:*
+
 ```
 dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -o Models -c NorthwindSlimContext -f --context-dir Contexts
 ```
+
+- *For MacOS arm64:*
+
+```
+dotnet ef dbcontext scaffold "Server=localhost; Database=NorthwindSlim; User ID=sa;Password=MyPass@word; TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models -c NorthwindSlimContext -f --context-dir Contexts
+```
+
+## Web API Sample Project
+
+- To run on macOS with arm64, set connection string with Secret Manager
+
+```
+dotnet user-secrets set "ConnectionStrings:NorthwindTestContext" "Server=localhost; Database=NorthwindSlim; User ID=sa;Password=MyPass@word; TrustServerCertificate=True;"
+```
+
 - Set the solution startup project to the **ScaffoldingSample.Api** project and press Ctrl+F5 to start the project without debugging. You should see data displayed from the Employee table.

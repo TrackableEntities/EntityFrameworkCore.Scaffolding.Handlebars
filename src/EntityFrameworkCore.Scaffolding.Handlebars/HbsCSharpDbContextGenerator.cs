@@ -696,10 +696,6 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 lines.Add($".{nameof(PropertyBuilder.IsConcurrencyToken)}()");
             }
 
-            lines.AddRange(
-                AnnotationCodeGenerator.GenerateFluentApiCalls(property, annotations).Select(m => CSharpHelper.Fragment(m))
-                    .Concat(GenerateAnnotations(annotations.Values)));
-
             switch (lines.Count)
             {
                 case 1:
@@ -709,7 +705,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     break;
             }
 
-            AppendMultiLineFluentApi(property.DeclaringEntityType, lines, sb);
+            AppendMultiLineFluentApi((IEntityType)property.DeclaringType, lines, sb);
         }
 
         private void GenerateRelationship(IEntityType entityType, IForeignKey foreignKey, bool useDataAnnotations, IndentedStringBuilder sb)

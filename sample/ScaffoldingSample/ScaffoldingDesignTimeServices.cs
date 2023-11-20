@@ -8,8 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 /*
 You may customize generated classes by modifying the Handlebars templates in the CodeTemplates folder.
 Then run a 'dotnet ef dbcontext scaffold' command to reverse engineer classes from an existing database.
-For example:
+For Windows Intel:
 dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -o Models -c NorthwindSlimContext -f --context-dir Contexts
+For macOS arm64:
+dotnet ef dbcontext scaffold "Server=localhost; Database=NorthwindSlim; User ID=sa;Password=MyPass@word; TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models -c NorthwindSlimContext -f --context-dir Contexts
 */
 
 namespace ScaffoldingSample
@@ -18,8 +20,11 @@ namespace ScaffoldingSample
     {
         public void ConfigureDesignTimeServices(IServiceCollection services)
         {
-            // Uncomment to launch JIT debugger and hit breakpoints
-            //System.Diagnostics.Debugger.Launch();
+            // Uncomment to launch JIT debugger and hit breakpoints on Windows
+            // System.Diagnostics.Debugger.Launch();
+            
+            // Uncomment so you can attach debugger and hit breakpoints on macOS
+            // Helpers.DebuggingHelper.WaitForDebugger();
 
             // Add Handlebars scaffolding templates
             services.AddHandlebarsScaffolding(options =>
@@ -55,11 +60,11 @@ namespace ScaffoldingSample
             services.AddHandlebarsBlockHelpers(ifCondHelper);
 
             // Add Handlebars transformer for Country property
-            services.AddHandlebarsTransformers(
-                propertyTransformer: p =>
-                    p.PropertyName == "Country"
-                        ? new EntityPropertyInfo("Country?", p.PropertyName, false)
-                        : new EntityPropertyInfo(p.PropertyType, p.PropertyName, p.PropertyIsNullable));
+            // services.AddHandlebarsTransformers(
+            //     propertyTransformer: p =>
+            //         p.PropertyName == "Country"
+            //             ? new EntityPropertyInfo("Country?", p.PropertyName, false)
+            //             : new EntityPropertyInfo(p.PropertyType, p.PropertyName, p.PropertyIsNullable));
 
             // Add Handlebars transformer for Id property
             //services.AddHandlebarsTransformers2(

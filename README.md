@@ -15,8 +15,8 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
 ## Prerequisites
 
 - [Visual Studio 2022](https://www.visualstudio.com/downloads/) or greater, [JetBrains Rider](https://www.jetbrains.com/rider) 2022.2 or greater.
-- [.NET 7.0 SDK](https://dotnet.microsoft.com/download/dotnet/7.0) or greater.
-- [EF Core CLI 7.0](https://docs.microsoft.com/en-us/ef/core/cli/dotnet) or greater.
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet) or greater.
+- [EF Core CLI 8.0](https://docs.microsoft.com/en-us/ef/core/cli/dotnet) or greater.
   - Install global `dotnet-ef` tool.
     ```
     dotnet tool install --global dotnet-ef
@@ -37,10 +37,10 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
 
 ## Upgrading
 
-1. Upgrade `TargetFramework` in **.csproj** file to `net6.0` or `net7.0`.
+1. Upgrade `TargetFramework` in **.csproj** file to `net8.0`.
    - Optional: Set `ImplicitUsings` to `enable`.
    - Optional: Set `Nullable` ro `enable`.
-2. Update the following NuGet packages to `7.0.0` or later:
+2. Update the following NuGet packages to `8.0.0` or later:
    - Microsoft.EntityFrameworkCore.Design
    - Microsoft.EntityFrameworkCore.SqlServer
    - EntityFrameworkCore.Scaffolding.Handlebars
@@ -52,7 +52,7 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
 
 ## Usage
 
-1. Create a new **.NET 6** or **.NET 7** class library.
+1. Create a new **.NET 8** class library.
 
 2. Add EF Core SQL Server and Tools NuGet packages.
     - `Microsoft.EntityFrameworkCore.SqlServer`

@@ -4,10 +4,14 @@
     {
         public static class Connections
         {
-            public const string SqLiteConnection = "DataSource=:memory:";
-            public const string SqlServerConnection = @"Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=NorthwindTestDb; Integrated Security=True";
+            public const string NorthwindTest = "NorthwindTestContext";
         }
 
+        public static class CollectionDefinitions
+        {
+            public const string DatabaseCollection = "Database Collection";
+        }
+        
         public static class Parameters
         {
             public const string ProjectPath = "FakeProjectPath";

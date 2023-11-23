@@ -1,7 +1,7 @@
 ﻿<Project>
 
   <ItemGroup>
-    <Files Include="$(MSBuildThisFileDirectory)/../lib/net6.0/CodeTemplates/**/*.*" />
+    <Files Include="$(MSBuildThisFileDirectory)/../lib/net8.0/CodeTemplates/**/*.*" />
   </ItemGroup>
   <Target Name="CopyFiles" AfterTargets="Build">
     <Copy SourceFiles="@(Files)" DestinationFolder="$(TargetDir)/CodeTemplates/%(RecursiveDir)" />

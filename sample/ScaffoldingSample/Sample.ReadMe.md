@@ -156,15 +156,11 @@ public partial class NorthwindSlimContext
     {
         modelBuilder.Entity<Employee>()
             .Property(e => e.Country)
-            .HasConversion(
-                v => v.ToString(),
-                v => (Country)Enum.Parse(typeof(Country), v));
+            .HasConversion<string>();
 
         modelBuilder.Entity<Customer>()
             .Property(e => e.Country)
-            .HasConversion(
-                v => v.ToString(),
-                v => (Country)Enum.Parse(typeof(Country), v));
+            .HasConversion<string>();
     }
 }
 ```
@@ -194,7 +190,7 @@ dotnet ef dbcontext scaffold "Server=localhost; Database=NorthwindSlim; User ID=
 - To run on macOS with arm64, set connection string with Secret Manager
 
 ```
-dotnet user-secrets set "ConnectionStrings:NorthwindTestContext" "Server=localhost; Database=NorthwindSlim; User ID=sa;Password=MyPass@word; TrustServerCertificate=True;"
+dotnet user-secrets set "ConnectionStrings:NorthwindSlimContext" "Server=localhost; Database=NorthwindSlim; User ID=sa;Password=MyPass@word; TrustServerCertificate=True;"
 ```
 
 - Set the solution startup project to the **ScaffoldingSample.Api** project and press Ctrl+F5 to start the project without debugging. You should see data displayed from the Employee table.

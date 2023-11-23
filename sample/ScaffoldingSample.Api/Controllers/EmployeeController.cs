@@ -21,7 +21,7 @@ public class EmployeeController(NorthwindSlimContext context) : ControllerBase
                 e.FirstName,
                 BirthDate = e.BirthDate.GetValueOrDefault().ToShortDateString(),
                 HireDate = e.HireDate.GetValueOrDefault().ToShortDateString(),
-                e.Country
+                Country = e.Country.ToString()
             })
             .ToListAsync();
         return Ok(employees);

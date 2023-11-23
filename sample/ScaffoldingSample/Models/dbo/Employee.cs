@@ -16,7 +16,7 @@ namespace ScaffoldingSample.Models.dbo
         public DateTime? BirthDate { get; set; }
         public DateTime? HireDate { get; set; }
         public string? City { get; set; }
-        public string? Country { get; set; }
+        public Country? Country { get; set; } = null!;
 
         public virtual ICollection<Territory> Territories { get; set; }
 

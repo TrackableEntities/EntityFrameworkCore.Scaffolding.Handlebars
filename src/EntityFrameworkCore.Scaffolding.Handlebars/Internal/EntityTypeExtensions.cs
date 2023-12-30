@@ -21,4 +21,36 @@ public static class EntityTypeExtensions
     public static IEnumerable<IPropertyBase> GetPropertiesAndNavigations(
         this IEntityType entityType)
         => entityType.GetProperties().Concat<IPropertyBase>(entityType.GetNavigations());
+
+    /// <summary>
+    /// Determines if the given <see cref="IEntityType"/> is a join entity 
+    /// type for a many-to-many relationship where Entity would not be generated.
+    /// This is where only Key properties are present.
+    /// </summary>
+    /// <param name="entityType">Entity Type</param>
+    /// <returns></returns>
+    public static bool IsManyToManyJoinEntityType(this IEntityType entityType)
+    {
+        if (!entityType.GetNavigations().Any()
+            && !entityType.GetSkipNavigations().Any())
+        {
+            var primaryKey = entityType.FindPrimaryKey();
+            var properties = entityType.GetProperties().ToList();
+            var foreignKeys = entityType.GetForeignKeys().ToList();
+            if (primaryKey != null
+                && primaryKey.Properties.Count > 1
+                && foreignKeys.Count == 2
+                && primaryKey.Properties.Count == properties.Count
+                && foreignKeys[0].Properties.Count + foreignKeys[1].Properties.Count == properties.Count
+                && !foreignKeys[0].Properties.Intersect(foreignKeys[1].Properties).Any()
+                && foreignKeys[0].IsRequired
+                && foreignKeys[1].IsRequired
+                && !foreignKeys[0].IsUnique
+                && !foreignKeys[1].IsUnique)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -244,7 +244,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                     foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
                     {
-                        if (IsManyToManyJoinEntityType(entityType))
+                        if (entityType.IsManyToManyJoinEntityType())
                         {
                             continue;
                         }
@@ -285,7 +285,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
             {
-                if (IsManyToManyJoinEntityType(entityType))
+                if (entityType.IsManyToManyJoinEntityType())
                 {
                     continue;
                 }
@@ -1204,30 +1204,5 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             => $".HasAnnotation({CSharpHelper.Literal(annotation.Name)}, " +
                $"{CSharpHelper.UnknownLiteral(annotation.Value)})";
 
-        private static bool IsManyToManyJoinEntityType(IEntityType entityType)
-        {
-            if (!entityType.GetNavigations().Any()
-                && !entityType.GetSkipNavigations().Any())
-            {
-                var primaryKey = entityType.FindPrimaryKey();
-                var properties = entityType.GetProperties().ToList();
-                var foreignKeys = entityType.GetForeignKeys().ToList();
-                if (primaryKey != null
-                    && primaryKey.Properties.Count > 1
-                    && foreignKeys.Count == 2
-                    && primaryKey.Properties.Count == properties.Count
-                    && foreignKeys[0].Properties.Count + foreignKeys[1].Properties.Count == properties.Count
-                    && !foreignKeys[0].Properties.Intersect(foreignKeys[1].Properties).Any()
-                    && foreignKeys[0].IsRequired
-                    && foreignKeys[1].IsRequired
-                    && !foreignKeys[0].IsUnique
-                    && !foreignKeys[1].IsUnique)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
 }

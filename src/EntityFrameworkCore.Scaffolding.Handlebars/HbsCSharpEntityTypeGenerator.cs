@@ -635,6 +635,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             if (navigation == null) throw new ArgumentNullException(nameof(navigation));
 
+            if (navigation.ForeignKey.DeclaringEntityType.IsManyToManyJoinEntityType())
+            { 
+                return;
+            }
+
             GenerateForeignKeyAttribute(entityType, navigation);
             GenerateInversePropertyAttribute(entityType, navigation);
         }
@@ -696,6 +701,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         private void GenerateNavigationDataAnnotations(IEntityType entityType, ISkipNavigation navigation)
         {
             if (navigation == null) throw new ArgumentNullException(nameof(navigation));
+
+            if (navigation.ForeignKey.DeclaringEntityType.IsManyToManyJoinEntityType())
+            {
+                return;
+            }
 
             GenerateForeignKeyAttribute(entityType, navigation);
             GenerateInversePropertyAttribute(entityType, navigation);

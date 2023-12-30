@@ -351,6 +351,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         {
             GenerateKey(entityType.FindPrimaryKey(), entityType, sb);
 
+            // Add HasTriggers Fluent method added for EF7+
+            entityType.GetDeclaredTriggers()
+                .ToList()
+                .ForEach(t => GenerateTrigger(entityType, t, sb));
+
             var annotations = AnnotationCodeGenerator
                 .FilterIgnoredAnnotations(entityType.GetAnnotations())
                 .ToDictionary(a => a.Name, a => a);
@@ -511,6 +516,20 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             AppendMultiLineFluentApi(key.DeclaringEntityType, lines, sb);
         }
 
+        /// <summary>
+        /// Generate Trigger Fluent API
+        /// </summary>
+        /// <param name="entityType"></param>
+        /// <param name="trigger"></param>
+        /// <param name="sb"></param>
+        private void GenerateTrigger(IEntityType entityType, ITrigger trigger, IndentedStringBuilder sb)
+        {
+            var parameterString = $"e => e.HasTrigger ( \"{trigger.ModelName}\" ) ";
+            var lines = new List<string> { $".{nameof(RelationalEntityTypeBuilderExtensions.ToTable)}({parameterString})" };
+
+            AppendMultiLineFluentApi(entityType, lines, sb);
+        }
+
         private void GenerateTableName(IEntityType entityType, IndentedStringBuilder sb)
         {
             var tableName = entityType.GetTableName();
@@ -660,12 +679,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 {
                     lines.Add($".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}()");
                     annotations.Remove(RelationalAnnotationNames.DefaultValue);
+                    annotations.Remove(RelationalAnnotationNames.DefaultValueSql);
                 }
                 else if (defaultValue != null)
                 {
                     lines.Add(
                         $".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}({CSharpHelper.UnknownLiteral(defaultValue)})");
                     annotations.Remove(RelationalAnnotationNames.DefaultValue);
+                    annotations.Remove(RelationalAnnotationNames.DefaultValueSql);
                 }
             }
 
@@ -695,6 +716,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 lines.Add($".{nameof(PropertyBuilder.IsConcurrencyToken)}()");
             }
+
+            lines.AddRange(
+                AnnotationCodeGenerator.GenerateFluentApiCalls(property, annotations).Select(m => CSharpHelper.Fragment(m))
+                    .Concat(GenerateAnnotations(annotations.Values)));
 
             switch (lines.Count)
             {
@@ -738,7 +763,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             lines.Add(
                 $".{nameof(ReferenceReferenceBuilder.HasForeignKey)}"
-                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(foreignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(foreignKey.DeclaringEntityType.Name))}>" : "")
+                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(entityType, EntityTypeTransformationService.TransformTypeEntityName(entityType.Name))}>" : "")
                 + $"(d => {GenerateLambdaToKey(entityType, foreignKey.Properties, "d", EntityTypeTransformationService.TransformPropertyName)})");
 
             var defaultOnDeleteAction = foreignKey.IsRequired

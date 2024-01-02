@@ -266,6 +266,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-annotations",  PropertyAnnotationsData },
                     { "property-comment", _options?.Value?.GenerateComments == true ? GenerateComment(property.GetComment(), 2) : null },
                     { "property-isnullable", propertyIsNullable },
+                    { "property-isenum", false },
+                    { "property-default-enum", null },
                     { "nullable-reference-types", UseNullableReferenceTypes }
                 });
             }

@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
     /// Default service for transforming entity type definitions.
     /// </summary>
     public abstract class HbsEntityTypeTransformationServiceBase : IEntityTypeTransformationService
-    {    
+    {
         /// <summary>
         /// Entity name transformer.
         /// </summary>
@@ -96,6 +96,48 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         }
 
         /// <summary>
+        /// Transforms the Property Type if it is an Enumeration.
+        /// Returns null when not an Enumeration
+        /// </summary>
+        /// <param name="entityType">Entity type.</param>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="propertyType">Property type</param>
+        /// <returns>Transformed property name, null when not an Enumeration</returns>
+        public string TransformPropertyTypeIfEnumaration(IEntityType entityType, string propertyName, string propertyType)
+        {
+            var propTypeInfo = new EntityPropertyInfo { PropertyName = propertyName, PropertyType = propertyType };
+            if (PropertyTransformer2 != null)
+            {
+                EntityPropertyInfo epi = PropertyTransformer2?.Invoke(entityType, propTypeInfo);
+                return epi.IsEnumPropertyType == true ? epi.PropertyType : null;
+            }
+            else if (PropertyTransformer != null)
+            {
+                EntityPropertyInfo epi = PropertyTransformer?.Invoke(propTypeInfo);
+                return epi.IsEnumPropertyType == true ? epi.PropertyType : null;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Transform Default Enum Value for a property
+        /// </summary>
+        /// <param name="entityType">Entity type.</param>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="propertyType">Property type</param>
+        /// <returns>Default Enumeration Value in format Format will be EnumName.EnumValue</returns>
+        public string TransformPropertyDefaultEnum(IEntityType entityType, string propertyName, string propertyType)
+        {
+            var propTypeInfo = new EntityPropertyInfo { PropertyName = propertyName, PropertyType = propertyType };
+            if (PropertyTransformer2 != null)
+                return PropertyTransformer2?.Invoke(entityType, propTypeInfo)?.PropertyDefaultEnumValue;
+            else if (PropertyTransformer != null)
+                return PropertyTransformer?.Invoke(propTypeInfo)?.PropertyDefaultEnumValue;
+            else
+                return null;
+        }
+
+        /// <summary>
         /// Transform single navigation property name.
         /// </summary>
         /// <param name="entityType">Entity type.</param>
@@ -159,7 +201,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             {
                 var propTypeInfo = new EntityPropertyInfo(property["property-type"] as string,
                     property["property-name"] as string,
-                    (property["property-isnullable"] as bool?) == true);
+                    (property["property-isnullable"] as bool?) == true,
+                    (property["property-isenum"] as bool?) == true,
+                    property["property-default-enum"] as string);
                 EntityPropertyInfo transformedProp;
                 if (PropertyTransformer2 != null)
                     transformedProp = PropertyTransformer2?.Invoke(entityType, propTypeInfo);
@@ -170,6 +214,12 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 var propertyIsNullable = transformedProp.PropertyIsNullable != null
                     ? transformedProp.PropertyIsNullable
                     : (bool)property["property-isnullable"];
+                var isEnumPropertyType = transformedProp.IsEnumPropertyType != null
+                    ? transformedProp.IsEnumPropertyType
+                    : (bool)property["property-isenum"];
+                string propertyDefaultEnumValue = transformedProp.PropertyDefaultEnumValue != null
+                    ? transformedProp.PropertyDefaultEnumValue
+                    : property["property-default-enum"] as string;
 
                 transformedProperties.Add(new Dictionary<string, object>
                 {
@@ -178,6 +228,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-annotations", property["property-annotations"] },
                     { "property-comment", property["property-comment"] },
                     { "property-isnullable", propertyIsNullable },
+                    { "property-isenum", isEnumPropertyType },
+                    { "property-default-enum", propertyDefaultEnumValue },
                     { "nullable-reference-types", property["nullable-reference-types"] }
                 });
             }

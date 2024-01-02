@@ -190,6 +190,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     { "property-annotations",  new List<Dictionary<string, object>>() },
                     { "property-comment", property.GetComment() },
                     { "property-isnullable", property.IsNullable },
+                    { "property-isenum", false },
+                    { "property-default-enum", null },
                     { "nullable-reference-types", UseNullableReferenceTypes }
                 });
             }

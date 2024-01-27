@@ -41,6 +41,25 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         string TransformNavPropertyName(IEntityType entityType, string propertyName, string propertyType);
 
         /// <summary>
+        /// Transforms the Property Type if it is an Enumeration.
+        /// Returns null when not an Enumeration
+        /// </summary>
+        /// <param name="entityType">Entity type.</param>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="propertyType">Property type</param>
+        /// <returns>Transformed property name, null when not an Enumeration</returns>
+        public string TransformPropertyTypeIfEnumaration(IEntityType entityType, string propertyName, string propertyType);
+
+        /// <summary>
+        /// Transform Default Enum Value for a property
+        /// </summary>
+        /// <param name="entityType">Entity type.</param>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="propertyType">Property type</param>
+        /// <returns>Default Enumeration Value in format Format will be EnumName.EnumValue</returns>
+        public string TransformPropertyDefaultEnum(IEntityType entityType, string propertyName, string propertyType);
+
+        /// <summary>
         /// Transform entity type constructor.
         /// </summary>
         /// <param name="entityType">Entity type.</param>

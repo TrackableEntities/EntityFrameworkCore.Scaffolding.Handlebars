@@ -244,7 +244,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                     foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
                     {
-                        if (IsManyToManyJoinEntityType(entityType))
+                        if (entityType.IsManyToManyJoinEntityType())
                         {
                             continue;
                         }
@@ -285,7 +285,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             foreach (var entityType in model.GetScaffoldEntityTypes(_options.Value))
             {
-                if (IsManyToManyJoinEntityType(entityType))
+                if (entityType.IsManyToManyJoinEntityType())
                 {
                     continue;
                 }
@@ -683,8 +683,18 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 }
                 else if (defaultValue != null)
                 {
-                    lines.Add(
-                        $".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}({CSharpHelper.UnknownLiteral(defaultValue)})");
+                    // Lookup Default Enum Value
+                    var defaultEnumValue = EntityTypeTransformationService.TransformPropertyDefaultEnum(entityType, property.Name, property.DeclaringType.Name);
+                    if (string.IsNullOrEmpty(defaultEnumValue))
+                    {
+                        lines.Add(
+                            $".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}({CSharpHelper.UnknownLiteral(defaultValue)})");
+                    }
+                    else
+                    {
+                        lines.Add(
+                            $".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}({defaultEnumValue})");
+                    }
                     annotations.Remove(RelationalAnnotationNames.DefaultValue);
                     annotations.Remove(RelationalAnnotationNames.DefaultValueSql);
                 }
@@ -912,8 +922,18 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                             foreach (var property in joinEntityType.GetProperties())
                             {
-                                lines.Add(
-                                    $"j.{nameof(EntityTypeBuilder.IndexerProperty)}<{CSharpHelper.Reference(property.ClrType)}>({CSharpHelper.Literal(property.Name)})");
+                                // Lookup Property Type Transformation if it is an Enumeration
+                                string enumPropertyType = EntityTypeTransformationService.TransformPropertyTypeIfEnumaration(joinEntityType, property.Name, property.DeclaringType.Name);
+                                if (enumPropertyType == null)
+                                {
+                                    lines.Add(
+                                        $"j.{nameof(EntityTypeBuilder.IndexerProperty)}<{CSharpHelper.Reference(property.ClrType)}>({CSharpHelper.Literal(property.Name)})");
+                                }
+                                else
+                                {
+                                    lines.Add(
+                                        $"j.{nameof(EntityTypeBuilder.IndexerProperty)}<{enumPropertyType}>({CSharpHelper.Literal(property.Name)})");
+                                }
 
                                 var propertyAnnotations = AnnotationCodeGenerator
                                     .FilterIgnoredAnnotations(property.GetAnnotations())
@@ -969,12 +989,14 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                                     {
                                         lines.Add($".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}()");
                                         propertyAnnotations.Remove(RelationalAnnotationNames.DefaultValue);
+                                        propertyAnnotations.Remove(RelationalAnnotationNames.DefaultValueSql);
                                     }
                                     else if (defaultValue != null)
                                     {
                                         lines.Add(
                                             $".{nameof(RelationalPropertyBuilderExtensions.HasDefaultValue)}({CSharpHelper.UnknownLiteral(defaultValue)})");
                                         propertyAnnotations.Remove(RelationalAnnotationNames.DefaultValue);
+                                        propertyAnnotations.Remove(RelationalAnnotationNames.DefaultValueSql);
                                     }
                                 }
 
@@ -1204,30 +1226,5 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             => $".HasAnnotation({CSharpHelper.Literal(annotation.Name)}, " +
                $"{CSharpHelper.UnknownLiteral(annotation.Value)})";
 
-        private static bool IsManyToManyJoinEntityType(IEntityType entityType)
-        {
-            if (!entityType.GetNavigations().Any()
-                && !entityType.GetSkipNavigations().Any())
-            {
-                var primaryKey = entityType.FindPrimaryKey();
-                var properties = entityType.GetProperties().ToList();
-                var foreignKeys = entityType.GetForeignKeys().ToList();
-                if (primaryKey != null
-                    && primaryKey.Properties.Count > 1
-                    && foreignKeys.Count == 2
-                    && primaryKey.Properties.Count == properties.Count
-                    && foreignKeys[0].Properties.Count + foreignKeys[1].Properties.Count == properties.Count
-                    && !foreignKeys[0].Properties.Intersect(foreignKeys[1].Properties).Any()
-                    && foreignKeys[0].IsRequired
-                    && foreignKeys[1].IsRequired
-                    && !foreignKeys[0].IsUnique
-                    && !foreignKeys[1].IsUnique)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
 }

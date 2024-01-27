@@ -56,7 +56,7 @@ docker run -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=MyPass@word" -e "MSSQL_PID=D
 
 1. Upgrade `TargetFramework` in **.csproj** file to `net8.0`.
    - Optional: Set `ImplicitUsings` to `enable`.
-   - Optional: Set `Nullable` ro `enable`.
+   - Optional: Set `Nullable` to `enable`.
 2. Update the following NuGet packages to `8.0.0` or later:
    - Microsoft.EntityFrameworkCore.Design
    - Microsoft.EntityFrameworkCore.SqlServer

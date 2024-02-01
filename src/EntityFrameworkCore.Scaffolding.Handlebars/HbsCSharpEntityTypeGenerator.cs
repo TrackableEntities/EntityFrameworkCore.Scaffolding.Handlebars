@@ -189,7 +189,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 GenerateEntityTypeDataAnnotations(entityType);
             }
 
-            var transformedEntityName = EntityTypeTransformationService.TransformTypeEntityName(entityType.Name);
+            var transformedEntityName = EntityTypeTransformationService.TransformTypeEntityName(entityType, entityType.Name);
 
             if (_options?.Value?.GenerateComments == true)
                 TemplateData.Add("comment", GenerateComment(entityType.GetComment(), 1));
@@ -220,10 +220,11 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
                 foreach (var navigation in collectionNavigations)
                 {
+                    var navPropertyType = EntityTypeTransformationService.TransformTypeEntityName(navigation.TargetEntityType, navigation.TargetEntityType.Name);
                     lines.Add(new Dictionary<string, object>
                     {
                         { "property-name", navigation.Name },
-                        { "property-type", navigation.TargetEntityType.Name }
+                        { "property-type", navPropertyType }
                     });
                 }
 
@@ -335,7 +336,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     var propertyIsNullable = !navigation.IsCollection &&
                         UseNullableReferenceTypes &&
                         !navigation.ForeignKey.IsRequired;
-                    var navPropertyType = navigation.TargetEntityType.Name;
+                    var navPropertyType = EntityTypeTransformationService.TransformTypeEntityName(navigation.TargetEntityType, navigation.TargetEntityType.Name);
                     navProperties.Add(new Dictionary<string, object>
                     {
                         { "nav-property-collection", navigation.IsCollection },
@@ -378,7 +379,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     var propertyIsNullable = !navigation.IsCollection &&
                         UseNullableReferenceTypes &&
                         !navigation.ForeignKey.IsRequired;
-                    var navPropertyType = navigation.TargetEntityType.Name;
+                    var navPropertyType = EntityTypeTransformationService.TransformTypeEntityName(navigation.TargetEntityType, navigation.TargetEntityType.Name);
                     if (propertyIsNullable &&
                         !navPropertyType.EndsWith("?")) {
                         navPropertyType += "?";
@@ -689,7 +690,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                                 m => m.Name == inverseNavigation.DeclaringEntityType.Name ||
                                     EntityTypeTransformationService.TransformNavPropertyName(entityType, m.Name, navigation.TargetEntityType.Name)
                                         == EntityTypeTransformationService.TransformNavPropertyName(entityType, inverseNavigation.DeclaringEntityType.Name, navigation.TargetEntityType.Name))
-                            ? $"nameof({EntityTypeTransformationService.TransformTypeEntityName(inverseNavigation.DeclaringType.Name)}.{propertyName})"
+                            ? $"nameof({EntityTypeTransformationService.TransformTypeEntityName(inverseNavigation.DeclaringEntityType, inverseNavigation.DeclaringType.Name)}.{propertyName})"
                             : CSharpHelper.Literal(propertyName));
 
                     NavPropertyAnnotations.Add(new Dictionary<string, object>
@@ -766,7 +767,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                                 m => m.Name == inverseNavigation.DeclaringEntityType.Name ||
                                     EntityTypeTransformationService.TransformNavPropertyName(entityType, m.Name, navigation.TargetEntityType.Name)
                                         == EntityTypeTransformationService.TransformNavPropertyName(entityType, inverseNavigation.DeclaringEntityType.Name, navigation.TargetEntityType.Name))
-                            ? $"nameof({EntityTypeTransformationService.TransformTypeEntityName(inverseNavigation.DeclaringType.Name)}.{propertyName})"
+                            ? $"nameof({EntityTypeTransformationService.TransformTypeEntityName(inverseNavigation.DeclaringEntityType, inverseNavigation.DeclaringType.Name)}.{propertyName})"
                             : CSharpHelper.Literal(propertyName));
 
                     NavPropertyAnnotations.Add(new Dictionary<string, object>

@@ -16,11 +16,33 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
         string TransformTypeEntityName(string entityName);
 
         /// <summary>
+        /// Transform entity type name.
+        /// </summary>
+        /// <param name="entityType">Entity type.</param>
+        /// <param name="entityName">Entity type name.</param>
+        /// <returns>Transformed entity type name.</returns>
+        string TransformTypeEntityName(IEntityType entityType, string entityName)
+        {
+            return TransformTypeEntityName(entityName);
+        }
+
+        /// <summary>
         /// Transform entity file name.
         /// </summary>
         /// <param name="entityFileName">Entity file name.</param>
         /// <returns>Transformed entity file name.</returns>
         string TransformEntityFileName(string entityFileName);
+
+        /// <summary>
+        /// Transform entity file name.
+        /// </summary>
+        /// <param name="entityType">Entity type.</param>
+        /// <param name="entityFileName">Entity file name.</param>
+        /// <returns>Transformed entity file name.</returns>
+        string TransformEntityFileName(IEntityType entityType, string entityFileName)
+        {
+            return TransformEntityFileName(entityFileName);
+        }
 
         /// <summary>
         /// Transform single property name.

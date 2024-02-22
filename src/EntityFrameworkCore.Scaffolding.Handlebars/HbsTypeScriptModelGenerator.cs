@@ -157,7 +157,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         options.UseDataAnnotations,
                         options.UseNullableReferenceTypes);
 
-                    var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.Name);
+                    var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType, entityType.Name);
                     var entityTypeFileName = transformedFileName + FileExtension;
                     if (_options?.Value?.EnableSchemaFolders == true) {
                         entityTypeFileName = entityType.GetSchema() + @"\" + entityTypeFileName;

@@ -38,7 +38,7 @@ namespace ScaffoldingSample.Contexts
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB; Initial Catalog=NorthwindSlim; Integrated Security=True;");
+                optionsBuilder.UseSqlServer("Server=localhost; Database=NorthwindSlim; User ID=sa;Password=MyPass@word; TrustServerCertificate=True;");
             }
         }
 
@@ -55,7 +55,9 @@ namespace ScaffoldingSample.Contexts
             {
                 entity.ToTable("Customer");
 
-                entity.Property(e => e.CustomerId).HasMaxLength(5);
+                entity.Property(e => e.CustomerId)
+                    .HasMaxLength(5)
+                    .IsFixedLength();
 
                 entity.Property(e => e.City).HasMaxLength(15);
 
@@ -73,7 +75,9 @@ namespace ScaffoldingSample.Contexts
 
                 entity.ToTable("CustomerSetting");
 
-                entity.Property(e => e.CustomerId).HasMaxLength(5);
+                entity.Property(e => e.CustomerId)
+                    .HasMaxLength(5)
+                    .IsFixedLength();
 
                 entity.Property(e => e.Setting).HasMaxLength(50);
 
@@ -120,7 +124,9 @@ namespace ScaffoldingSample.Contexts
             {
                 entity.ToTable("Order");
 
-                entity.Property(e => e.CustomerId).HasMaxLength(5);
+                entity.Property(e => e.CustomerId)
+                    .HasMaxLength(5)
+                    .IsFixedLength();
 
                 entity.Property(e => e.Freight)
                     .HasColumnType("money")

@@ -146,13 +146,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     options.SuppressOnConfiguring);
 
                 var dbContextFileName = ContextTransformationService.TransformContextFileName(options.ContextName) + FileExtension;
-                resultingFiles.ContextFile = new ScaffoldedFile
-                {
-                    Path = options.ContextDir != null
-                        ? Path.Combine(options.ContextDir, dbContextFileName)
-                        : dbContextFileName,
-                    Code = generatedCode
-                };
+                resultingFiles.ContextFile = new ScaffoldedFile(options.ContextDir != null
+                    ? Path.Combine(options.ContextDir, dbContextFileName)
+                    : dbContextFileName, generatedCode);
             }
 
             if (!(CSharpEntityTypeGenerator is NullCSharpEntityTypeGenerator))
@@ -177,11 +173,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         ? Path.Combine(CSharpHelper.Namespace(schema), transformedFileName + FileExtension)
                         : transformedFileName + FileExtension;
                     resultingFiles.AdditionalFiles.Add(
-                        new ScaffoldedFile
-                        {
-                            Path = entityTypeFileName,
-                            Code = generatedCode
-                        });
+                        new ScaffoldedFile(entityTypeFileName, generatedCode));
                 }
             }
 

@@ -138,13 +138,9 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     options.SuppressOnConfiguring);
 
                 var dbContextFileName = ContextTransformationService.TransformContextFileName(options.ContextName) + ".cs";
-                resultingFiles.ContextFile = new ScaffoldedFile
-                {
-                    Path = options.ContextDir != null
-                        ? Path.Combine(options.ContextDir, dbContextFileName)
-                        : dbContextFileName,
-                    Code = generatedCode
-                };
+                resultingFiles.ContextFile = new ScaffoldedFile(options.ContextDir != null
+                    ? Path.Combine(options.ContextDir, dbContextFileName)
+                    : dbContextFileName, generatedCode);
             }
 
             if (!(CSharpEntityTypeGenerator is NullCSharpEntityTypeGenerator))
@@ -163,11 +159,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         entityTypeFileName = entityType.GetSchema() + @"\" + entityTypeFileName;
                     }
                     resultingFiles.AdditionalFiles.Add(
-                        new ScaffoldedFile
-                        {
-                            Path = entityTypeFileName,
-                            Code = generatedCode
-                        });
+                        new ScaffoldedFile(entityTypeFileName, generatedCode));
                 }
             }
 

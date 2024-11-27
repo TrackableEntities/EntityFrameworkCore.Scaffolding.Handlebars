@@ -165,7 +165,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         options.UseDataAnnotations,
                         options.UseNullableReferenceTypes);
 
-                    var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType.Name);
+                    var transformedFileName = EntityTypeTransformationService.TransformEntityFileName(entityType, entityType.Name);
                     var schema = !string.IsNullOrEmpty(entityType.GetTableName())
                         ? entityType.GetSchema()
                         : entityType.GetViewSchema();

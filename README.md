@@ -15,8 +15,8 @@ Before creating a pull request, please refer to the [Contributing Guidelines](ht
 ## Prerequisites
 
 - [Visual Studio 2022](https://www.visualstudio.com/downloads/) or greater, [JetBrains Rider](https://www.jetbrains.com/rider) 2024.3 or greater.
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet) or greater.
-- [EF Core CLI 9.0](https://docs.microsoft.com/en-us/ef/core/cli/dotnet) or greater.
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet) or greater.
+- [EF Core CLI 10.0](https://docs.microsoft.com/en-us/ef/core/cli/dotnet) or greater.
   - Install global `dotnet-ef` tool.
     ```
     dotnet tool install --global dotnet-ef
@@ -54,10 +54,10 @@ docker run -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=MyPass@word" -e "MSSQL_PID=D
 
 ## Upgrading
 
-1. Upgrade `TargetFramework` in **.csproj** file to `net8.0` or `net9.0`.
+1. Upgrade `TargetFramework` in **.csproj** file to `net10.0`.
    - Optional: Set `ImplicitUsings` to `enable`.
    - Optional: Set `Nullable` to `enable`.
-2. Update the following NuGet packages to `9.0.0` or later:
+2. Update the following NuGet packages to `10.0.0` or later:
    - Microsoft.EntityFrameworkCore.Design
    - Microsoft.EntityFrameworkCore.SqlServer
    - EntityFrameworkCore.Scaffolding.Handlebars
@@ -69,7 +69,7 @@ docker run -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=MyPass@word" -e "MSSQL_PID=D
 
 ## Usage
 
-1. Create a new **.NET 8** or **.NET 9** class library.
+1. Create a new **.NET 10** class library.
 
 2. Add EF Core SQL Server and Tools NuGet packages.
     - `Microsoft.EntityFrameworkCore.SqlServer`

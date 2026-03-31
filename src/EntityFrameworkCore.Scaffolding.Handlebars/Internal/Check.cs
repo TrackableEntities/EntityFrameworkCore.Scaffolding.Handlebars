@@ -34,7 +34,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars.Internal
             {
                 NotEmpty(parameterName, nameof(parameterName));
 
-                throw new ArgumentException(AbstractionsStrings.CollectionArgumentIsEmpty(parameterName));
+                throw new ArgumentException(AbstractionsStrings.CollectionArgumentIsEmpty, parameterName);
             }
 
             return value;
@@ -50,7 +50,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars.Internal
             }
             else if (value.Trim().Length == 0)
             {
-                e = new ArgumentException(AbstractionsStrings.ArgumentIsEmpty(parameterName));
+                e = new ArgumentException(AbstractionsStrings.ArgumentIsEmpty, parameterName);
             }
 
             if (e != null)
@@ -70,7 +70,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars.Internal
             {
                 NotEmpty(parameterName, nameof(parameterName));
 
-                throw new ArgumentException(AbstractionsStrings.ArgumentIsEmpty(parameterName));
+                throw new ArgumentException(AbstractionsStrings.ArgumentIsEmpty, parameterName);
             }
 
             return value;

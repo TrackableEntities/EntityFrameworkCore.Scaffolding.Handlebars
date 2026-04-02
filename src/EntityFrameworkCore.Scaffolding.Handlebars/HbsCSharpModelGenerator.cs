@@ -146,9 +146,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                     options.SuppressOnConfiguring);
 
                 var dbContextFileName = ContextTransformationService.TransformContextFileName(options.ContextName) + FileExtension;
-                resultingFiles.ContextFile = new ScaffoldedFile(options.ContextDir != null
+                var dbContextPath = options.ContextDir != null
                     ? Path.Combine(options.ContextDir, dbContextFileName)
-                    : dbContextFileName, generatedCode);
+                    : dbContextFileName;
+                resultingFiles.ContextFile = new ScaffoldedFile(dbContextPath, generatedCode);
             }
 
             if (!(CSharpEntityTypeGenerator is NullCSharpEntityTypeGenerator))

@@ -291,7 +291,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                 }
 
                 var transformedEntityTypeName = GetEntityTypeName(
-                    entityType, EntityTypeTransformationService.TransformTypeEntityName(entityType.Name));
+                    entityType, EntityTypeTransformationService.TransformTypeEntityName(entityType, entityType.Name));
                 dbSets.Add(new Dictionary<string, object>
                 {
                     { "set-property-type", transformedEntityTypeName },
@@ -327,7 +327,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             if (!_entityTypeBuilderInitialized)
             {
                 var transformedEntityTypeName = GetEntityTypeName(
-                    entityType, EntityTypeTransformationService.TransformTypeEntityName(entityType.Name));
+                    entityType, EntityTypeTransformationService.TransformTypeEntityName(entityType, entityType.Name));
 
                 sb.AppendLine();
                 sb.AppendLine($"modelBuilder.Entity<{transformedEntityTypeName}>({EntityLambdaIdentifier} =>");
@@ -536,7 +536,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var schema = entityType.GetSchema();
             var defaultSchema = entityType.Model.GetDefaultSchema();
 
-            var transformedTableName = EntityTypeTransformationService.TransformTypeEntityName(tableName);
+            var transformedTableName = EntityTypeTransformationService.TransformTypeEntityName(entityType, tableName);
             var tableNameVirtual = tableName != null && !tableName.Equals(transformedTableName);
 
             var explicitSchema = schema != null && schema != defaultSchema;
@@ -773,7 +773,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
             lines.Add(
                 $".{nameof(ReferenceReferenceBuilder.HasForeignKey)}"
-                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(entityType, EntityTypeTransformationService.TransformTypeEntityName(entityType.Name))}>" : "")
+                + (foreignKey.IsUnique ? $"<{GetEntityTypeName(entityType, EntityTypeTransformationService.TransformTypeEntityName(entityType, entityType.Name))}>" : "")
                 + $"(d => {GenerateLambdaToKey(entityType, foreignKey.Properties, "d", EntityTypeTransformationService.TransformPropertyName)})");
 
             var defaultOnDeleteAction = foreignKey.IsRequired
@@ -820,10 +820,10 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
             var joinEntityType = skipNavigation.JoinEntityType;
             using (sb.Indent())
             {
-                sb.AppendLine($"{EntityLambdaIdentifier}.{nameof(EntityTypeBuilder.HasMany)}(d => d.{EntityTypeTransformationService.TransformTypeEntityName(skipNavigation.Name)})");
+                sb.AppendLine($"{EntityLambdaIdentifier}.{nameof(EntityTypeBuilder.HasMany)}(d => d.{EntityTypeTransformationService.TransformTypeEntityName(skipNavigation.JoinEntityType, skipNavigation.Name)})");
                 using (sb.Indent())
                 {
-                    sb.AppendLine($".{nameof(CollectionNavigationBuilder.WithMany)}(p => p.{EntityTypeTransformationService.TransformTypeEntityName(inverse.Name)})");
+                    sb.AppendLine($".{nameof(CollectionNavigationBuilder.WithMany)}(p => p.{EntityTypeTransformationService.TransformTypeEntityName(inverse.DeclaringEntityType, inverse.Name)})");
                     sb.AppendLine(
                         $".{nameof(CollectionCollectionBuilder.UsingEntity)}<{CSharpHelper.Reference(Model.DefaultPropertyBagType)}>(");
                     using (sb.Indent())
@@ -831,8 +831,8 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
                         sb.AppendLine($"{CSharpHelper.Literal(joinEntityType.Name)},");
                         var lines = new List<string>();
 
-                        var navEntityTypeName = GetEntityTypeName(inverse.ForeignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(inverse.ForeignKey.PrincipalEntityType.Name));
-                        var skipNavEntityTypeName = GetEntityTypeName(skipNavigation.ForeignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(skipNavigation.ForeignKey.PrincipalEntityType.Name));
+                        var navEntityTypeName = GetEntityTypeName(inverse.ForeignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(inverse.ForeignKey.PrincipalEntityType, inverse.ForeignKey.PrincipalEntityType.Name));
+                        var skipNavEntityTypeName = GetEntityTypeName(skipNavigation.ForeignKey.PrincipalEntityType, EntityTypeTransformationService.TransformTypeEntityName(skipNavigation.ForeignKey.PrincipalEntityType, skipNavigation.ForeignKey.PrincipalEntityType.Name));
                         GenerateForeignKeyConfigurationLines(inverse.ForeignKey, navEntityTypeName, "l");
                         GenerateForeignKeyConfigurationLines(skipNavigation.ForeignKey, skipNavEntityTypeName, "r");
                         sb.AppendLine("j =>");

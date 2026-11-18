@@ -1205,7 +1205,7 @@ namespace EntityFrameworkCore.Scaffolding.Handlebars
 
         private static string GenerateLambdaToKey(
             IEntityType entityType,
-            IReadOnlyList<IProperty> properties,
+            IReadOnlyList<IPropertyBase> properties,
             string lambdaIdentifier,
             Func<IEntityType, string, string, string> nameTransform)
         {
